@@ -96,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen> {
               )
                   .animate()
                   .fade(duration: 800.ms)
-                  .scale(delay: 200.ms, duration: 800.ms, curve: Curves.backOut),
+                  .scale(delay: 200.ms, duration: 800.ms, curve: Curves.easeOutBack),
               
               const SizedBox(height: 24),
               

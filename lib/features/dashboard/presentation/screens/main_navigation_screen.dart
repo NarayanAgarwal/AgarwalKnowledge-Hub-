@@ -21,6 +21,7 @@ import 'academic_calendar_screen.dart';
 import '../../../web_panel/presentation/screens/super_admin_master_panel.dart';
 import '../../../web_panel/presentation/screens/institute_branding_screen.dart';
 import '../../../settings/presentation/screens/enterprise_settings_panel.dart';
+import '../../../../core/models/user_profile.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});

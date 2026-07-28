@@ -9,7 +9,7 @@ import '../../../../core/widgets/custom_textfield.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../../dashboard/presentation/screens/main_navigation_screen.dart';
-import '../../web_panel/presentation/screens/admin_login_screen.dart';
+import '../../../web_panel/presentation/screens/admin_login_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
