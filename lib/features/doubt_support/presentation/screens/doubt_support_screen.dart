@@ -49,13 +49,23 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
       
-      String aiResponse = "That's a great question! Here's a brief breakdown: ";
-      if (text.toLowerCase().contains("fraction")) {
-        aiResponse += "A fraction represents a part of a whole. It consists of a numerator (top number) and a denominator (bottom number). For example, 1/2 means one part out of two equal parts.";
-      } else if (text.toLowerCase().contains("computer") || text.toLowerCase().contains("ram")) {
-        aiResponse += "RAM (Random Access Memory) is the primary volatile memory of a computer that temporarily stores data that is actively being used by the CPU for rapid retrieval.";
+      String aiResponse = "";
+      final query = text.toLowerCase();
+      
+      if (query.contains("fraction")) {
+        aiResponse = "That's a great question! Here's a brief breakdown: A fraction represents a part of a whole. It consists of a numerator (top number) and a denominator (bottom number). For example, 1/2 means one part out of two equal parts. To add fractions with the same denominator, simply add the numerators!";
+      } else if (query.contains("computer") || query.contains("ram") || query.contains("cpu") || query.contains("hardware")) {
+        aiResponse = "Excellent question about Computer Basics! Computers process data using the CPU (Central Processing Unit), which is the brain. RAM (Random Access Memory) holds active data temporarily. Input devices like keyboard/mouse let you send instructions, and output devices like monitor display results.";
+      } else if (query.contains("admission") || query.contains("join") || query.contains("fee") || query.contains("class")) {
+        aiResponse = "Welcome! Admissions are open at Agarwal Knowledge Hub. We provide excellent conceptual courses in Computer Science, CBSE Mathematics, and interactive Science labs. Our fees are very reasonable. Please consult Director Agarwal or Ms. Anjali Verma at the office to get the registration booklet!";
+      } else if (query.contains("homework") || query.contains("assignment") || query.contains("due")) {
+        aiResponse = "You can access all assigned homework sheets under the 'Homework' tab in your portal. You can download the PDF worksheets, solve them, and submit snapshots directly from the 'Submit' screen. If you have any specific query from a worksheet, type it here!";
+      } else if (query.contains("hi") || query.contains("hello") || query.contains("hey") || query.contains("helo")) {
+        aiResponse = "Hello! I am your AI Doubt Assistant at Agarwal Knowledge Hub. I can help you solve doubts on Mathematics, Computer Science, and general classroom homework. What subject are you studying today?";
+      } else if (query.contains("thank") || query.contains("thanks")) {
+        aiResponse = "You're very welcome! Learning is a journey, and we are happy to support you. Let me know if you have any other questions!";
       } else {
-        aiResponse += "I am checking the Agarwal Knowledge Hub reference manuals for detailed notes. Please consult Ms. Anjali Verma for class specific updates.";
+        aiResponse = "That's an interesting question about '${text}'. Let's analyze:\n1. At Agarwal Knowledge Hub, we recommend checking the study materials in your 'Notes' tab.\n2. For this topic, try to review the textbook chapters first.\n3. If you need step-by-step guidance, Ms. Anjali Verma will cover this in the next live doubt clearing session!";
       }
 
       setState(() {
