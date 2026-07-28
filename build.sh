@@ -10,7 +10,7 @@ export PATH="$PATH:`pwd`/flutter/bin"
 # 3. Enable web support and create web template files
 echo "Configuring Web support..."
 flutter config --enable-web
-flutter create . --platforms web --force
+flutter create . --platforms web
 
 # 4. Fetch dependencies
 echo "Getting pub packages..."
