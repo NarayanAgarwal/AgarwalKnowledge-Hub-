@@ -21,8 +21,8 @@ sed -i 's/<base href="\/">/<base href=".\/">/g' web/index.html
 echo "Getting pub packages..."
 flutter pub get
 
-# 5. Build production web bundle
+# 5. Build production web bundle (disable icon tree shaking to prevent build failure)
 echo "Building Flutter Web release assets..."
-flutter build web --release --dart-define=FLUTTER_WEB_RENDERER=html
+flutter build web --release --dart-define=FLUTTER_WEB_RENDERER=html --no-tree-shake-icons
 
 echo "Build complete!"
