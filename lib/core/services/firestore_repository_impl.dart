@@ -11,7 +11,7 @@ import 'firestore_repository.dart';
 import '../constants/app_strings.dart';
 
 class FirestoreRepositoryImpl implements FirestoreRepository {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  FirebaseFirestore get _db => FirebaseFirestore.instance;
 
   // Local lists to hold mock data when running without active Firebase connection
   final List<UserProfile> _mockUsers = [];

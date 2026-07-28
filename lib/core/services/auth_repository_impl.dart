@@ -6,8 +6,8 @@ import 'auth_repository.dart';
 import '../constants/app_strings.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   // Local state for fallback when running without Firebase config
   UserProfile? _mockUser;

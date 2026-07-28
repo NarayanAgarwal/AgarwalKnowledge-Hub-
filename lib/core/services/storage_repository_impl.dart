@@ -3,7 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'storage_repository.dart';
 
 class StorageRepositoryImpl implements StorageRepository {
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  FirebaseStorage get _storage => FirebaseStorage.instance;
   bool _useMock = false;
 
   void enableMockMode() {
