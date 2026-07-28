@@ -17,7 +17,7 @@ class StorageRepositoryImpl implements StorageRepository {
     required String fileName,
   }) async {
     if (_useMock) {
-      await Future.delayed(const Duration(seconds: 1.5));
+      await Future.delayed(const Duration(milliseconds: 1500));
       return "https://firebasestorage.googleapis.com/v0/b/mock-bucket/o/${Uri.encodeComponent(path)}%2F$fileName?alt=media";
     }
 

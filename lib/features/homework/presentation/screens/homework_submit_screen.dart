@@ -45,7 +45,7 @@ class _HomeworkSubmitScreenState extends State<HomeworkSubmitScreen> {
 
     setState(() => _isUploading = true);
     // Simulate upload delay
-    await Future.delayed(const Duration(seconds: 1.5));
+    await Future.delayed(const Duration(milliseconds: 1500));
 
     if (!mounted) return;
     

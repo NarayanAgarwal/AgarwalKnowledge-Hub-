@@ -119,7 +119,9 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
                 return Align(
                   alignment: msg.isUser ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
-                    maxWidth: MediaQuery.sizeOf(context).width * 0.75,
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.sizeOf(context).width * 0.75,
+                    ),
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(

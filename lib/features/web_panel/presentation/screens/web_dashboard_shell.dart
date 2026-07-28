@@ -8,7 +8,7 @@ import '../../../../core/widgets/glass_container.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_textfield.dart';
 import '../../../auth/viewmodels/auth_viewmodel.dart';
-import '../viewmodels/web_panel_viewmodel.dart';
+import '../../viewmodels/web_panel_viewmodel.dart';
 import '../../../../core/models/user_profile.dart';
 import '../../../../core/models/attendance.dart';
 import '../../../../core/models/homework.dart';

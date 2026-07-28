@@ -36,7 +36,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       setState(() => _isLoading = true);
       
       // Simulate admin verification
-      await Future.delayed(const Duration(seconds: 1.5));
+      await Future.delayed(const Duration(milliseconds: 1500));
       
       if (!mounted) return;
       

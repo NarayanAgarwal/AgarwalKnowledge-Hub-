@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../viewmodels/dashboard_viewmodel.dart';
+import '../../../dashboard/viewmodels/dashboard_viewmodel.dart';
 import '../../../../core/models/homework.dart';
 import '../../../../core/models/note.dart';
 import '../../../../core/models/quiz.dart';

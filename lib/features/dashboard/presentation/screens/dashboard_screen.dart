@@ -82,7 +82,7 @@ class DashboardScreen extends StatelessWidget {
                       const SizedBox(height: 24),
                       
                       // Homework Summary
-                      _buildHomeworkSummary(dashVm, isDark),
+                      _buildHomeworkSummary(dashVm, context, isDark),
                       
                       const SizedBox(height: 24),
                       
@@ -564,7 +564,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHomeworkSummary(DashboardViewModel dashVm, bool isDark) {
+  Widget _buildHomeworkSummary(DashboardViewModel dashVm, BuildContext context, bool isDark) {
     if (dashVm.homeworkList.isEmpty) return const SizedBox.shrink();
     
     return Column(

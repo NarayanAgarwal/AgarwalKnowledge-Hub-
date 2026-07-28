@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../dashboard/viewmodels/dashboard_viewmodel.dart';
+import '../../../dashboard/viewmodels/dashboard_viewmodel.dart';
 
 class NoticeScreen extends StatelessWidget {
   const NoticeScreen({super.key});
