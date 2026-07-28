@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e # Exit immediately if any command exits with a non-zero status
 
 # 1. Clone Flutter stable branch
 echo "Downloading Flutter SDK..."

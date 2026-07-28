@@ -150,7 +150,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
                               child: Text(
                                 widget.resource.title.toUpperCase(),
                                 style: TextStyle(
-                                  fontWeight: FontWeight.extrabold,
+                                  fontWeight: FontWeight.w800,
                                   fontSize: 16,
                                   color: textColor,
                                   letterSpacing: 1.0,

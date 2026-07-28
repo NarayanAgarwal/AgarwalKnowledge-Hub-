@@ -232,7 +232,7 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
               const SizedBox(width: 12),
               Text(
                 _menuItems[_selectedMenuIndex]['title'],
-                style: const TextStyle(fontWeight: FontWeight.extrabold, fontSize: 18),
+                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
               ),
             ],
           ),
@@ -430,7 +430,7 @@ class SuperAdminDashboardPanel extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold)),
-                  Text(count, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.extrabold)),
+                  Text(count, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
                 ],
               ),
             )
@@ -525,7 +525,7 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Students Roster', style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold)),
+                const Text('Students Roster', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 16),
                 Card(
                   child: ListView.separated(
@@ -671,7 +671,7 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Teachers Roster', style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold)),
+                const Text('Teachers Roster', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 16),
                 Card(
                   child: ListView.separated(

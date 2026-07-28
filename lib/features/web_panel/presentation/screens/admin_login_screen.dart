@@ -150,7 +150,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
                       const Text(
                         'Administrative Login',
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.extrabold),
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
                       ),
                       const SizedBox(height: 8),
                       const Text(

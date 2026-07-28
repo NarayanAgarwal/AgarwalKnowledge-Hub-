@@ -59,7 +59,7 @@ class SuccessDialog extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.extrabold, fontSize: 18),
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
             ),
             const SizedBox(height: 12),
             Text(

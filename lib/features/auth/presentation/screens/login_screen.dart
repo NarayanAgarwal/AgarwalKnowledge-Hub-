@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         AppStrings.appName,
                         style: TextStyle(
                           fontSize: 24,
-                          fontWeight: FontWeight.extrabold,
+                          fontWeight: FontWeight.w800,
                           color: isDark ? AppColors.darkTextPrimary : AppColors.primaryBlue,
                         ),
                       ),

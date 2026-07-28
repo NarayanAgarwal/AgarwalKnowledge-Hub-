@@ -60,7 +60,7 @@ class ErrorScreen extends StatelessWidget {
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.extrabold, fontSize: 20),
+                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
                 ),
                 const SizedBox(height: 12),
                 Text(

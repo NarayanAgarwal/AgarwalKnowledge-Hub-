@@ -132,7 +132,7 @@ class DashboardScreen extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 22,
                     color: Colors.white,
-                    fontWeight: FontWeight.extrabold,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -538,7 +538,7 @@ class DashboardScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(notice.title, style: const TextStyle(fontWeight: FontWeight.extrabold, fontSize: 15)),
+                  Text(notice.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(

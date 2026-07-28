@@ -45,7 +45,7 @@ class QuizResultScreen extends StatelessWidget {
               
               Text(
                 isPassed ? 'Congratulations!' : 'Keep Practicing!',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.extrabold),
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 8),
               Text(
@@ -70,7 +70,7 @@ class QuizResultScreen extends StatelessWidget {
                       '$scorePercent%',
                       style: const TextStyle(
                         fontSize: 48,
-                        fontWeight: FontWeight.extrabold,
+                        fontWeight: FontWeight.w800,
                         color: AppColors.primaryBlue,
                       ),
                     ),

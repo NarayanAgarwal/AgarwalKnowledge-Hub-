@@ -141,7 +141,7 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
                   const SizedBox(height: 12),
                   Text(
                     question.questionText,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                   ),
                   const SizedBox(height: 32),
                   

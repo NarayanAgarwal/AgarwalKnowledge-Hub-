@@ -108,7 +108,7 @@ class ReportCardScreen extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(cert['title']!, style: const TextStyle(fontWeight: FontWeight.extrabold, fontSize: 15)),
+                                  Text(cert['title']!, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
                                   const SizedBox(height: 4),
                                   Text(cert['description']!, style: const TextStyle(color: Colors.grey, fontSize: 12)),
                                   const SizedBox(height: 8),
@@ -152,7 +152,7 @@ class ReportCardScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.extrabold)),
+            Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
           ],
         ),
       ),
