@@ -1,0 +1,59 @@
+name: agarwal_knowledge_hub
+description: A production-ready, modern Education Management Application for Agarwal Knowledge Hub.
+version: 1.0.0+1
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management
+  provider: ^6.1.2
+
+  # Firebase SDKs
+  firebase_core: ^2.27.0
+  firebase_auth: ^4.17.8
+  cloud_firestore: ^4.15.8
+  firebase_storage: ^11.6.9
+  firebase_messaging: ^14.7.19
+  firebase_analytics: ^10.8.9
+  firebase_crashlytics: ^3.4.19
+  firebase_app_check: ^0.2.1-dev.2
+
+  # UI and Visuals
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.5.0
+  shimmer: ^3.0.0
+  percent_indicator: ^4.2.3
+  cached_network_image: ^3.3.1
+
+  # Local Hardware and Utilities
+  shared_preferences: ^2.2.2
+  crypto: ^3.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo.png"
+  web:
+    generate: true
+    image_path: "assets/images/logo.png"
+  windows:
+    generate: true
+    image_path: "assets/images/logo.png"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/

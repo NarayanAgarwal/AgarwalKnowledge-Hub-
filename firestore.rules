@@ -1,0 +1,75 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is logged in
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Helper to get user profile document
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    // Helper to check user role
+    function hasRole(role) {
+      return isSignedIn() && getUserData().role == role;
+    }
+    
+    // Helper to check child assignment for parents
+    function isParentOf(studentPhone) {
+      return isSignedIn() && 
+             getUserData().role == 'Parent' && 
+             getUserData().parentMobile == studentPhone;
+    }
+
+    // Rules for Users collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if hasRole('Super Admin') || hasRole('Admin') || (request.auth.uid == userId);
+    }
+    
+    // Rules for Attendance
+    match /attendance/{attendanceId} {
+      allow read: if isSignedIn() && (
+        hasRole('Super Admin') || 
+        hasRole('Admin') || 
+        hasRole('Teacher') || 
+        (hasRole('Student') && resource.data.studentId == request.auth.uid) ||
+        (hasRole('Parent') && isParentOf(resource.data.studentPhone))
+      );
+      allow write: if hasRole('Super Admin') || hasRole('Admin') || hasRole('Teacher');
+    }
+    
+    // Rules for Homework
+    match /homework/{homeworkId} {
+      allow read: if isSignedIn();
+      allow write: if hasRole('Super Admin') || hasRole('Admin') || hasRole('Teacher');
+    }
+    
+    // Rules for Notes & PDFs & Lecture Videos
+    match /notes/{noteId} {
+      allow read: if isSignedIn();
+      allow write: if hasRole('Super Admin') || hasRole('Admin') || hasRole('Teacher');
+    }
+    
+    // Rules for Notices
+    match /notifications/{noticeId} {
+      allow read: if isSignedIn();
+      allow write: if hasRole('Super Admin') || hasRole('Admin') || hasRole('Teacher');
+    }
+    
+    // Rules for Quizzes
+    match /quiz/{quizId} {
+      allow read: if isSignedIn();
+      allow write: if hasRole('Super Admin') || hasRole('Admin') || hasRole('Teacher');
+    }
+    
+    // Rules for Stories
+    match /stories/{storyId} {
+      allow read: if isSignedIn();
+      allow write: if hasRole('Super Admin') || hasRole('Admin') || hasRole('Teacher');
+    }
+  }
+}
