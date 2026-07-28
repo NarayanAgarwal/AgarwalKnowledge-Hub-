@@ -16,8 +16,8 @@ flutter create . --platforms web
 echo "Getting pub packages..."
 flutter pub get
 
-# 5. Build production web bundle
-echo "Building Flutter Web release assets..."
-flutter build web --release
+# 5. Build production web bundle with HTML renderer (maximizes browser compatibility and prevents CanvasKit/WebGL blank screens)
+echo "Building Flutter Web release assets using HTML renderer..."
+flutter build web --release --web-renderer html
 
 echo "Build complete!"
