@@ -8,6 +8,7 @@ import '../../../../core/widgets/custom_textfield.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../../auth/viewmodels/auth_viewmodel.dart';
 import 'web_dashboard_shell.dart';
+import '../../../../core/models/user_profile.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
