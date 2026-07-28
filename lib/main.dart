@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'core/theme/theme_provider.dart';
@@ -30,15 +31,8 @@ void main() async {
   final storageRepo = StorageRepositoryImpl();
   final notificationService = NotificationService();
 
-  try {
-    // Attempt Firebase initialization
-    await Firebase.initializeApp();
-    notificationService.initialize();
-  } catch (e) {
-    // If Firebase configuration is missing or throws error, we execute in mock mode
-    print("Firebase not configured. Launching Agarwal Knowledge Hub in mock mode: $e");
-    
-    // Enable Mock fallbacks
+  if (kIsWeb) {
+    print("Running on Web. Launching Agarwal Knowledge Hub in mock mode directly.");
     authRepo.enableMockMode(UserProfile(
       uid: "student_user_123",
       role: "Student",
@@ -62,6 +56,40 @@ void main() async {
     firestoreRepo.enableMockMode();
     storageRepo.enableMockMode();
     notificationService.enableMockMode();
+  } else {
+    try {
+      // Attempt Firebase initialization for Mobile/Native
+      await Firebase.initializeApp();
+      notificationService.initialize();
+    } catch (e) {
+      // If Firebase configuration is missing or throws error, we execute in mock mode
+      print("Firebase not configured. Launching in mock mode: $e");
+      
+      // Enable Mock fallbacks
+      authRepo.enableMockMode(UserProfile(
+        uid: "student_user_123",
+        role: "Student",
+        name: "Aman Agarwal",
+        phone: "+919876543210",
+        email: "aman@agarwal.com",
+        address: "Mithapur, Patna",
+        userClass: "Class 5",
+        rollNumber: "12",
+        gender: "Male",
+        dob: "2015-02-10",
+        admissionNumber: "ADM2026512",
+        school: "Agarwal Knowledge Hub",
+        parentName: "Suresh Agarwal",
+        parentMobile: "+919876543220",
+        emergencyContact: "+919876543221",
+        profilePhotoUrl: "",
+        createdDate: DateTime.now(),
+        lastLogin: DateTime.now(),
+      ));
+      firestoreRepo.enableMockMode();
+      storageRepo.enableMockMode();
+      notificationService.enableMockMode();
+    }
   }
 
   runApp(
