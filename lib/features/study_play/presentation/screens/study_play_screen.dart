@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:universal_html/html.dart' as html;
+import 'package:universal_html/js.dart' as js;
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/glass_container.dart';
 
@@ -164,7 +165,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   void _stopTextSpeech() {
     if (kIsWeb) {
       try {
-        html.window.eval("if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); }");
+        js.context.callMethod('eval', ["if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); }"]);
       } catch (_) {}
     }
   }
@@ -173,7 +174,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     if (kIsWeb) {
       try {
         final cleanText = text.replaceAll("'", "\\'").replaceAll("\n", " ");
-        html.window.eval("""
+        final jsCode = """
           if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
             var msg = new SpeechSynthesisUtterance('$cleanText');
@@ -182,7 +183,8 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
             msg.rate = 0.8;
             window.speechSynthesis.speak(msg);
           }
-        """);
+        """;
+        js.context.callMethod('eval', [jsCode]);
       } catch (e) {
         debugPrint("Speech synthesis error: $e");
       }
