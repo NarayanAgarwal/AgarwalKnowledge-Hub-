@@ -123,6 +123,109 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     {"letter": "ज्ञ", "word": "ज्ञानी", "emoji": "👨‍🏫"},
   ];
 
+  static const Map<String, String> _emoji3dPaths = {
+    "🍎": "Red apple/red_apple",
+    "⚽": "Soccer ball/soccer_ball",
+    "🐱": "Cat face/cat_face",
+    "🐶": "Dog face/dog_face",
+    "🐘": "Elephant/elephant",
+    "🐟": "Fish/fish",
+    "🍇": "Grapes/grapes",
+    "🐴": "Horse face/horse_face",
+    "🍦": "Soft ice cream/soft_ice_cream",
+    "🪁": "Kite/kite",
+    "🦁": "Lion/lion",
+    "🐒": "Monkey/monkey",
+    "🍊": "Tangerine/tangerine",
+    "🦜": "Parrot/parrot",
+    "👑": "Crown/crown",
+    "🐇": "Rabbit face/rabbit_face",
+    "☀️": "Sun/sun",
+    "🐯": "Tiger face/tiger_face",
+    "☂️": "Umbrella/umbrella",
+    "🚐": "Minibus/minibus",
+    "环保": "Watch/watch",
+    "⌚": "Watch/watch",
+    "🎼": "Musical score/musical_score",
+    "⛵": "Sailboat/sailboat",
+    "🦓": "Zebra/zebra",
+    
+    // Swar/Vyanjan
+    "🥭": "Mango/mango",
+    "🫒": "Olive/olive",
+    "🎋": "Tanabata tree/tanabata_tree",
+    "🦉": "Owl/owl",
+    "🧶": "Yarn/yarn",
+    "🧘": "Person in lotus position/person_in_lotus_position",
+    "🦶": "Foot/foot",
+    "👓": "Glasses/glasses",
+    "🥣": "Bowl with spoon/bowl_with_spoon",
+    "👩": "Woman/woman",
+    "🗣️": "Speaking head/speaking_head",
+    "🕊️": "Dove/dove",
+    "🪴": "Potted plant/potted_plant",
+    "🏠": "House/house",
+    "🔘": "Radio button/radio_button",
+    "🥄": "Spoon/spoon",
+    "⛱️": "Umbrella on ground/umbrella_on_ground",
+    "🚢": "Ship/ship",
+    "🇮🇳": "Flag India/flag_india",
+    "🍅": "Tomato/tomato",
+    "🔨": "Hammer/hammer",
+    "🥁": "Drum/drum",
+    "🪘": "Long drum/long_drum",
+    "🍉": "Watermelon/watermelon",
+    "🍼": "Baby bottle/baby_bottle",
+    "🖋️": "Pen/pen",
+    "🏹": "Bow and arrow/bow_and_arrow",
+    "🚰": "Potable water/potable_water",
+    "🦆": "Duck/duck",
+    "🐻": "Bear/bear",
+    "🔥": "Fire/fire",
+    "🎠": "Carousel horse/carousel_horse",
+    "🪀": "Yo-yo/yo_yo",
+    "🌳": "Deciduous tree/deciduous_tree",
+    "🧅": "Onion/onion",
+    "💠": "Diamond with a dot/diamond_with_a_dot",
+    "🐍": "Snake/snake",
+    "✈️": "Airplane/airplane",
+    "🛡️": "Shield/shield",
+    "⚔️": "Crossed swords/crossed_swords",
+    "🔱": "Trident emblem/trident_emblem",
+    "👨‍🏫": "Teacher/teacher",
+    
+    // Easy Words
+    "🐜": "Ant/ant",
+    "🪓": "Axe/axe",
+    "🏏": "Cricket game/cricket_game",
+    "👦": "Boy/boy",
+    "🚗": "Automobile/automobile",
+    "🐄": "Cow/cow",
+    "🪆": "Nestling dolls/nestling_dolls",
+    "🥛": "Glass of milk/glass_of_milk",
+    "🌙": "New moon/new_moon",
+    "🪺": "Nest with eggs/nest_with_eggs",
+    "🕸️": "Spider web/spider_web",
+    "🥜": "Peanuts/peanuts",
+    "🧲": "Magnet/magnet",
+    "🛏️": "Bed/bed",
+    "❓": "Red question mark/red_question_mark",
+    "🌹": "Rose/rose",
+    "💍": "Ring/ring",
+    "⭐": "Star/star",
+    "🧸": "Teddy bear/teddy_bear",
+    "🎽": "Running shirt/running_shirt",
+    "🩻": "X-ray/x_ray",
+    "🎄": "Christmas tree/christmas_tree",
+    "🤐": "Zipper-mouth face/zipper_mouth_face",
+    "📦": "Package/package",
+    
+    // Rhymes
+    "🌟": "Glowing star/glowing_star",
+    "👶": "Baby/baby",
+    "🥚": "Egg/egg"
+  };
+
   final Map<String, List<Map<String, String>>> _easyWordsGrouped = {
     "A": [
       {"word": "ANT", "emoji": "🐜", "sentence": "Ants work together in a team."},
@@ -240,8 +343,8 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       {"word": "WEB", "emoji": "🕸️", "sentence": "The spider spun a sticky web."}
     ],
     "X": [
-      {"word": "XYLOPHONE", "emoji": "🎼", "sentence": "Tap the keys of the xylophone."},
-      {"word": "XMAS TREE", "emoji": "🎄", "sentence": "Decorate the Xmas tree with lights."},
+      {"word": "BOX", "emoji": "📦", "sentence": "Put toys inside the cardboard box."},
+      {"word": "FOX", "emoji": "🦊", "sentence": "The red fox has a bushy tail."},
       {"word": "X-RAY", "emoji": "🩻", "sentence": "The doctor took an X-ray of my hand."}
     ],
     "Y": [
@@ -310,19 +413,20 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 }
               }
               
-              if (!voice) {
-                for (var i = 0; i < voices.length; i++) {
-                  if (voices[i].lang.toLowerCase().indexOf(langFilter) !== -1) {
-                    voice = voices[i];
-                    break;
-                  }
+              // Mobile / Phone fallback: if we need male pitch, we clear voice binding so browser lets us modulate pitch freely!
+              if (gender === 'female') {
+                if (voice) msg.voice = voice;
+                msg.pitch = 1.35;
+              } else {
+                // For male, if a native male voice is found, bind it. Otherwise, use default system voice with deep pitch modulation.
+                if (voice) {
+                  msg.voice = voice;
+                  msg.pitch = 0.9;
+                } else {
+                  msg.pitch = 0.68; // Deepen voice to male range
                 }
               }
               
-              if (voice) {
-                msg.voice = voice;
-              }
-              msg.pitch = (gender === 'female') ? 1.35 : 0.85;
               msg.rate = isHindi ? 0.72 : 0.8; // Crystal-clear slow rate
               msg.volume = 1.0;
               window.speechSynthesis.speak(msg);
@@ -347,7 +451,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   void _playRhymeAsSong(String lyrics) {
     if (kIsWeb) {
       try {
-        // String newlines must be strictly escaped to avoid breaking Javascript template literals!
         final cleanText = lyrics.replaceAll("'", "\\'").replaceAll("\r", "").replaceAll("\n", "\\n");
         final jsCode = """
           if ('speechSynthesis' in window) {
@@ -386,13 +489,20 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                   }
                 }
                 
-                if (voice) {
-                  msg.voice = voice;
+                if (gender === 'female') {
+                  if (voice) msg.voice = voice;
+                  var basePitch = 1.35;
+                  var modulation = [0, 0.18, -0.12, 0.08];
+                  msg.pitch = basePitch + (modulation[idx % 4]);
+                } else {
+                  if (voice) {
+                    msg.voice = voice;
+                    msg.pitch = 0.85 + ([0, 0.12, -0.08, 0.05][idx % 4]);
+                  } else {
+                    msg.pitch = 0.68 + ([0, 0.12, -0.08, 0.05][idx % 4]);
+                  }
                 }
                 
-                var basePitch = (gender === 'female') ? 1.35 : 0.85;
-                var modulation = [0, 0.18, -0.12, 0.08];
-                msg.pitch = basePitch + (modulation[idx % 4]);
                 msg.rate = 0.72 + (idx % 2 * 0.05); 
                 msg.volume = 1.0;
                 
@@ -423,14 +533,28 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
 
   String getEmojiUrl(String emoji, {String word = ""}) {
     if (emoji.isEmpty) return "";
-    // Transparent Pomegranate
-    if (emoji == "🍒" || emoji.contains("🍒") || word == "अनार") {
-      return "https://upload.wikimedia.org/wikipedia/commons/e/ea/Pomegranate_drawing_with_transparent_background.png";
+    // Transparent Pomegranate - user's custom photo
+    if (emoji == "🍒" || emoji.contains("🍒") || word == "अनार" || word == "ANAR" || word.toLowerCase() == "anar") {
+      return "assets/images/anar.jpg";
     }
     // Transparent Jug Pitcher
     if (emoji == "🏺" || word == "Jug" || word == "JUG" || emoji.contains("🏺")) {
       return "https://upload.wikimedia.org/wikipedia/commons/2/23/Pitcher_Jug_%28PSF%29.png";
     }
+    
+    // Find mapped Fluent 3D Emoji
+    final path = _emoji3dPaths[emoji];
+    if (path != null) {
+      final parts = path.split("/");
+      final folder = parts[0];
+      final file = parts[1];
+      // Uri encode space characters as %20
+      final encodedFolder = Uri.encodeComponent(folder);
+      final encodedFile = Uri.encodeComponent(file);
+      return "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/$encodedFolder/3D/${encodedFile}_3d.png";
+    }
+    
+    // Fallback to Google Noto Emoji
     try {
       final runes = emoji.runes.toList();
       if (runes.isEmpty) return "";
@@ -444,8 +568,11 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
 
   Widget _buildEmojiImage(String emoji, {double size = 48, String word = ""}) {
     final url = getEmojiUrl(emoji, word: word);
-    if (url.isNotEmpty) {
-      return Image.network(
+    if (url.isEmpty) {
+      return Text(emoji, style: TextStyle(fontSize: size));
+    }
+    if (url.startsWith("assets/")) {
+      return Image.asset(
         url,
         width: size,
         height: size,
@@ -453,7 +580,13 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
         errorBuilder: (c, o, s) => Text(emoji, style: TextStyle(fontSize: size)),
       );
     }
-    return Text(emoji, style: TextStyle(fontSize: size));
+    return Image.network(
+      url,
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+      errorBuilder: (c, o, s) => Text(emoji, style: TextStyle(fontSize: size)),
+    );
   }
 
   // 3D Embossed toy-blocks button layout (Duolingo 3D style)
@@ -588,12 +721,12 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       ),
       body: Column(
         children: [
-          // Styled 3D Blue Shelf TabBar (matches 3rd screenshot shelf design)
+          // Styled 3D Blue Shelf TabBar
           Container(
             margin: const EdgeInsets.all(12),
             padding: const EdgeInsets.symmetric(vertical: 4),
             decoration: BoxDecoration(
-              color: isDark ? AppColors.darkSurface : const Color(0xFFB3E5FC), // light-blue shelf
+              color: isDark ? AppColors.darkSurface : const Color(0xFFB3E5FC),
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
@@ -627,6 +760,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
               children: [
                 // RHYMES TAB
                 SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     children: [
@@ -697,9 +831,10 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                   ),
                 ),
 
-                // NUMBERS 1-100 TAB (Pixel-perfect 3D toy block shelf from 3rd screenshot)
+                // NUMBERS 1-100 TAB (Highly responsive to avoid wrapping text on phones!)
                 SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                   child: Column(
                     children: [
                       const Text(
@@ -713,8 +848,8 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 10,
-                          crossAxisSpacing: 6,
-                          mainAxisSpacing: 6,
+                          crossAxisSpacing: 4, // Narrow spacing for small screens
+                          mainAxisSpacing: 4,
                           childAspectRatio: 1.0,
                         ),
                         itemCount: 100,
@@ -722,7 +857,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                           final num = index + 1;
                           final isSelected = _countingStars == num;
                           
-                          // Match orange-tinted active select cell from 3rd screenshot
                           final baseColor = isSelected ? Colors.deepOrange : blockBaseColor;
                           final shadowColor = isSelected ? Colors.red[900]! : blockShadowColor;
                           final textColor = isSelected ? Colors.white : AppColors.primaryBlue;
@@ -732,18 +866,25 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                             section: "numbers",
                             baseColor: baseColor,
                             shadowColor: shadowColor,
+                            shadowDepth: 4.0, // slightly shallower for grid density
                             onTap: () {
                               setState(() {
                                 _countingStars = num;
                               });
                               _speakText(num.toString());
                             },
-                            child: Text(
-                              '$num',
-                              style: TextStyle(
-                                fontSize: 22, // Large readable font
-                                fontWeight: FontWeight.w900,
-                                color: textColor,
+                            child: Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown, // Auto scales text size to fit block cleanly
+                                child: Text(
+                                  '$num',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
+                                    color: textColor,
+                                  ),
+                                ),
                               ),
                             ),
                           );
@@ -783,6 +924,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 // ALPHABET A-Z TAB
                 GridView.builder(
                   padding: const EdgeInsets.all(16),
+                  physics: const BouncingScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 14,
@@ -811,7 +953,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                           Text(
                             item["letter"]!,
                             style: const TextStyle(
-                              fontSize: 44, // Huge readable font
+                              fontSize: 44,
                               fontWeight: FontWeight.w900,
                               color: AppColors.primaryBlue,
                             ),
@@ -824,8 +966,9 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                   },
                 ),
 
-                // HINDI VARNMALA TAB (Fully 3D with correct Pomegranate image)
+                // HINDI VARNMALA TAB
                 SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -910,6 +1053,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 // EASY WORDS TAB
                 ListView.builder(
                   padding: const EdgeInsets.all(16),
+                  physics: const BouncingScrollPhysics(),
                   itemCount: _alphabets.length,
                   itemBuilder: (context, index) {
                     final letter = _alphabets[index]["letter"]!;
