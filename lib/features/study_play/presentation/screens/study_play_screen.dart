@@ -18,6 +18,8 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   bool _isPlayingRhyme = false;
   int _countingStars = 0;
   String _selectedVoiceGender = 'female'; // 'female' or 'male'
+  int? _pressedGridIndex; // For 3D press animation on grids
+  String? _pressedSection; // Track active tab section for grid presses
 
   final List<Map<String, String>> _rhymes = [
     {
@@ -47,7 +49,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     {"letter": "G", "word": "Grapes", "emoji": "🍇", "color": "0xFFF1F8E9"},
     {"letter": "H", "word": "Horse", "emoji": "🐴", "color": "0xFFEFEBE9"},
     {"letter": "I", "word": "Ice Cream", "emoji": "🍦", "color": "0xFFFCE4EC"},
-    {"letter": "J", "word": "Joker", "emoji": "🤡", "color": "0xFFFFFDE7"},
+    {"letter": "J", "word": "Jug", "emoji": "🏺", "color": "0xFFFFFDE7"},
     {"letter": "K", "word": "Kite", "emoji": "🪁", "color": "0xFFE0F2F1"},
     {"letter": "L", "word": "Lion", "emoji": "🦁", "color": "0xFFFBE9E7"},
     {"letter": "M", "word": "Monkey", "emoji": "🐒", "color": "0xFFFFF1F1"},
@@ -59,7 +61,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     {"letter": "S", "word": "Sun", "emoji": "☀️", "color": "0xFFF1F8E9"},
     {"letter": "T", "word": "Tiger", "emoji": "🐯", "color": "0xFFEFEBE9"},
     {"letter": "U", "word": "Umbrella", "emoji": "☂️", "color": "0xFFFCE4EC"},
-    {"letter": "V", "word": "Violin", "emoji": "🎻", "color": "0xFFFFFDE7"},
+    {"letter": "V", "word": "Van", "emoji": "🚐", "color": "0xFFFFFDE7"},
     {"letter": "W", "word": "Watch", "emoji": "⌚", "color": "0xFFE0F2F1"},
     {"letter": "X", "word": "Xylophone", "emoji": "🎼", "color": "0xFFFBE9E7"},
     {"letter": "Y", "word": "Yacht", "emoji": "⛵", "color": "0xFFFFF1F1"},
@@ -109,14 +111,14 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     {"letter": "भ", "word": "भालू", "emoji": "🐻"},
     {"letter": "म", "word": "मछली", "emoji": "🐟"},
     {"letter": "य", "word": "यज्ञ", "emoji": "🔥"},
-    {"letter": "र", "word": "रथ", "emoji": "🏹"},
+    {"letter": "र", "word": "रथ", "emoji": "🎠"},
     {"letter": "ल", "word": "लट्टू", "emoji": "🪀"},
     {"letter": "व", "word": "वन", "emoji": "🌳"},
     {"letter": "श", "word": "शलगम", "emoji": "🧅"},
     {"letter": "ष", "word": "षट्कोण", "emoji": "💠"},
     {"letter": "स", "word": "सपेरा", "emoji": "🐍"},
     {"letter": "ह", "word": "हवाई जहाज", "emoji": "✈️"},
-    {"letter": "क्ष", "word": "क्षत्रिय", "emoji": "🛡️"},
+    {"letter": "क्ष", "word": "क्षत्रिय", "emoji": "⚔️"},
     {"letter": "त्र", "word": "त्रिशूल", "emoji": "🔱"},
     {"letter": "ज्ञ", "word": "ज्ञानी", "emoji": "👨‍🏫"},
   ];
@@ -168,7 +170,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       {"word": "IRON", "emoji": "🧲", "sentence": "Magnets attract iron nails."}
     ],
     "J": [
-      {"word": "JUG", "emoji": "🫙", "sentence": "Pour water from the jug."},
+      {"word": "JUG", "emoji": "🏺", "sentence": "Pour water from the jug."},
       {"word": "JEEP", "emoji": "🚙", "sentence": "We went for a ride in the jeep."},
       {"word": "JAM", "emoji": "🍓", "sentence": "Spread sweet jam on bread."}
     ],
@@ -320,8 +322,8 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
               if (voice) {
                 msg.voice = voice;
               }
-              msg.pitch = (gender === 'female') ? 1.25 : 0.9;
-              msg.rate = isHindi ? 0.7 : 0.78; // Slow and clear pronunciation
+              msg.pitch = (gender === 'female') ? 1.35 : 0.85;
+              msg.rate = isHindi ? 0.72 : 0.8; // Crystal-clear slow rate
               msg.volume = 1.0;
               window.speechSynthesis.speak(msg);
             }
@@ -345,7 +347,8 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   void _playRhymeAsSong(String lyrics) {
     if (kIsWeb) {
       try {
-        final cleanText = lyrics.replaceAll("'", "\\'").replaceAll("\r", "");
+        // String newlines must be strictly escaped to avoid breaking Javascript template literals!
+        final cleanText = lyrics.replaceAll("'", "\\'").replaceAll("\r", "").replaceAll("\n", "\\n");
         final jsCode = """
           if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
@@ -387,7 +390,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                   msg.voice = voice;
                 }
                 
-                var basePitch = (gender === 'female') ? 1.25 : 0.9;
+                var basePitch = (gender === 'female') ? 1.35 : 0.85;
                 var modulation = [0, 0.18, -0.12, 0.08];
                 msg.pitch = basePitch + (modulation[idx % 4]);
                 msg.rate = 0.72 + (idx % 2 * 0.05); 
@@ -418,10 +421,15 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     }
   }
 
-  String getEmojiUrl(String emoji) {
+  String getEmojiUrl(String emoji, {String word = ""}) {
     if (emoji.isEmpty) return "";
-    if (emoji == "🍒" || emoji == "अनार") {
-      return "https://pngimg.com/uploads/pomegranate/pomegranate_PNG8637.png";
+    // Transparent Pomegranate
+    if (emoji == "🍒" || emoji.contains("🍒") || word == "अनार") {
+      return "https://upload.wikimedia.org/wikipedia/commons/e/ea/Pomegranate_drawing_with_transparent_background.png";
+    }
+    // Transparent Jug Pitcher
+    if (emoji == "🏺" || word == "Jug" || word == "JUG" || emoji.contains("🏺")) {
+      return "https://upload.wikimedia.org/wikipedia/commons/2/23/Pitcher_Jug_%28PSF%29.png";
     }
     try {
       final runes = emoji.runes.toList();
@@ -434,8 +442,8 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     }
   }
 
-  Widget _buildEmojiImage(String emoji, {double size = 48}) {
-    final url = getEmojiUrl(emoji);
+  Widget _buildEmojiImage(String emoji, {double size = 48, String word = ""}) {
+    final url = getEmojiUrl(emoji, word: word);
     if (url.isNotEmpty) {
       return Image.network(
         url,
@@ -448,49 +456,64 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     return Text(emoji, style: TextStyle(fontSize: size));
   }
 
-  Widget _build3DCard({
+  // 3D Embossed toy-blocks button layout (Duolingo 3D style)
+  Widget _build3DBlock({
     required Widget child,
-    required Color color,
+    required Color baseColor,
+    required Color shadowColor,
     required VoidCallback onTap,
-    double borderRadius = 20,
-    double padding = 8,
+    required int index,
+    required String section,
+    double borderRadius = 16,
+    double shadowDepth = 6.0,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(borderRadius),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(4, 4),
-          ),
-          BoxShadow(
-            color: Colors.white,
-            blurRadius: 4,
-            offset: Offset(-2, -2),
-          ),
-        ],
-        border: Border.all(
-          color: Colors.white.withOpacity(0.5),
-          width: 1.5,
+    final bool isPressed = _pressedGridIndex == index && _pressedSection == section;
+    return GestureDetector(
+      onTapDown: (_) {
+        setState(() {
+          _pressedGridIndex = index;
+          _pressedSection = section;
+        });
+      },
+      onTapUp: (_) {
+        setState(() {
+          _pressedGridIndex = null;
+          _pressedSection = null;
+        });
+        onTap();
+      },
+      onTapCancel: () {
+        setState(() {
+          _pressedGridIndex = null;
+          _pressedSection = null;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 60),
+        margin: EdgeInsets.only(
+          top: isPressed ? shadowDepth : 0,
+          bottom: isPressed ? 0 : shadowDepth,
         ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
+        decoration: BoxDecoration(
+          color: baseColor,
           borderRadius: BorderRadius.circular(borderRadius),
-          child: Padding(
-            padding: EdgeInsets.all(padding),
-            child: child,
-          ),
+          border: Border.all(color: Colors.black.withOpacity(0.08), width: 1.5),
+          boxShadow: isPressed
+              ? []
+              : [
+                  BoxShadow(
+                    color: shadowColor,
+                    offset: Offset(0, shadowDepth),
+                    blurRadius: 0,
+                  ),
+                ],
         ),
+        child: child,
       ),
     );
   }
 
-  void _showCardDialog(String title, String subtitle, String emoji) {
+  void _showCardDialog(String title, String subtitle, String emoji, {String word = ""}) {
     _speakText("$title. $subtitle");
     showDialog(
       context: context,
@@ -499,7 +522,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildEmojiImage(emoji, size: 90),
+            _buildEmojiImage(emoji, size: 100, word: word),
             const SizedBox(height: 16),
             Text(title, style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
             const SizedBox(height: 8),
@@ -524,9 +547,12 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBgColor = isDark ? AppColors.darkSurface : Colors.white;
+    final playroomBgColor = isDark ? Colors.grey[900] : const Color(0xFFFFFDF5); // Warm cream playroom background
+    final blockBaseColor = isDark ? AppColors.darkSurface : Colors.white;
+    final blockShadowColor = isDark ? Colors.black54 : const Color(0xFFDDD7C8);
 
     return Scaffold(
+      backgroundColor: playroomBgColor,
       appBar: AppBar(
         title: const Text('Study with Play 🎈', style: TextStyle(fontWeight: FontWeight.bold)),
         actions: [
@@ -559,374 +585,404 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
             ),
           )
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          tabs: const [
-            Tab(text: 'Rhymes 🎵', icon: Icon(Icons.music_note)),
-            Tab(text: 'Numbers 1-100 🔟', icon: Icon(Icons.pin)),
-            Tab(text: 'A B C D 🔠', icon: Icon(Icons.abc)),
-            Tab(text: 'Varnmala ✍️', icon: Icon(Icons.font_download_outlined)),
-            Tab(text: 'Easy Words 🐱', icon: Icon(Icons.child_care)),
-          ],
-        ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          // RHYMES TAB
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(_rhymes.length, (index) {
-                    return ChoiceChip(
-                      label: Text(_rhymes[index]["title"]!.split(" ")[0]),
-                      selected: _activeRhymeIndex == index,
-                      onSelected: (val) {
-                        setState(() {
-                          _activeRhymeIndex = index;
-                          _isPlayingRhyme = false;
-                          _stopTextSpeech();
-                        });
-                      },
-                    );
-                  }),
+          // Styled 3D Blue Shelf TabBar (matches 3rd screenshot shelf design)
+          Container(
+            margin: const EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.darkSurface : const Color(0xFFB3E5FC), // light-blue shelf
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  offset: const Offset(0, 4),
+                  blurRadius: 6,
                 ),
-                const SizedBox(height: 24),
-                GlassContainer(
-                  padding: const EdgeInsets.all(28),
+              ],
+              border: Border.all(color: Colors.white.withOpacity(0.5), width: 1.5),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              indicatorColor: Colors.transparent,
+              labelColor: AppColors.primaryBlue,
+              unselectedLabelColor: Colors.black54,
+              labelStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+              tabs: const [
+                Tab(text: 'Rhymes 🎵', icon: Icon(Icons.music_note)),
+                Tab(text: 'Numbers 1-100 🔟', icon: Icon(Icons.pin)),
+                Tab(text: 'A B C D 🔠', icon: Icon(Icons.abc)),
+                Tab(text: 'Varnmala ✍️', icon: Icon(Icons.font_download_outlined)),
+                Tab(text: 'Easy Words 🐱', icon: Icon(Icons.child_care)),
+              ],
+            ),
+          ),
+          
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                // RHYMES TAB
+                SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
                   child: Column(
                     children: [
-                      _buildEmojiImage(_rhymes[_activeRhymeIndex]["emoji"]!, size: 80),
-                      const SizedBox(height: 16),
-                      Text(
-                        _rhymes[_activeRhymeIndex]["title"]!,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        _rhymes[_activeRhymeIndex]["lyrics"]!,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 18, height: 1.6, fontWeight: FontWeight.bold, letterSpacing: 0.5),
-                      ),
-                      const SizedBox(height: 32),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: _isPlayingRhyme ? Colors.red : AppColors.accentGreen,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                            ),
-                            icon: Icon(_isPlayingRhyme ? Icons.stop : Icons.play_arrow, size: 24),
-                            label: Text(_isPlayingRhyme ? "Stop Song" : "Play Voice Song 🎵", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                            onPressed: () {
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(_rhymes.length, (index) {
+                          return ChoiceChip(
+                            label: Text(_rhymes[index]["title"]!.split(" ")[0]),
+                            selected: _activeRhymeIndex == index,
+                            onSelected: (val) {
                               setState(() {
-                                _isPlayingRhyme = !_isPlayingRhyme;
-                              });
-                              if (_isPlayingRhyme) {
-                                _playRhymeAsSong(_rhymes[_activeRhymeIndex]["lyrics"]!);
-                              } else {
+                                _activeRhymeIndex = index;
+                                _isPlayingRhyme = false;
                                 _stopTextSpeech();
-                              }
+                              });
                             },
-                          ),
-                        ],
+                          );
+                        }),
+                      ),
+                      const SizedBox(height: 24),
+                      GlassContainer(
+                        padding: const EdgeInsets.all(28),
+                        child: Column(
+                          children: [
+                            _buildEmojiImage(_rhymes[_activeRhymeIndex]["emoji"]!, size: 90),
+                            const SizedBox(height: 16),
+                            Text(
+                              _rhymes[_activeRhymeIndex]["title"]!,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              _rhymes[_activeRhymeIndex]["lyrics"]!,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 18, height: 1.6, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                            ),
+                            const SizedBox(height: 32),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: _isPlayingRhyme ? Colors.red : AppColors.accentGreen,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  ),
+                                  icon: Icon(_isPlayingRhyme ? Icons.stop : Icons.play_arrow, size: 24),
+                                  label: Text(_isPlayingRhyme ? "Stop Song" : "Play Voice Song 🎵", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                  onPressed: () {
+                                    setState(() {
+                                      _isPlayingRhyme = !_isPlayingRhyme;
+                                    });
+                                    if (_isPlayingRhyme) {
+                                      _playRhymeAsSong(_rhymes[_activeRhymeIndex]["lyrics"]!);
+                                    } else {
+                                      _stopTextSpeech();
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
 
-          // NUMBERS 1-100 TAB
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                const Text(
-                  'Tap any number from 1 to 100 to hear and count stars! ⭐',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 10,
-                    crossAxisSpacing: 6,
-                    mainAxisSpacing: 6,
-                    childAspectRatio: 1.0,
-                  ),
-                  itemCount: 100,
-                  itemBuilder: (context, index) {
-                    final num = index + 1;
-                    final isSelected = _countingStars == num;
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 3,
-                            offset: const Offset(2, 2),
-                          ),
-                        ],
+                // NUMBERS 1-100 TAB (Pixel-perfect 3D toy block shelf from 3rd screenshot)
+                SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      const Text(
+                        'Tap any number from 1 to 100 to hear and count stars! ⭐',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                      child: Material(
-                        color: isSelected ? AppColors.secondaryOrange : cardBgColor,
-                        borderRadius: BorderRadius.circular(8),
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _countingStars = num;
-                            });
-                            _speakText(num.toString());
-                          },
-                          borderRadius: BorderRadius.circular(8),
-                          child: Center(
+                      const SizedBox(height: 16),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 10,
+                          crossAxisSpacing: 6,
+                          mainAxisSpacing: 6,
+                          childAspectRatio: 1.0,
+                        ),
+                        itemCount: 100,
+                        itemBuilder: (context, index) {
+                          final num = index + 1;
+                          final isSelected = _countingStars == num;
+                          
+                          // Match orange-tinted active select cell from 3rd screenshot
+                          final baseColor = isSelected ? Colors.deepOrange : blockBaseColor;
+                          final shadowColor = isSelected ? Colors.red[900]! : blockShadowColor;
+                          final textColor = isSelected ? Colors.white : AppColors.primaryBlue;
+
+                          return _build3DBlock(
+                            index: index,
+                            section: "numbers",
+                            baseColor: baseColor,
+                            shadowColor: shadowColor,
+                            onTap: () {
+                              setState(() {
+                                _countingStars = num;
+                              });
+                              _speakText(num.toString());
+                            },
                             child: Text(
                               '$num',
                               style: TextStyle(
-                                fontSize: 16, // Larger font size for clear reading
-                                fontWeight: FontWeight.w800,
-                                color: isSelected ? Colors.white : AppColors.primaryBlue,
+                                fontSize: 22, // Large readable font
+                                fontWeight: FontWeight.w900,
+                                color: textColor,
                               ),
                             ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                      if (_countingStars > 0) ...[
+                        GlassContainer(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              Text(
+                                'Let\'s count: $_countingStars stars! 🌟',
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
+                              ),
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 4,
+                                runSpacing: 4,
+                                alignment: WrapAlignment.center,
+                                children: List.generate(_countingStars, (index) {
+                                  return const Icon(
+                                    Icons.star,
+                                    color: AppColors.secondaryOrange,
+                                    size: 22,
+                                  );
+                                }),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+
+                // ALPHABET A-Z TAB
+                GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                    childAspectRatio: 0.76,
+                  ),
+                  itemCount: _alphabets.length,
+                  itemBuilder: (context, index) {
+                    final item = _alphabets[index];
+                    final colVal = Color(int.parse(item["color"]!));
+                    final shadowVal = Color(int.parse(item["color"]!)).withBlue(100).withRed(150);
+                    return _build3DBlock(
+                      index: index,
+                      section: "alphabets",
+                      baseColor: isDark ? AppColors.darkSurface : colVal,
+                      shadowColor: isDark ? Colors.black54 : shadowVal,
+                      onTap: () => _showCardDialog(
+                        item["letter"]!,
+                        "${item["letter"]} for ${item["word"]}",
+                        item["emoji"]!,
+                        word: item["word"]!,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            item["letter"]!,
+                            style: const TextStyle(
+                              fontSize: 44, // Huge readable font
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.primaryBlue,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          _buildEmojiImage(item["emoji"]!, size: 54, word: item["word"]!),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+
+                // HINDI VARNMALA TAB (Fully 3D with correct Pomegranate image)
+                SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('स्वर (Vowels)', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
+                      const SizedBox(height: 12),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.82,
+                        ),
+                        itemCount: _swar.length,
+                        itemBuilder: (context, index) {
+                          final item = _swar[index];
+                          return _build3DBlock(
+                            index: index,
+                            section: "swar",
+                            baseColor: blockBaseColor,
+                            shadowColor: blockShadowColor,
+                            onTap: () => _showCardDialog(
+                              item["letter"]!,
+                              "${item["letter"]} से ${item["word"]}",
+                              item["emoji"]!,
+                              word: item["word"]!,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(item["letter"]!, style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900)),
+                                const SizedBox(height: 4),
+                                _buildEmojiImage(item["emoji"]!, size: 36, word: item["word"]!),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 28),
+                      const Text('व्यंजन (Consonants)', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
+                      const SizedBox(height: 12),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.82,
+                        ),
+                        itemCount: _vyanjan.length,
+                        itemBuilder: (context, index) {
+                          final item = _vyanjan[index];
+                          return _build3DBlock(
+                            index: index,
+                            section: "vyanjan",
+                            baseColor: blockBaseColor,
+                            shadowColor: blockShadowColor,
+                            onTap: () => _showCardDialog(
+                              item["letter"]!,
+                              "${item["letter"]} से ${item["word"]}",
+                              item["emoji"]!,
+                              word: item["word"]!,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(item["letter"]!, style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900)),
+                                const SizedBox(height: 4),
+                                _buildEmojiImage(item["emoji"]!, size: 36, word: item["word"]!),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
+                // EASY WORDS TAB
+                ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _alphabets.length,
+                  itemBuilder: (context, index) {
+                    final letter = _alphabets[index]["letter"]!;
+                    final color = Color(int.parse(_alphabets[index]["color"]!));
+                    final wordsList = _easyWordsGrouped[letter] ?? [];
+                    
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.06),
+                            blurRadius: 6,
+                            offset: const Offset(3, 3),
+                          ),
+                        ],
+                      ),
+                      child: Card(
+                        color: isDark ? AppColors.darkSurface : Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor: isDark ? AppColors.primaryBlue : color,
+                                    child: Text(letter, style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.w900, fontSize: 18)),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text('Words starting with $letter', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: List.generate(wordsList.length, (wIdx) {
+                                  final item = wordsList[wIdx];
+                                  return Expanded(
+                                    child: _build3DBlock(
+                                      index: wIdx,
+                                      section: "easy-$letter",
+                                      baseColor: isDark ? AppColors.darkSurface : Colors.grey[50]!,
+                                      shadowColor: blockShadowColor,
+                                      onTap: () => _speakText("${item["word"]}. ${item["sentence"]}"),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                                        child: Column(
+                                          children: [
+                                            _buildEmojiImage(item["emoji"]!, size: 40, word: item["word"]!),
+                                            const SizedBox(height: 6),
+                                            Text(item["word"]!, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     );
                   },
                 ),
-                const SizedBox(height: 24),
-                if (_countingStars > 0) ...[
-                  GlassContainer(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Let\'s count: $_countingStars stars! 🌟',
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
-                        ),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 4,
-                          runSpacing: 4,
-                          alignment: WrapAlignment.center,
-                          children: List.generate(_countingStars, (index) {
-                            return const Icon(
-                              Icons.star,
-                              color: AppColors.secondaryOrange,
-                              size: 22,
-                            );
-                          }),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ],
             ),
-          ),
-
-          // ALPHABET A-Z TAB
-          GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 0.82,
-            ),
-            itemCount: _alphabets.length,
-            itemBuilder: (context, index) {
-              final item = _alphabets[index];
-              final colVal = Color(int.parse(item["color"]!));
-              return _build3DCard(
-                color: isDark ? AppColors.darkSurface : colVal,
-                onTap: () => _showCardDialog(item["letter"]!, "${item["letter"]} for ${item["word"]}", item["emoji"]!),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      item["letter"]!,
-                      style: TextStyle(
-                        fontSize: 38,
-                        fontWeight: FontWeight.w900,
-                        color: isDark ? Colors.white : AppColors.primaryBlue,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    _buildEmojiImage(item["emoji"]!, size: 44),
-                  ],
-                ),
-              );
-            },
-          ),
-
-          // HINDI VARNMALA TAB
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('स्वर (Vowels)', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
-                const SizedBox(height: 12),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.9,
-                  ),
-                  itemCount: _swar.length,
-                  itemBuilder: (context, index) {
-                    final item = _swar[index];
-                    return _build3DCard(
-                      color: cardBgColor,
-                      onTap: () => _showCardDialog(item["letter"]!, "${item["letter"]} से ${item["word"]}", item["emoji"]!),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(item["letter"]!, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
-                          const SizedBox(height: 4),
-                          _buildEmojiImage(item["emoji"]!, size: 30),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 28),
-                const Text('व्यंजन (Consonants)', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
-                const SizedBox(height: 12),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.9,
-                  ),
-                  itemCount: _vyanjan.length,
-                  itemBuilder: (context, index) {
-                    final item = _vyanjan[index];
-                    return _build3DCard(
-                      color: cardBgColor,
-                      onTap: () => _showCardDialog(item["letter"]!, "${item["letter"]} से ${item["word"]}", item["emoji"]!),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(item["letter"]!, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
-                          const SizedBox(height: 4),
-                          _buildEmojiImage(item["emoji"]!, size: 30),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          // EASY WORDS A-Z TAB (3 words per letter)
-          ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: _alphabets.length, // 26 letters
-            itemBuilder: (context, index) {
-              final letter = _alphabets[index]["letter"]!;
-              final color = Color(int.parse(_alphabets[index]["color"]!));
-              final wordsList = _easyWordsGrouped[letter] ?? [];
-              
-              return Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.06),
-                      blurRadius: 6,
-                      offset: const Offset(3, 3),
-                    ),
-                  ],
-                ),
-                child: Card(
-                  color: isDark ? AppColors.darkSurface : Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 18,
-                              backgroundColor: isDark ? AppColors.primaryBlue : color,
-                              child: Text(letter, style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.w900, fontSize: 18)),
-                            ),
-                            const SizedBox(width: 12),
-                            Text('Words starting with $letter', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: wordsList.map((item) {
-                            return Expanded(
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 4),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.04),
-                                      blurRadius: 4,
-                                      offset: const Offset(2, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: Card(
-                                  color: isDark ? AppColors.darkSurface : Colors.grey[50],
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                  child: InkWell(
-                                    onTap: () => _speakText("${item["word"]}. ${item["sentence"]}"),
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                                      child: Column(
-                                        children: [
-                                          _buildEmojiImage(item["emoji"]!, size: 36),
-                                          const SizedBox(height: 6),
-                                          Text(item["word"]!, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
           ),
         ],
       ),
