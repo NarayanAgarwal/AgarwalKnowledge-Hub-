@@ -22,11 +22,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   final _otpController = TextEditingController();
+  final _phoneFocusNode = FocusNode();
+  final _otpFocusNode = FocusNode();
 
   @override
   void dispose() {
     _phoneController.dispose();
     _otpController.dispose();
+    _phoneFocusNode.dispose();
+    _otpFocusNode.dispose();
     super.dispose();
   }
 
@@ -157,6 +161,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               // Phone number input
                               CustomTextField(
                                 controller: _phoneController,
+                                focusNode: _phoneFocusNode,
+                                textInputAction: TextInputAction.done,
+                                onFieldSubmitted: (_) => _onSendOtp(),
                                 labelText: 'Mobile Number',
                                 hintText: 'Enter 10-digit number',
                                 prefixIcon: Icons.phone_android_outlined,
@@ -212,6 +219,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               // OTP code verification input
                               CustomTextField(
                                 controller: _otpController,
+                                focusNode: _otpFocusNode,
+                                textInputAction: TextInputAction.done,
+                                onFieldSubmitted: (_) => _onVerifyOtp(),
                                 labelText: 'Verification Code (OTP)',
                                 hintText: 'Enter 6-digit code',
                                 prefixIcon: Icons.lock_outline,

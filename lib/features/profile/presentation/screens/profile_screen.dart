@@ -1,11 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:universal_html/html.dart' as html;
 import '../../../../core/constants/app_colors.dart';
 import '../../../auth/viewmodels/auth_viewmodel.dart';
 import '../../../../core/models/user_profile.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
+
+  void _pickImageFromGallery(BuildContext context, AuthViewModel authVm, UserProfile user) {
+    if (kIsWeb) {
+      final html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
+      uploadInput.accept = 'image/*';
+      uploadInput.click();
+
+      uploadInput.onChange.listen((e) {
+        final files = uploadInput.files;
+        if (files != null && files.isNotEmpty) {
+          final file = files[0];
+          final reader = html.FileReader();
+          reader.readAsDataUrl(file);
+          reader.onLoadEnd.listen((e) async {
+            final base64Data = reader.result as String;
+            final updated = user.copyWith(profilePhotoUrl: base64Data);
+            await authVm.completeProfile(updated);
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Profile photo updated successfully!')),
+              );
+            }
+          });
+        }
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gallery picker is supported on Web. Please paste a Photo URL on native.')),
+      );
+    }
+  }
 
   void _showEditProfileDialog(BuildContext context, AuthViewModel authVm, UserProfile user) {
     final formKey = GlobalKey<FormState>();
@@ -121,9 +154,23 @@ class ProfileScreen extends StatelessWidget {
                         keyboardType: TextInputType.phone,
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        controller: photoUrlController,
-                        decoration: const InputDecoration(labelText: 'Profile Photo URL'),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: photoUrlController,
+                              decoration: const InputDecoration(labelText: 'Profile Photo URL'),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.photo_library_outlined, color: AppColors.primaryBlue),
+                            tooltip: 'Upload from Gallery',
+                            onPressed: () {
+                              _pickImageFromGallery(context, authVm, user);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -206,7 +253,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => _showEditProfileDialog(context, authVm, user),
+                    onTap: () => _pickImageFromGallery(context, authVm, user),
                     child: Stack(
                       children: [
                         CircleAvatar(
