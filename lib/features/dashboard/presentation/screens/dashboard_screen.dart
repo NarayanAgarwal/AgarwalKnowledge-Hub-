@@ -12,6 +12,9 @@ import '../../../doubt_support/presentation/screens/doubt_support_screen.dart';
 import '../../../homework/presentation/screens/homework_detail_screen.dart';
 import '../../../stories/presentation/screens/story_viewer_screen.dart';
 import '../../../attendance/presentation/screens/attendance_dashboard_screen.dart';
+import '../../../study_play/presentation/screens/study_play_screen.dart';
+import '../../../downloads/presentation/screens/downloads_screen.dart';
+import '../../../settings/presentation/screens/settings_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -277,7 +280,7 @@ class DashboardScreen extends StatelessWidget {
           crossAxisCount: 4,
           crossAxisSpacing: 8,
           mainAxisSpacing: 8,
-          childAspectRatio: 0.9,
+          childAspectRatio: 0.85,
           children: [
             _buildActionItem(
               context: context,
@@ -305,6 +308,30 @@ class DashboardScreen extends StatelessWidget {
             ),
             _buildActionItem(
               context: context,
+              icon: Icons.qr_code_scanner_outlined,
+              title: 'QR Scan',
+              color: Colors.purple,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AttendanceDashboardScreen()),
+                );
+              },
+            ),
+            _buildActionItem(
+              context: context,
+              icon: Icons.toys_outlined,
+              title: 'Play Study',
+              color: Colors.pink,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const StudyPlayScreen()),
+                );
+              },
+            ),
+            _buildActionItem(
+              context: context,
               icon: Icons.quiz_outlined,
               title: 'Quizzes',
               color: AppColors.accentGreen,
@@ -316,13 +343,36 @@ class DashboardScreen extends StatelessWidget {
             ),
             _buildActionItem(
               context: context,
-              icon: Icons.qr_code_scanner_outlined,
-              title: 'QR Scan',
-              color: Colors.purple,
+              icon: Icons.download_for_offline_outlined,
+              title: 'Downloads',
+              color: Colors.amber,
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AttendanceDashboardScreen()),
+                  MaterialPageRoute(builder: (context) => const DownloadsScreen()),
+                );
+              },
+            ),
+            _buildActionItem(
+              context: context,
+              icon: Icons.notifications_active_outlined,
+              title: 'Notices',
+              color: Colors.indigo,
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Notice board is accessible in the Notice tab below!')),
+                );
+              },
+            ),
+            _buildActionItem(
+              context: context,
+              icon: Icons.settings_outlined,
+              title: 'Settings',
+              color: Colors.teal,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsScreen()),
                 );
               },
             ),

@@ -15,90 +15,159 @@ class ProfileScreen extends StatelessWidget {
     final parentNameController = TextEditingController(text: user.parentName);
     final parentPhoneController = TextEditingController(text: user.parentMobile);
     final photoUrlController = TextEditingController(text: user.profilePhotoUrl);
+    final classController = TextEditingController(text: user.userClass);
+    final rollController = TextEditingController(text: user.rollNumber);
+    final dobController = TextEditingController(text: user.dob);
+    final emergencyController = TextEditingController(text: user.emergencyContact);
+    String selectedGender = user.gender.isNotEmpty ? user.gender : 'Male';
 
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Edit Profile Details', style: TextStyle(fontWeight: FontWeight.bold)),
-          content: SingleChildScrollView(
-            child: Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextFormField(
-                    controller: nameController,
-                    decoration: const InputDecoration(labelText: 'Full Name'),
-                    validator: (val) {
-                      if (val == null || val.trim().isEmpty) {
-                        return 'Please enter your name';
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Edit Profile Details', style: TextStyle(fontWeight: FontWeight.bold)),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: nameController,
+                        decoration: const InputDecoration(labelText: 'Full Name'),
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return 'Please enter your name';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: classController,
+                        decoration: const InputDecoration(labelText: 'Class (e.g. Class 3, LKG)'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: rollController,
+                        decoration: const InputDecoration(labelText: 'Roll Number'),
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: ['Male', 'Female', 'Other'].contains(selectedGender) ? selectedGender : 'Male',
+                        decoration: const InputDecoration(labelText: 'Gender'),
+                        items: const [
+                          DropdownMenuItem(value: 'Male', child: Text('Male')),
+                          DropdownMenuItem(value: 'Female', child: Text('Female')),
+                          DropdownMenuItem(value: 'Other', child: Text('Other')),
+                        ],
+                        onChanged: (val) {
+                          if (val != null) {
+                            setDialogState(() {
+                              selectedGender = val;
+                            });
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: dobController,
+                        decoration: const InputDecoration(
+                          labelText: 'Date of Birth (YYYY-MM-DD)',
+                          suffixIcon: Icon(Icons.calendar_today, size: 16),
+                        ),
+                        readOnly: true,
+                        onTap: () async {
+                          final DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now().subtract(const Duration(days: 3650)),
+                            firstDate: DateTime(1950),
+                            lastDate: DateTime.now(),
+                          );
+                          if (picked != null) {
+                            setDialogState(() {
+                              dobController.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+                            });
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: emailController,
+                        decoration: const InputDecoration(labelText: 'Email Address'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: addressController,
+                        decoration: const InputDecoration(labelText: 'Address'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: parentNameController,
+                        decoration: const InputDecoration(labelText: 'Parent Name'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: parentPhoneController,
+                        decoration: const InputDecoration(labelText: 'Parent Mobile'),
+                        keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: emergencyController,
+                        decoration: const InputDecoration(labelText: 'Emergency Contact'),
+                        keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: photoUrlController,
+                        decoration: const InputDecoration(labelText: 'Profile Photo URL'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryBlue,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      final updated = user.copyWith(
+                        name: nameController.text.trim(),
+                        email: emailController.text.trim(),
+                        address: addressController.text.trim(),
+                        parentName: parentNameController.text.trim(),
+                        parentMobile: parentPhoneController.text.trim(),
+                        profilePhotoUrl: photoUrlController.text.trim(),
+                        userClass: classController.text.trim(),
+                        rollNumber: rollController.text.trim(),
+                        dob: dobController.text.trim(),
+                        gender: selectedGender,
+                        emergencyContact: emergencyController.text.trim(),
+                      );
+                      await authVm.completeProfile(updated);
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Profile updated successfully!')),
+                        );
                       }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: emailController,
-                    decoration: const InputDecoration(labelText: 'Email Address'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: addressController,
-                    decoration: const InputDecoration(labelText: 'Address'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: parentNameController,
-                    decoration: const InputDecoration(labelText: 'Parent Name'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: parentPhoneController,
-                    decoration: const InputDecoration(labelText: 'Parent Mobile'),
-                    keyboardType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: photoUrlController,
-                    decoration: const InputDecoration(labelText: 'Profile Photo URL'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                foregroundColor: Colors.white,
-              ),
-              onPressed: () async {
-                if (formKey.currentState!.validate()) {
-                  final updated = user.copyWith(
-                    name: nameController.text.trim(),
-                    email: emailController.text.trim(),
-                    address: addressController.text.trim(),
-                    parentName: parentNameController.text.trim(),
-                    parentMobile: parentPhoneController.text.trim(),
-                    profilePhotoUrl: photoUrlController.text.trim(),
-                  );
-                  await authVm.completeProfile(updated);
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Profile updated successfully!')),
-                    );
-                  }
-                }
-              },
-              child: const Text('Save'),
-            ),
-          ],
+                    }
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
         );
       },
     );

@@ -52,22 +52,44 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
       String aiResponse = "";
       final query = text.toLowerCase();
       
-      if (query.contains("fraction")) {
-        aiResponse = "That's a great question! Here's a brief breakdown: A fraction represents a part of a whole. It consists of a numerator (top number) and a denominator (bottom number). For example, 1/2 means one part out of two equal parts. To add fractions with the same denominator, simply add the numerators!";
-      } else if (query.contains("computer") || query.contains("ram") || query.contains("cpu") || query.contains("hardware") || query.contains("keyboard") || query.contains("software")) {
-        aiResponse = "Excellent question about Computer Basics! Computers process data using the CPU (Central Processing Unit), which is the brain. RAM (Random Access Memory) holds active data temporarily. Input devices like keyboard/mouse let you send instructions, and output devices like monitor display results. Operating Systems like Windows manage these processes.";
-      } else if (query.contains("force") || query.contains("gravity") || query.contains("motion") || query.contains("work")) {
-        aiResponse = "Excellent Science Question! A force is a push or pull acting upon an object. Gravity is a force that pulls objects toward each other (like Earth pulling us down). Motion occurs when an object changes its position over time. Work is done when a force applied to an object moves it over a distance.";
-      } else if (query.contains("photosynthesis") || query.contains("plant") || query.contains("leaf") || query.contains("chlorophyll")) {
-        aiResponse = "Great Biology doubt! Photosynthesis is the process green plants use to make food. Using chlorophyll (green pigment), leaves capture sunlight, combine carbon dioxide from the air and water from the soil, to create glucose (energy) and release oxygen as a byproduct.";
-      } else if (query.contains("water cycle") || query.contains("rain") || query.contains("evaporation") || query.contains("condensation") || query.contains("precipitation")) {
-        aiResponse = "Fascinating Geography / Science doubt! The Water Cycle is the continuous movement of water on Earth. It has 3 main stages:\n1. Evaporation: Heat turns water into vapor.\n2. Condensation: Vapor cools to form clouds.\n3. Precipitation: Water falls back as rain or snow.";
-      } else if (query.contains("math") || query.contains("sum") || query.contains("add") || query.contains("multiply") || query.contains("divide") || query.contains("number") || query.contains("algebra")) {
-        aiResponse = "Let's solve this Math problem! When working out arithmetic or word problems, follow these key steps:\n1. Read the values carefully.\n2. Apply BODMAS rules (Brackets, Orders, Division, Multiplication, Addition, Subtraction).\n3. Double check your calculation. Agarwal Knowledge Hub math worksheets contain practice exercises on this!";
-      } else if (query.contains("english") || query.contains("grammar") || query.contains("noun") || query.contains("verb") || query.contains("pronoun") || query.contains("tense")) {
-        aiResponse = "Great Grammar doubt! Grammar helps us structure sentences. A noun is a naming word (person, place, thing), a verb is an action word (run, jump), and tenses (past, present, future) indicate when an action happens. Always check your capitalization!";
-      } else if (query.contains("science") || query.contains("cell") || query.contains("atom") || query.contains("chemistry") || query.contains("physics")) {
-        aiResponse = "Wonderful Science inquiry! In science, we explore how things work. Cells are the basic building blocks of living organisms. Atoms are the tiny particles that make up all physical matter. Keep experimenting and observing!";
+      if (query.contains("twinkle") || query.contains("rhyme") || query.contains("johny") || query.contains("humpty")) {
+        aiResponse = "Here is a classic Baby Rhyme for children 🎵:\n\n'Twinkle, twinkle, little star,\nHow I wonder what you are!\nUp above the world so high,\nLike a diamond in the sky.'\n\nYou can also open the new 'Play Study' tab on your Home screen to see the full Rhymes player!";
+      } else if (query.contains("counting") || query.contains("number") || query.contains("counting number")) {
+        aiResponse = "Let's count numbers with fun playing style 🔟:\n\n1 (One) 🌟\n2 (Two) 🌟🌟\n3 (Three) 🌟🌟🌟\n4 (Four) 🌟🌟🌟🌟\n5 (Five) 🌟🌟🌟🌟🌟\n\nOpen the 'Play Study' page on the dashboard to tap and see counting stars anims!";
+      } else if (query.contains("alphabet") || query.contains("abcd")) {
+        aiResponse = "Let's learn English Alphabets 🔠:\n\nA for Apple 🍎\nB for Ball ⚽\nC for Cat 🐱\nD for Dog 🐶\n\nYou can explore A to Z cards in the 'Play Study' section of the app!";
+      } else if (query.contains("swar") || query.contains("vyanjan") || query.contains("varnmala")) {
+        aiResponse = "आइए हिंदी वर्णमाला सीखें ✍️:\n\nस्वर (Vowels): अ (अनार 🍎), आ (आम 🥭), इ (इमली 🫒)...\nव्यंजन (Consonants): क (कबूतर 🕊️), ख (खरगोश 🐇), ग (गमला 🪴)...\n\nबच्चों के सीखने के लिए 'Play Study' section में Varnmala tab open करें!";
+      } else if (query.contains("fraction")) {
+        aiResponse = "Math doubt solved! 🔢 A fraction represents a part of a whole (Numerator/Denominator). For example, 3/4 means 3 parts out of 4 equal parts. To add fractions with common denominators, add their numerators directly (e.g., 1/5 + 2/5 = 3/5).";
+      } else if (query.contains("math") || query.contains("sum") || query.contains("add") || query.contains("multiply") || query.contains("divide") || query.contains("algebra") || query.contains("geometry")) {
+        aiResponse = "Mathematics Tutor Guide (Standard 1-10) 📐:\n1. Arithmetic: BODMAS rule determines order of operations (Brackets, Order, Division, Multiplication, Addition, Subtraction).\n2. Geometry: Perimeter of rectangle = 2*(length + width). Area of circle = π * r^2.\n3. Algebra: Solve for x by keeping variable terms on one side and constants on other (e.g. 2x = 10 => x = 5).";
+      } else if (query.contains("physics") || query.contains("gravity") || query.contains("force") || query.contains("motion") || query.contains("light") || query.contains("electricity")) {
+        aiResponse = "Physics Tutor Explanation (Standard 1-10) ⚡:\n1. Force: A push or pull acting upon an object (F = mass * acceleration).\n2. Gravity: An attractive force pulling objects down (acceleration g ≈ 9.8 m/s^2).\n3. Light: Travel in straight lines; reflects off smooth surfaces and refracts when changing mediums.";
+      } else if (query.contains("chemistry") || query.contains("acid") || query.contains("base") || query.contains("element") || query.contains("atom") || query.contains("molecule")) {
+        aiResponse = "Chemistry Tutor Explanation (Standard 1-10) 🧪:\n1. Atoms: The basic unit of chemical elements, consisting of protons, neutrons, and electrons.\n2. Molecules: Groups of atoms bonded together (e.g., Water is H2O).\n3. Acids & Bases: Acids have pH < 7 (sour, e.g. lemon juice), Bases have pH > 7 (bitter/slippery, e.g. soap). Neutral is pH = 7.";
+      } else if (query.contains("biology") || query.contains("cell") || query.contains("plant") || query.contains("photosynthesis") || query.contains("human body")) {
+        aiResponse = "Biology Tutor Explanation (Standard 1-10) 🧬:\n1. Cell: Basic structural and functional unit of life. Animal cells have membrane, Plant cells have extra cell wall.\n2. Photosynthesis: Plants use chlorophyll to absorb sunlight, carbon dioxide, and water to manufacture glucose and release oxygen.\n3. Circulation: Heart pumps oxygenated blood from lungs to body organs.";
+      } else if (query.contains("science")) {
+        aiResponse = "Science Tutor Hub (Standard 1-10) 🔬:\nScience is divided into:\n1. Physics: Study of energy, force, light, and motion.\n2. Chemistry: Study of matter, elements, reactions, and pH scale.\n3. Biology: Study of cells, plant/human body life cycles, and ecosystems.\nTell me which topic you want to learn about!";
+      } else if (query.contains("economics") || query.contains("money") || query.contains("demand") || query.contains("supply") || query.contains("market")) {
+        aiResponse = "Economics Tutor explanation (Standard 9-10) 📊:\n1. Supply and Demand: Law of Demand states that higher prices lead to lower demand. Law of Supply states that higher prices lead to higher supply.\n2. Sectors of Indian Economy: Primary (Agriculture), Secondary (Manufacturing), Tertiary (Services/IT).";
+      } else if (query.contains("history") || query.contains("gandhi") || query.contains("independence") || query.contains("harappa") || query.contains("revolution")) {
+        aiResponse = "History Tutor Guide (Standard 1-10) 📜:\n1. Harappan Civilization: An ancient Bronze Age urban culture located near the Indus River basin (famous for brick houses, grid planning, drainage).\n2. Indian Independence: India gained freedom from British rule on 15 August 1947, led by freedom struggles of Mahatma Gandhi (Non-Violence), Subhash Chandra Bose, etc.";
+      } else if (query.contains("geography") || query.contains("earth") || query.contains("map") || query.contains("continent") || query.contains("river") || query.contains("soil")) {
+        aiResponse = "Geography Tutor explanation (Standard 1-10) 🌍:\n1. Earth Structure: Core (innermost), Mantle (middle silicate layer), Crust (outer solid surface where we live).\n2. Rivers & Oceans: Rivers flow from mountains down to seas. Oceans cover 71% of Earth surface.\n3. Atmosphere: Troposphere (where weather occurs), Stratosphere (holds ozone layer), Mesosphere.";
+      } else if (query.contains("english") || query.contains("grammar") || query.contains("noun") || query.contains("verb") || query.contains("tense")) {
+        aiResponse = "English Grammar Guide (Standard 1-10) 📝:\n1. Noun: Name of a person, place, thing, or idea (e.g. Aman, Patna, book).\n2. Verb: Actions performed (e.g. write, run, study).\n3. Tenses: Present (I study), Past (I studied), Future (I will study).";
+      } else if (query.contains("hindi") || query.contains("vyakaran") || query.contains("sangya") || query.contains("kriya")) {
+        aiResponse = "हिंदी व्याकरण सहायक (कक्षा 1-10) ✍️:\n1. संज्ञा (Noun): किसी व्यक्ति, स्थान, या वस्तु के नाम को संज्ञा कहते हैं (जैसे - राम, पटना, किताब)।\n2. क्रिया (Verb): जिस शब्द से किसी काम का करना या होना पाया जाए, उसे क्रिया कहते हैं (जैसे - लिखना, दौड़ना)।\n3. सर्वनाम (Pronoun): संज्ञा के स्थान पर प्रयुक्त होने वाले शब्द (जैसे - वह, तुम, मैं)।";
+      } else if (query.contains("excel") || query.contains("spreadsheet") || query.contains("formula")) {
+        aiResponse = "Microsoft Excel Basics 📊:\nExcel is a spreadsheet tool used to organize data in rows and columns.\n1. Cell Address: Intersection of column letter and row number (e.g. A1).\n2. Sum Formula: `=SUM(A1:A5)` adds numbers in cells A1 to A5.\n3. Average Formula: `=AVERAGE(B1:B10)` calculates average.";
+      } else if (query.contains("word") || query.contains("typing") || query.contains("format")) {
+        aiResponse = "Microsoft Word Basics 📄:\nWord is a word processing software used to type documents, letters, and reports.\n1. Shortcuts: Ctrl+C (Copy), Ctrl+V (Paste), Ctrl+B (Bold), Ctrl+I (Italic), Ctrl+U (Underline).\n2. Alignment: Left, Center, Right, and Justified.";
+      } else if (query.contains("powerpoint") || query.contains("slide") || query.contains("presentation")) {
+        aiResponse = "Microsoft PowerPoint Basics 📉:\nPowerPoint is used to build slides for presentations.\n1. Slide: A single page of a presentation.\n2. Transitions: Animation effects that play when moving from one slide to another.\n3. Slide Show: Press F5 shortcut to play slides full screen.";
+      } else if (query.contains("office") || query.contains("ms office") || query.contains("computer science")) {
+        aiResponse = "Computer Science & MS Office Tutor 💻:\nWe teach:\n1. MS Word: Typing and formatting text.\n2. MS Excel: Spreadsheet formulas `=SUM()` and charts.\n3. MS PowerPoint: Interactive slide decks.\nWhich of these programs are you studying today?";
       } else if (query.contains("admission") || query.contains("join") || query.contains("fee") || query.contains("class") || query.contains("register")) {
         aiResponse = "Welcome! Admissions are open at Agarwal Knowledge Hub (Patna branches) for Nursery to Class 7 and specialized Computer courses. We focus on conceptual learning and digital tools. For registration forms and monthly fee queries, please consult Director Agarwal or Ms. Anjali Verma at the admin cabin!";
       } else if (query.contains("homework") || query.contains("assignment") || query.contains("due")) {
@@ -199,6 +221,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
                     ),
                     child: TextField(
                       controller: _controller,
+                      onSubmitted: (_) => _sendMessage(),
                       decoration: const InputDecoration(
                         hintText: 'Type your doubt here...',
                         border: InputBorder.none,

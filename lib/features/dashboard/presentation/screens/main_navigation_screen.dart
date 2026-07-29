@@ -22,6 +22,7 @@ import '../../../web_panel/presentation/screens/super_admin_master_panel.dart';
 import '../../../web_panel/presentation/screens/institute_branding_screen.dart';
 import '../../../settings/presentation/screens/enterprise_settings_panel.dart';
 import '../../../../core/models/user_profile.dart';
+import '../../../study_play/presentation/screens/study_play_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -278,6 +279,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const DownloadsScreen()),
+                    );
+                  },
+                ),
+                _buildDrawerItem(
+                  icon: Icons.toys_outlined,
+                  title: 'Study with Play',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const StudyPlayScreen()),
                     );
                   },
                 ),
