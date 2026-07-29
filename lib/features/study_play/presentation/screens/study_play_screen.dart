@@ -17,6 +17,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   int _activeRhymeIndex = 0;
   bool _isPlayingRhyme = false;
   int _countingStars = 0;
+  String _selectedVoiceGender = 'female'; // 'female' or 'male'
 
   final List<Map<String, String>> _rhymes = [
     {
@@ -39,7 +40,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   final List<Map<String, String>> _alphabets = [
     {"letter": "A", "word": "Apple", "emoji": "🍎", "color": "0xFFE57373"},
     {"letter": "B", "word": "Ball", "emoji": "⚽", "color": "0xFF64B5F6"},
-    {"letter": "C", "word": "Cat", "emoji": "🐱", "color": "0xFFFFB74D"},
+    {"letter": "C", "word": "Cat", "emoji": "🐱", "color": "0xFFE0F7FA"},
     {"letter": "D", "word": "Dog", "emoji": "🐶", "color": "0xFF81C784"},
     {"letter": "E", "word": "Elephant", "emoji": "🐘", "color": "0xFFBA68C8"},
     {"letter": "F", "word": "Fish", "emoji": "🐟", "color": "0xFF4DD0E1"},
@@ -66,7 +67,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   ];
 
   final List<Map<String, String>> _swar = [
-    {"letter": "अ", "word": "अनार", "emoji": "🍎"},
+    {"letter": "अ", "word": "अनार", "emoji": "🍒"},
     {"letter": "आ", "word": "आम", "emoji": "🥭"},
     {"letter": "इ", "word": "इमली", "emoji": "🫒"},
     {"letter": "ई", "word": "ईख", "emoji": "🎋"},
@@ -120,34 +121,138 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     {"letter": "ज्ञ", "word": "ज्ञानी", "emoji": "👨‍🏫"},
   ];
 
-  final List<Map<String, String>> _easyWords = [
-    {"word": "APPLE", "emoji": "🍎", "sentence": "An apple a day keeps the doctor away."},
-    {"word": "BALL", "emoji": "⚽", "sentence": "Play with the football."},
-    {"word": "CAT", "emoji": "🐱", "sentence": "The cat is sleeping on the mat."},
-    {"word": "DOG", "emoji": "🐶", "sentence": "The dog barks loud."},
-    {"word": "ELEPHANT", "emoji": "🐘", "sentence": "Elephants are very big animals."},
-    {"word": "FISH", "emoji": "🐟", "sentence": "Fish swim in the water."},
-    {"word": "GRAPES", "emoji": "🍇", "sentence": "Grapes are sweet and green."},
-    {"word": "HOUSE", "emoji": "🏠", "sentence": "This is my sweet home."},
-    {"word": "ICE CREAM", "emoji": "🍦", "sentence": "I love cold ice cream."},
-    {"word": "JUG", "emoji": "🫙", "sentence": "Fill the water in the jug."},
-    {"word": "KITE", "emoji": "🪁", "sentence": "Kite flies high in the sky."},
-    {"word": "LION", "emoji": "🦁", "sentence": "The lion is the king of the forest."},
-    {"word": "MONKEY", "emoji": "🐒", "sentence": "Monkeys love to eat bananas."},
-    {"word": "NEST", "emoji": "🪺", "sentence": "Birds live in a nest."},
-    {"word": "ORANGE", "emoji": "🍊", "sentence": "Oranges are orange in color."},
-    {"word": "PENCIL", "emoji": "✏️", "sentence": "I write with my pencil."},
-    {"word": "QUEEN", "emoji": "👑", "sentence": "The queen wears a gold crown."},
-    {"word": "ROSE", "emoji": "🌹", "sentence": "Rose is a beautiful flower."},
-    {"word": "SUN", "emoji": "☀️", "sentence": "The sun is very hot and bright."},
-    {"word": "TOY", "emoji": "🧸", "sentence": "I play with my teddy bear."},
-    {"word": "UMBRELLA", "emoji": "☂️", "sentence": "Umbrella protects us from rain."},
-    {"word": "VAN", "emoji": "🚐", "sentence": "We go to school in a van."},
-    {"word": "WATER", "emoji": "💧", "sentence": "Drink clean water everyday."},
-    {"word": "XYLOPHONE", "emoji": "🎼", "sentence": "Xylophone plays sweet music."},
-    {"word": "YAK", "emoji": "🐂", "sentence": "Yak lives in cold snowy hills."},
-    {"word": "ZEBRA", "emoji": "🦓", "sentence": "Zebra has black and white stripes."},
-  ];
+  final Map<String, List<Map<String, String>>> _easyWordsGrouped = {
+    "A": [
+      {"word": "ANT", "emoji": "🐜", "sentence": "Ants work together in a team."},
+      {"word": "AXE", "emoji": "🪓", "sentence": "An axe is used to cut wood."},
+      {"word": "APRON", "emoji": "🎽", "sentence": "Wear an apron while cooking."}
+    ],
+    "B": [
+      {"word": "BALL", "emoji": "⚽", "sentence": "Throw the colorful ball."},
+      {"word": "BAT", "emoji": "🏏", "sentence": "Hit the ball with the bat."},
+      {"word": "BOY", "emoji": "👦", "sentence": "The boy is reading a book."}
+    ],
+    "C": [
+      {"word": "CAT", "emoji": "🐱", "sentence": "The cat drinks milk."},
+      {"word": "CAR", "emoji": "🚗", "sentence": "Drive the red car safely."},
+      {"word": "COW", "emoji": "🐄", "sentence": "The cow gives fresh milk."}
+    ],
+    "D": [
+      {"word": "DOG", "emoji": "🐶", "sentence": "The dog is wagging its tail."},
+      {"word": "DOLL", "emoji": "🪆", "sentence": "I have a cute barbie doll."},
+      {"word": "DUCK", "emoji": "🦆", "sentence": "Ducks are swimming in the pond."}
+    ],
+    "E": [
+      {"word": "EGG", "emoji": "🥚", "sentence": "Eat a healthy egg daily."},
+      {"word": "EYE", "emoji": "👁️", "sentence": "Look at the stars with your eyes."},
+      {"word": "ELF", "emoji": "🧝", "sentence": "The little elf lives in forest."}
+    ],
+    "F": [
+      {"word": "FISH", "emoji": "🐟", "sentence": "Fish live under water."},
+      {"word": "FOX", "emoji": "🦊", "sentence": "The fox is a clever animal."},
+      {"word": "FAN", "emoji": "🪭", "sentence": "Switch on the fan to feel cool."}
+    ],
+    "G": [
+      {"word": "GRAPES", "emoji": "🍇", "sentence": "Grapes grow in bunches."},
+      {"word": "GIRL", "emoji": "👧", "sentence": "She is a very smart girl."},
+      {"word": "GOAT", "emoji": "🐐", "sentence": "Goats eat fresh green leaves."}
+    ],
+    "H": [
+      {"word": "HOUSE", "emoji": "🏠", "sentence": "This is our beautiful house."},
+      {"word": "HAT", "emoji": "🎩", "sentence": "Wear a sun hat on hot days."},
+      {"word": "HEN", "emoji": "🐔", "sentence": "The hen laid an egg."}
+    ],
+    "I": [
+      {"word": "ICE", "emoji": "🧊", "sentence": "Ice is very cold and solid."},
+      {"word": "IGLOO", "emoji": "🛖", "sentence": "Igloo is a house made of ice."},
+      {"word": "INK", "emoji": "✒️", "sentence": "Fill ink in the fountain pen."}
+    ],
+    "J": [
+      {"word": "JUG", "emoji": "🫙", "sentence": "Pour water from the jug."},
+      {"word": "JEEP", "emoji": "🚙", "sentence": "We went for a ride in the jeep."},
+      {"word": "JAM", "emoji": "🍓", "sentence": "Spread sweet jam on bread."}
+    ],
+    "K": [
+      {"word": "KITE", "emoji": "🪁", "sentence": "Kites fly high in the air."},
+      {"word": "KEY", "emoji": "🔑", "sentence": "Use the key to open the lock."},
+      {"word": "KANGAROO", "emoji": "🦘", "sentence": "Kangaroo hops with its baby."}
+    ],
+    "L": [
+      {"word": "LION", "emoji": "🦁", "sentence": "The lion is the king of jungle."},
+      {"word": "LAMP", "emoji": "💡", "sentence": "Turn on the lamp at night."},
+      {"word": "LEAF", "emoji": "🍃", "sentence": "The green leaf fell from tree."}
+    ],
+    "M": [
+      {"word": "MONKEY", "emoji": "🐒", "sentence": "Monkey is swinging on branches."},
+      {"word": "MILK", "emoji": "🥛", "sentence": "Drink warm milk for strong bones."},
+      {"word": "MOON", "emoji": "🌙", "sentence": "The moon shines bright at night."}
+    ],
+    "N": [
+      {"word": "NEST", "emoji": "🪺", "sentence": "Birds built a nest on tree."},
+      {"word": "NET", "emoji": "🕸️", "sentence": "Use a net to catch butterflies."},
+      {"word": "NUT", "emoji": "🥜", "sentence": "Peanuts are a healthy type of nut."}
+    ],
+    "O": [
+      {"word": "ORANGE", "emoji": "🍊", "sentence": "Orange is a sweet juicy fruit."},
+      {"word": "OWL", "emoji": "🦉", "sentence": "The owl stays awake all night."},
+      {"word": "ONION", "emoji": "🧅", "sentence": "Chopping onions makes me cry."}
+    ],
+    "P": [
+      {"word": "PENCIL", "emoji": "✏️", "sentence": "Sharpen your pencil before writing."},
+      {"word": "PEN", "emoji": "🖊️", "sentence": "The teacher writes with a blue pen."},
+      {"word": "PARROT", "emoji": "🦜", "sentence": "The green parrot can talk."}
+    ],
+    "Q": [
+      {"word": "QUEEN", "emoji": "👑", "sentence": "The queen wears a shiny crown."},
+      {"word": "QUILL", "emoji": "🪶", "sentence": "A quill is a pen made of feather."},
+      {"word": "QUILT", "emoji": "🛏️", "sentence": "Use a warm quilt in winter."}
+    ],
+    "R": [
+      {"word": "RABBIT", "emoji": "🐇", "sentence": "The white rabbit eats carrots."},
+      {"word": "ROSE", "emoji": "🌹", "sentence": "Rose is a beautiful red flower."},
+      {"word": "RING", "emoji": "💍", "sentence": "She wears a gold ring on her finger."}
+    ],
+    "S": [
+      {"word": "SUN", "emoji": "☀️", "sentence": "The sun rises in the east."},
+      {"word": "STAR", "emoji": "⭐", "sentence": "A tiny star shines in the sky."},
+      {"word": "SHIP", "emoji": "🚢", "sentence": "The big ship sails on sea."}
+    ],
+    "T": [
+      {"word": "TIGER", "emoji": "🐯", "sentence": "The tiger has black stripes."},
+      {"word": "TOY", "emoji": "🧸", "sentence": "I share my toys with friends."},
+      {"word": "TREE", "emoji": "🌳", "sentence": "Trees give us cool shade."}
+    ],
+    "U": [
+      {"word": "UMBRELLA", "emoji": "☂️", "sentence": "Open your umbrella in the rain."},
+      {"word": "UNICORN", "emoji": "🦄", "sentence": "A unicorn is a magical horse."},
+      {"word": "URN", "emoji": "🏺", "sentence": "Keep flowers in the ancient urn."}
+    ],
+    "V": [
+      {"word": "VAN", "emoji": "🚐", "sentence": "The school van has arrived."},
+      {"word": "VIOLIN", "emoji": "🎻", "sentence": "Play sweet music on the violin."},
+      {"word": "VASE", "emoji": "🏺", "sentence": "Place fresh flowers in the vase."}
+    ],
+    "W": [
+      {"word": "WATCH", "emoji": "⌚", "sentence": "Check the time on your watch."},
+      {"word": "WATER", "emoji": "💧", "sentence": "Water is essential for life."},
+      {"word": "WIND", "emoji": "💨", "sentence": "The strong wind blew away leaves."}
+    ],
+    "X": [
+      {"word": "XYLOPHONE", "emoji": "🎼", "sentence": "Tap the keys of the xylophone."},
+      {"word": "XMAS TREE", "emoji": "🎄", "sentence": "Decorate the Xmas tree with lights."},
+      {"word": "X-RAY", "emoji": "🩻", "sentence": "The doctor took an X-ray of my hand."}
+    ],
+    "Y": [
+      {"word": "YAK", "emoji": "🐂", "sentence": "The yak lives in snowy mountains."},
+      {"word": "YACHT", "emoji": "⛵", "sentence": "The white yacht sails smoothly."},
+      {"word": "YOYO", "emoji": "🪀", "sentence": "Spin the yoyo up and down."}
+    ],
+    "Z": [
+      {"word": "ZEBRA", "emoji": "🦓", "sentence": "The zebra crossed the road."},
+      {"word": "ZIP", "emoji": "🤐", "sentence": "Close the zip of your bag."},
+      {"word": "ZOO", "emoji": "🦁", "sentence": "We saw many wild animals at the zoo."}
+    ]
+  };
 
   @override
   void initState() {
@@ -180,6 +285,10 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
             var msg = new SpeechSynthesisUtterance('$cleanText');
             var isHindi = /[\\u0900-\\u097F]/.test('$cleanText');
             msg.lang = isHindi ? 'hi-IN' : 'en-US';
+            
+            // Gender settings
+            var gender = '$_selectedVoiceGender';
+            msg.pitch = (gender === 'female') ? 1.3 : 0.85;
             msg.rate = 0.8;
             window.speechSynthesis.speak(msg);
           }
@@ -190,6 +299,53 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       }
     } else {
       debugPrint("TTS voice simulation: $text");
+    }
+  }
+
+  void _playRhymeAsSong(String lyrics) {
+    if (kIsWeb) {
+      try {
+        final cleanText = lyrics.replaceAll("'", "\\'").replaceAll("\r", "");
+        final jsCode = """
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            var lines = '$cleanText'.split('\\n');
+            var idx = 0;
+            var gender = '$_selectedVoiceGender';
+            
+            function speakLine() {
+              if (idx >= lines.length) return;
+              var line = lines[idx].trim();
+              if (line.length === 0) {
+                idx++;
+                speakLine();
+                return;
+              }
+              
+              var msg = new SpeechSynthesisUtterance(line);
+              msg.lang = 'en-US';
+              
+              // Sing / Melodic pitch modulation
+              var basePitch = (gender === 'female') ? 1.3 : 0.85;
+              var modulation = [0, 0.18, -0.12, 0.08];
+              msg.pitch = basePitch + (modulation[idx % 4]);
+              msg.rate = 0.72 + (idx % 2 * 0.06); 
+              
+              msg.onend = function() {
+                idx++;
+                setTimeout(speakLine, 400); // 400ms pause for musical rest
+              };
+              window.speechSynthesis.speak(msg);
+            }
+            speakLine();
+          }
+        """;
+        js.context.callMethod('eval', [jsCode]);
+      } catch (e) {
+        debugPrint("Song synthesis error: $e");
+      }
+    } else {
+      debugPrint("Song simulation: $lyrics");
     }
   }
 
@@ -230,6 +386,37 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     return Scaffold(
       appBar: AppBar(
         title: const Text('Study with Play 🎈', style: TextStyle(fontWeight: FontWeight.bold)),
+        actions: [
+          // Voice Gender Toggle Selector
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white24,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white30),
+            ),
+            child: DropdownButton<String>(
+              value: _selectedVoiceGender,
+              dropdownColor: AppColors.primaryBlue,
+              underline: const SizedBox(),
+              icon: const Icon(Icons.volume_up, color: Colors.white, size: 18),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+              items: const [
+                DropdownMenuItem(value: 'female', child: Text('Voice: Female 👩')),
+                DropdownMenuItem(value: 'male', child: Text('Voice: Male 👨')),
+              ],
+              onChanged: (val) {
+                if (val != null) {
+                  setState(() {
+                    _selectedVoiceGender = val;
+                  });
+                  _speakText("Voice changed!");
+                }
+              },
+            ),
+          )
+        ],
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
@@ -299,13 +486,13 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             ),
                             icon: Icon(_isPlayingRhyme ? Icons.stop : Icons.play_arrow, size: 24),
-                            label: Text(_isPlayingRhyme ? "Stop Song" : "Play Voice Song", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            label: Text(_isPlayingRhyme ? "Stop Song" : "Play Voice Song 🎵", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                             onPressed: () {
                               setState(() {
                                 _isPlayingRhyme = !_isPlayingRhyme;
                               });
                               if (_isPlayingRhyme) {
-                                _speakText(_rhymes[_activeRhymeIndex]["lyrics"]!);
+                                _playRhymeAsSong(_rhymes[_activeRhymeIndex]["lyrics"]!);
                               } else {
                                 _stopTextSpeech();
                               }
@@ -514,43 +701,59 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
             ),
           ),
 
-          // EASY WORDS A-Z TAB
+          // EASY WORDS A-Z TAB (3 words per letter)
           ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: _easyWords.length,
+            itemCount: _alphabets.length, // 26 letters
             itemBuilder: (context, index) {
-              final item = _easyWords[index];
+              final letter = _alphabets[index]["letter"]!;
+              final color = Color(int.parse(_alphabets[index]["color"]!));
+              final wordsList = _easyWordsGrouped[letter] ?? [];
+              
               return Card(
-                margin: const EdgeInsets.only(bottom: 12),
+                margin: const EdgeInsets.only(bottom: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item["emoji"]!, style: const TextStyle(fontSize: 48)),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item["word"]!,
-                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              item["sentence"]!,
-                              style: TextStyle(fontSize: 14, color: isDark ? Colors.grey[300] : Colors.grey[700]),
-                            ),
-                          ],
-                        ),
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: color,
+                            child: Text(letter, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                          ),
+                          const SizedBox(width: 12),
+                          Text('Learn words starting with $letter', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                        ],
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.volume_up, color: AppColors.secondaryOrange, size: 28),
-                        onPressed: () {
-                          _speakText("${item["word"]}. ${item["sentence"]}");
-                        },
-                      )
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: wordsList.map((item) {
+                          return Expanded(
+                            child: Card(
+                              elevation: 1,
+                              color: isDark ? AppColors.darkSurface : Colors.grey[50],
+                              child: InkWell(
+                                onTap: () => _speakText("${item["word"]}. ${item["sentence"]}"),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                                  child: Column(
+                                    children: [
+                                      Text(item["emoji"]!, style: const TextStyle(fontSize: 32)),
+                                      const SizedBox(height: 4),
+                                      Text(item["word"]!, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ],
                   ),
                 ),
