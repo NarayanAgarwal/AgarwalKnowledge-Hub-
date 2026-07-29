@@ -11,6 +11,7 @@ import '../../../classes/presentation/screens/class_selection_screen.dart';
 import '../../../doubt_support/presentation/screens/doubt_support_screen.dart';
 import '../../../homework/presentation/screens/homework_detail_screen.dart';
 import '../../../stories/presentation/screens/story_viewer_screen.dart';
+import '../../../attendance/presentation/screens/attendance_dashboard_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -62,7 +63,7 @@ class DashboardScreen extends StatelessWidget {
                       const SizedBox(height: 24),
                       
                       // Attendance Card
-                      _buildAttendanceCard(dashVm, isDark),
+                      _buildAttendanceCard(context, dashVm, isDark),
                       
                       const SizedBox(height: 24),
                       
@@ -273,10 +274,10 @@ class DashboardScreen extends StatelessWidget {
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 3,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 1.0,
+          crossAxisCount: 4,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          childAspectRatio: 0.9,
           children: [
             _buildActionItem(
               context: context,
@@ -310,6 +311,18 @@ class DashboardScreen extends StatelessWidget {
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Quiz module is accessible via individual classes!')),
+                );
+              },
+            ),
+            _buildActionItem(
+              context: context,
+              icon: Icons.qr_code_scanner_outlined,
+              title: 'QR Scan',
+              color: Colors.purple,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AttendanceDashboardScreen()),
                 );
               },
             ),
@@ -358,48 +371,56 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAttendanceCard(DashboardViewModel dashVm, bool isDark) {
+  Widget _buildAttendanceCard(BuildContext context, DashboardViewModel dashVm, bool isDark) {
     // Calculate attendance percentage
     final total = dashVm.attendance.length;
     final present = dashVm.attendance.where((a) => a.status == 'Present').length;
     final percentage = total == 0 ? 0.85 : present / total; // Mock high if empty
 
-    return GlassContainer(
-      child: Row(
-        children: [
-          CircularPercentIndicator(
-            radius: 40.0,
-            lineWidth: 8.0,
-            percent: percentage,
-            center: Text(
-              "${(percentage * 100).toInt()}%",
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const AttendanceDashboardScreen()),
+        );
+      },
+      child: GlassContainer(
+        child: Row(
+          children: [
+            CircularPercentIndicator(
+              radius: 40.0,
+              lineWidth: 8.0,
+              percent: percentage,
+              center: Text(
+                "${(percentage * 100).toInt()}%",
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+              progressColor: AppColors.accentGreen,
+              backgroundColor: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+              circularStrokeCap: CircularStrokeCap.round,
             ),
-            progressColor: AppColors.accentGreen,
-            backgroundColor: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-            circularStrokeCap: CircularStrokeCap.round,
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Your Attendance Rate',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Keep it above 75% to remain eligible for term exams.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Your Attendance Rate',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
-                ),
-              ],
-            ),
-          )
-        ],
+                  const SizedBox(height: 4),
+                  Text(
+                    'Keep it above 75% to remain eligible for term exams.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

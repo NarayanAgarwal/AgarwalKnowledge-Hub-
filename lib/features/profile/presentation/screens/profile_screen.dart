@@ -14,6 +14,7 @@ class ProfileScreen extends StatelessWidget {
     final addressController = TextEditingController(text: user.address);
     final parentNameController = TextEditingController(text: user.parentName);
     final parentPhoneController = TextEditingController(text: user.parentMobile);
+    final photoUrlController = TextEditingController(text: user.profilePhotoUrl);
 
     showDialog(
       context: context,
@@ -57,6 +58,11 @@ class ProfileScreen extends StatelessWidget {
                     decoration: const InputDecoration(labelText: 'Parent Mobile'),
                     keyboardType: TextInputType.phone,
                   ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: photoUrlController,
+                    decoration: const InputDecoration(labelText: 'Profile Photo URL'),
+                  ),
                 ],
               ),
             ),
@@ -79,6 +85,7 @@ class ProfileScreen extends StatelessWidget {
                     address: addressController.text.trim(),
                     parentName: parentNameController.text.trim(),
                     parentMobile: parentPhoneController.text.trim(),
+                    profilePhotoUrl: photoUrlController.text.trim(),
                   );
                   await authVm.completeProfile(updated);
                   if (context.mounted) {
@@ -108,15 +115,6 @@ class ProfileScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Profile', style: TextStyle(fontWeight: FontWeight.bold)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined, color: AppColors.primaryBlue),
-            onPressed: () => _showEditProfileDialog(context, authVm, user),
-          ),
-        ],
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -124,22 +122,48 @@ class ProfileScreen extends StatelessWidget {
             // Profile Card (Header)
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 8),
               decoration: BoxDecoration(
                 gradient: AppColors.primaryGradient,
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.white24,
-                    child: CircleAvatar(
-                      radius: 46,
-                      backgroundColor: Colors.white,
-                      child: user.profilePhotoUrl.isNotEmpty
-                          ? ClipOval(child: Image.network(user.profilePhotoUrl, fit: BoxFit.cover))
-                          : const Icon(Icons.person, size: 50, color: AppColors.primaryBlue),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                      icon: const Icon(Icons.edit_outlined, color: Colors.white, size: 22),
+                      onPressed: () => _showEditProfileDialog(context, authVm, user),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => _showEditProfileDialog(context, authVm, user),
+                    child: Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.white24,
+                          child: CircleAvatar(
+                            radius: 46,
+                            backgroundColor: Colors.white,
+                            child: user.profilePhotoUrl.isNotEmpty
+                                ? ClipOval(child: Image.network(user.profilePhotoUrl, fit: BoxFit.cover, errorBuilder: (c, o, s) => const Icon(Icons.person, size: 50, color: AppColors.primaryBlue)))
+                                : const Icon(Icons.person, size: 50, color: AppColors.primaryBlue),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: AppColors.secondaryOrange,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 16),

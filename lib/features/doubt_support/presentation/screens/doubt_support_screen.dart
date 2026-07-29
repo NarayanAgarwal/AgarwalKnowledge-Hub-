@@ -54,10 +54,22 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
       
       if (query.contains("fraction")) {
         aiResponse = "That's a great question! Here's a brief breakdown: A fraction represents a part of a whole. It consists of a numerator (top number) and a denominator (bottom number). For example, 1/2 means one part out of two equal parts. To add fractions with the same denominator, simply add the numerators!";
-      } else if (query.contains("computer") || query.contains("ram") || query.contains("cpu") || query.contains("hardware")) {
-        aiResponse = "Excellent question about Computer Basics! Computers process data using the CPU (Central Processing Unit), which is the brain. RAM (Random Access Memory) holds active data temporarily. Input devices like keyboard/mouse let you send instructions, and output devices like monitor display results.";
-      } else if (query.contains("admission") || query.contains("join") || query.contains("fee") || query.contains("class")) {
-        aiResponse = "Welcome! Admissions are open at Agarwal Knowledge Hub. We provide excellent conceptual courses in Computer Science, CBSE Mathematics, and interactive Science labs. Our fees are very reasonable. Please consult Director Agarwal or Ms. Anjali Verma at the office to get the registration booklet!";
+      } else if (query.contains("computer") || query.contains("ram") || query.contains("cpu") || query.contains("hardware") || query.contains("keyboard") || query.contains("software")) {
+        aiResponse = "Excellent question about Computer Basics! Computers process data using the CPU (Central Processing Unit), which is the brain. RAM (Random Access Memory) holds active data temporarily. Input devices like keyboard/mouse let you send instructions, and output devices like monitor display results. Operating Systems like Windows manage these processes.";
+      } else if (query.contains("force") || query.contains("gravity") || query.contains("motion") || query.contains("work")) {
+        aiResponse = "Excellent Science Question! A force is a push or pull acting upon an object. Gravity is a force that pulls objects toward each other (like Earth pulling us down). Motion occurs when an object changes its position over time. Work is done when a force applied to an object moves it over a distance.";
+      } else if (query.contains("photosynthesis") || query.contains("plant") || query.contains("leaf") || query.contains("chlorophyll")) {
+        aiResponse = "Great Biology doubt! Photosynthesis is the process green plants use to make food. Using chlorophyll (green pigment), leaves capture sunlight, combine carbon dioxide from the air and water from the soil, to create glucose (energy) and release oxygen as a byproduct.";
+      } else if (query.contains("water cycle") || query.contains("rain") || query.contains("evaporation") || query.contains("condensation") || query.contains("precipitation")) {
+        aiResponse = "Fascinating Geography / Science doubt! The Water Cycle is the continuous movement of water on Earth. It has 3 main stages:\n1. Evaporation: Heat turns water into vapor.\n2. Condensation: Vapor cools to form clouds.\n3. Precipitation: Water falls back as rain or snow.";
+      } else if (query.contains("math") || query.contains("sum") || query.contains("add") || query.contains("multiply") || query.contains("divide") || query.contains("number") || query.contains("algebra")) {
+        aiResponse = "Let's solve this Math problem! When working out arithmetic or word problems, follow these key steps:\n1. Read the values carefully.\n2. Apply BODMAS rules (Brackets, Orders, Division, Multiplication, Addition, Subtraction).\n3. Double check your calculation. Agarwal Knowledge Hub math worksheets contain practice exercises on this!";
+      } else if (query.contains("english") || query.contains("grammar") || query.contains("noun") || query.contains("verb") || query.contains("pronoun") || query.contains("tense")) {
+        aiResponse = "Great Grammar doubt! Grammar helps us structure sentences. A noun is a naming word (person, place, thing), a verb is an action word (run, jump), and tenses (past, present, future) indicate when an action happens. Always check your capitalization!";
+      } else if (query.contains("science") || query.contains("cell") || query.contains("atom") || query.contains("chemistry") || query.contains("physics")) {
+        aiResponse = "Wonderful Science inquiry! In science, we explore how things work. Cells are the basic building blocks of living organisms. Atoms are the tiny particles that make up all physical matter. Keep experimenting and observing!";
+      } else if (query.contains("admission") || query.contains("join") || query.contains("fee") || query.contains("class") || query.contains("register")) {
+        aiResponse = "Welcome! Admissions are open at Agarwal Knowledge Hub (Patna branches) for Nursery to Class 7 and specialized Computer courses. We focus on conceptual learning and digital tools. For registration forms and monthly fee queries, please consult Director Agarwal or Ms. Anjali Verma at the admin cabin!";
       } else if (query.contains("homework") || query.contains("assignment") || query.contains("due")) {
         aiResponse = "You can access all assigned homework sheets under the 'Homework' tab in your portal. You can download the PDF worksheets, solve them, and submit snapshots directly from the 'Submit' screen. If you have any specific query from a worksheet, type it here!";
       } else if (query.contains("hi") || query.contains("hello") || query.contains("hey") || query.contains("helo")) {
@@ -65,7 +77,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
       } else if (query.contains("thank") || query.contains("thanks")) {
         aiResponse = "You're very welcome! Learning is a journey, and we are happy to support you. Let me know if you have any other questions!";
       } else {
-        aiResponse = "That's an interesting question about '${text}'. Let's analyze:\n1. At Agarwal Knowledge Hub, we recommend checking the study materials in your 'Notes' tab.\n2. For this topic, try to review the textbook chapters first.\n3. If you need step-by-step guidance, Ms. Anjali Verma will cover this in the next live doubt clearing session!";
+        aiResponse = "That's an interesting question about '${text}'! As your AI Doubt Tutor, let's look at this concept:\n\n1. In your Agarwal Knowledge Hub reference curriculum, '${text}' is a key academic topic covered under your course syllabus.\n2. I recommend checking your class details notes or textbook pdf resources in the 'Library' tab.\n3. Write down a practical example or seek direct step-by-step guidance from Ms. Anjali Verma in the next live doubt clearing session!";
       }
 
       setState(() {
