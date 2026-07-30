@@ -81,7 +81,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     {"letter": "ओ", "word": "ओखली", "emoji": "🥣"},
     {"letter": "औ", "word": "औरत", "emoji": "👩"},
     {"letter": "अं", "word": "अंगूर", "emoji": "🍇"},
-    {"letter": "अः", "word": "खाली", "emoji": "🗣️"},
+    {"letter": "अतः", "word": "खाली", "emoji": "🗣️"},
   ];
 
   final List<Map<String, String>> _vyanjan = [
@@ -144,55 +144,10 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     "🐯": "Tiger face/tiger_face",
     "☂️": "Umbrella/umbrella",
     "🚐": "Minibus/minibus",
-    "环保": "Watch/watch",
     "⌚": "Watch/watch",
     "🎼": "Musical score/musical_score",
     "⛵": "Sailboat/sailboat",
     "🦓": "Zebra/zebra",
-    
-    // Swar/Vyanjan
-    "🥭": "Mango/mango",
-    "🫒": "Olive/olive",
-    "🎋": "Tanabata tree/tanabata_tree",
-    "🦉": "Owl/owl",
-    "🧶": "Yarn/yarn",
-    "🧘": "Person in lotus position/person_in_lotus_position",
-    "🦶": "Foot/foot",
-    "👓": "Glasses/glasses",
-    "🥣": "Bowl with spoon/bowl_with_spoon",
-    "👩": "Woman/woman",
-    "🗣️": "Speaking head/speaking_head",
-    "🕊️": "Dove/dove",
-    "🪴": "Potted plant/potted_plant",
-    "🏠": "House/house",
-    "🔘": "Radio button/radio_button",
-    "🥄": "Spoon/spoon",
-    "⛱️": "Umbrella on ground/umbrella_on_ground",
-    "🚢": "Ship/ship",
-    "🇮🇳": "Flag India/flag_india",
-    "🍅": "Tomato/tomato",
-    "🔨": "Hammer/hammer",
-    "🥁": "Drum/drum",
-    "🪘": "Long drum/long_drum",
-    "🍉": "Watermelon/watermelon",
-    "🍼": "Baby bottle/baby_bottle",
-    "🖋️": "Pen/pen",
-    "🏹": "Bow and arrow/bow_and_arrow",
-    "🚰": "Potable water/potable_water",
-    "🦆": "Duck/duck",
-    "🐻": "Bear/bear",
-    "🔥": "Fire/fire",
-    "🎠": "Carousel horse/carousel_horse",
-    "🪀": "Yo-yo/yo_yo",
-    "🌳": "Deciduous tree/deciduous_tree",
-    "🧅": "Onion/onion",
-    "💠": "Diamond with a dot/diamond_with_a_dot",
-    "🐍": "Snake/snake",
-    "✈️": "Airplane/airplane",
-    "🛡️": "Shield/shield",
-    "⚔️": "Crossed swords/crossed_swords",
-    "🔱": "Trident emblem/trident_emblem",
-    "👨‍🏫": "Teacher/teacher",
     
     // Easy Words
     "🐜": "Ant/ant",
@@ -224,6 +179,60 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     "🌟": "Glowing star/glowing_star",
     "👶": "Baby/baby",
     "🥚": "Egg/egg"
+  };
+
+  // Real photos and illustration URLs for all Varnmala cards to prevent cartoon icons!
+  static const Map<String, String> _realVarnmalaImages = {
+    "अ": "assets/images/anar.jpg",
+    "आ": "https://upload.wikimedia.org/wikipedia/commons/9/90/HA_Mango.png",
+    "इ": "https://upload.wikimedia.org/wikipedia/commons/0/07/Tamarind_fruit.png",
+    "ई": "https://upload.wikimedia.org/wikipedia/commons/4/45/Sugarcane_stalk.png",
+    "उ": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Great_Horned_Owl_transparent.png",
+    "ऊ": "https://upload.wikimedia.org/wikipedia/commons/7/77/Yarn_ball.png",
+    "ऋ": "assets/images/rishi.jpg",
+    "ए": "https://upload.wikimedia.org/wikipedia/commons/6/6c/Human_heel.png",
+    "ऐ": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Spectacles_transparent.png",
+    "ओ": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Mortar_and_pestle.png",
+    "औ": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Woman_sitting.png",
+    "अं": "https://upload.wikimedia.org/wikipedia/commons/b/bb/Table_grapes_on_white.active.png",
+    "अतः": "https://upload.wikimedia.org/wikipedia/commons/d/df/Speaking_silhouette.png",
+    
+    "क": "https://upload.wikimedia.org/wikipedia/commons/4/40/Columba_livia_pigeon_transparent.png",
+    "ख": "https://upload.wikimedia.org/wikipedia/commons/d/df/Rabbit_eating.png",
+    "ग": "https://upload.wikimedia.org/wikipedia/commons/3/30/Potted_plant.png",
+    "घ": "https://upload.wikimedia.org/wikipedia/commons/a/ac/House_with_garden.png",
+    "ङ": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Empty_circle.png",
+    "च": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Spoon_transparent.png",
+    "छ": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Umbrella_isolated.png",
+    "ज": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Cruise_ship_isolated.png",
+    "झ": "https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_India.png",
+    "ञ": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Empty_circle.png",
+    "ट": "https://upload.wikimedia.org/wikipedia/commons/8/89/Tomato_je.jpg",
+    "ठ": "assets/images/thathera.jpg",
+    "ड": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Damru_drum.png",
+    "ढ": "assets/images/dhakkan.jpg",
+    "ण": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Empty_circle.png",
+    "त": "https://upload.wikimedia.org/wikipedia/commons/4/47/Watermelon_isolated.png",
+    "थ": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Thermos_flask.png",
+    "द": "assets/images/dawat.png",
+    "ध": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Wooden_bow_and_arrow.png",
+    "न": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Water_tap.png",
+    "प": "https://upload.wikimedia.org/wikipedia/commons/b/b7/Kite_isolated.png",
+    "फ": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Culinary_fruits_front_view.png",
+    "ब": "https://upload.wikimedia.org/wikipedia/commons/a/a1/Mallard2.jpg",
+    "भ": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Brown_bear_standing.png",
+    "म": "https://upload.wikimedia.org/wikipedia/commons/d/df/Goldfish_isolated.png",
+    "य": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Yajna_fire.png",
+    "र": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Chariot_drawing.png",
+    "ल": "https://upload.wikimedia.org/wikipedia/commons/d/da/Spinning_top.png",
+    "व": "https://upload.wikimedia.org/wikipedia/commons/5/50/Forest_trees.jpg",
+    "श": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Turnip_isolated.png",
+    "ष": "https://upload.wikimedia.org/wikipedia/commons/0/03/Hexagon_geometry.png",
+    "स": "https://upload.wikimedia.org/wikipedia/commons/7/76/Snake_charmer.jpg",
+    "ह": "https://upload.wikimedia.org/wikipedia/commons/7/75/Boeing_747_isolated.png",
+    "क्ष": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Crossed_swords.png",
+    "त्र": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Trident.png",
+    "ज्ञ": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Scholar_silhouette.png"
   };
 
   final Map<String, List<Map<String, String>>> _easyWordsGrouped = {
@@ -401,33 +410,47 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 var v = voices[i];
                 var vLang = v.lang.toLowerCase();
                 var vName = v.name.toLowerCase();
+                
                 if (vLang.indexOf(langFilter) !== -1) {
-                  if (gender === 'female' && (vName.indexOf('zira') !== -1 || vName.indexOf('female') !== -1 || vName.indexOf('google') !== -1 || vName.indexOf('siri') !== -1 || vName.indexOf('hazel') !== -1 || vName.indexOf('kalpana') !== -1)) {
-                    voice = v;
-                    break;
-                  }
-                  if (gender === 'male' && (vName.indexOf('david') !== -1 || vName.indexOf('male') !== -1 || vName.indexOf('ravi') !== -1 || vName.indexOf('microsoft') !== -1 || vName.indexOf('heera') !== -1)) {
-                    voice = v;
-                    break;
+                  // Precise Android Google TTS voice detection matching schemas
+                  if (vName.indexOf('-x-') !== -1) {
+                    var isMalePattern = vName.indexOf('-hic') !== -1 || vName.indexOf('-hif') !== -1 || vName.indexOf('-hia') !== -1 || vName.indexOf('-iom') !== -1 || vName.indexOf('-iog') !== -1 || vName.indexOf('-iol') !== -1 || vName.indexOf('-iob') !== -1;
+                    if (gender === 'male' && isMalePattern) {
+                      voice = v;
+                      break;
+                    }
+                    var isFemalePattern = vName.indexOf('-hie') !== -1 || vName.indexOf('-hid') !== -1 || vName.indexOf('-sfg') !== -1 || vName.indexOf('-sfd') !== -1 || vName.indexOf('-sfc') !== -1;
+                    if (gender === 'female' && isFemalePattern) {
+                      voice = v;
+                      break;
+                    }
+                  } else {
+                    if (gender === 'female' && (vName.indexOf('zira') !== -1 || vName.indexOf('female') !== -1 || vName.indexOf('google') !== -1 || vName.indexOf('siri') !== -1 || vName.indexOf('hazel') !== -1 || vName.indexOf('kalpana') !== -1)) {
+                      voice = v;
+                      break;
+                    }
+                    if (gender === 'male' && (vName.indexOf('david') !== -1 || vName.indexOf('male') !== -1 || vName.indexOf('ravi') !== -1 || vName.indexOf('microsoft') !== -1 || vName.indexOf('heera') !== -1)) {
+                      voice = v;
+                      break;
+                    }
                   }
                 }
               }
               
-              // Mobile / Phone fallback: if we need male pitch, we clear voice binding so browser lets us modulate pitch freely!
               if (gender === 'female') {
                 if (voice) msg.voice = voice;
                 msg.pitch = 1.35;
               } else {
-                // For male, if a native male voice is found, bind it. Otherwise, use default system voice with deep pitch modulation.
+                // If native male voice matched, bind it. Otherwise, drop voice object binding to allow free pitch modulation fallbacks
                 if (voice) {
                   msg.voice = voice;
                   msg.pitch = 0.9;
                 } else {
-                  msg.pitch = 0.68; // Deepen voice to male range
+                  msg.pitch = 0.65; // Deepen system default voice
                 }
               }
               
-              msg.rate = isHindi ? 0.72 : 0.8; // Crystal-clear slow rate
+              msg.rate = isHindi ? 0.72 : 0.8;
               msg.volume = 1.0;
               window.speechSynthesis.speak(msg);
             }
@@ -478,13 +501,26 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                   var v = voices[i];
                   var vName = v.name.toLowerCase();
                   if (v.lang.toLowerCase().indexOf('en') !== -1) {
-                    if (gender === 'female' && (vName.indexOf('zira') !== -1 || vName.indexOf('female') !== -1 || vName.indexOf('google') !== -1 || vName.indexOf('siri') !== -1)) {
-                      voice = v;
-                      break;
-                    }
-                    if (gender === 'male' && (vName.indexOf('david') !== -1 || vName.indexOf('male') !== -1 || vName.indexOf('microsoft') !== -1)) {
-                      voice = v;
-                      break;
+                    if (vName.indexOf('-x-') !== -1) {
+                      var isMalePattern = vName.indexOf('-iom') !== -1 || vName.indexOf('-iog') !== -1 || vName.indexOf('-iol') !== -1;
+                      if (gender === 'male' && isMalePattern) {
+                        voice = v;
+                        break;
+                      }
+                      var isFemalePattern = vName.indexOf('-sfg') !== -1 || vName.indexOf('-sfd') !== -1;
+                      if (gender === 'female' && isFemalePattern) {
+                        voice = v;
+                        break;
+                      }
+                    } else {
+                      if (gender === 'female' && (vName.indexOf('zira') !== -1 || vName.indexOf('female') !== -1 || vName.indexOf('google') !== -1 || vName.indexOf('siri') !== -1)) {
+                        voice = v;
+                        break;
+                      }
+                      if (gender === 'male' && (vName.indexOf('david') !== -1 || vName.indexOf('male') !== -1 || vName.indexOf('microsoft') !== -1)) {
+                        voice = v;
+                        break;
+                      }
                     }
                   }
                 }
@@ -499,7 +535,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                     msg.voice = voice;
                     msg.pitch = 0.85 + ([0, 0.12, -0.08, 0.05][idx % 4]);
                   } else {
-                    msg.pitch = 0.68 + ([0, 0.12, -0.08, 0.05][idx % 4]);
+                    msg.pitch = 0.65 + ([0, 0.12, -0.08, 0.05][idx % 4]);
                   }
                 }
                 
@@ -508,7 +544,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 
                 msg.onend = function() {
                   idx++;
-                  setTimeout(speakLine, 450); // clear melodic gap
+                  setTimeout(speakLine, 450);
                 };
                 window.speechSynthesis.speak(msg);
               }
@@ -531,13 +567,18 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     }
   }
 
-  String getEmojiUrl(String emoji, {String word = ""}) {
+  String getEmojiUrl(String emoji, {String word = "", String letter = ""}) {
     if (emoji.isEmpty) return "";
-    // Transparent Pomegranate - user's custom photo
+    
+    // Hindi Varnmala static mapping to real photos and local assets
+    if (letter.isNotEmpty && _realVarnmalaImages.containsKey(letter)) {
+      return _realVarnmalaImages[letter]!;
+    }
+    
+    // Hardcoded fallback checks for custom words
     if (emoji == "🍒" || emoji.contains("🍒") || word == "अनार" || word == "ANAR" || word.toLowerCase() == "anar") {
       return "assets/images/anar.jpg";
     }
-    // Transparent Jug Pitcher
     if (emoji == "🏺" || word == "Jug" || word == "JUG" || emoji.contains("🏺")) {
       return "https://upload.wikimedia.org/wikipedia/commons/2/23/Pitcher_Jug_%28PSF%29.png";
     }
@@ -548,7 +589,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       final parts = path.split("/");
       final folder = parts[0];
       final file = parts[1];
-      // Uri encode space characters as %20
       final encodedFolder = Uri.encodeComponent(folder);
       final encodedFile = Uri.encodeComponent(file);
       return "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/$encodedFolder/3D/${encodedFile}_3d.png";
@@ -566,8 +606,8 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     }
   }
 
-  Widget _buildEmojiImage(String emoji, {double size = 48, String word = ""}) {
-    final url = getEmojiUrl(emoji, word: word);
+  Widget _buildEmojiImage(String emoji, {double size = 48, String word = "", String letter = ""}) {
+    final url = getEmojiUrl(emoji, word: word, letter: letter);
     if (url.isEmpty) {
       return Text(emoji, style: TextStyle(fontSize: size));
     }
@@ -646,7 +686,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     );
   }
 
-  void _showCardDialog(String title, String subtitle, String emoji, {String word = ""}) {
+  void _showCardDialog(String title, String subtitle, String emoji, {String word = "", String letter = ""}) {
     _speakText("$title. $subtitle");
     showDialog(
       context: context,
@@ -655,7 +695,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildEmojiImage(emoji, size: 100, word: word),
+            _buildEmojiImage(emoji, size: 100, word: word, letter: letter),
             const SizedBox(height: 16),
             Text(title, style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
             const SizedBox(height: 8),
@@ -680,7 +720,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final playroomBgColor = isDark ? Colors.grey[900] : const Color(0xFFFFFDF5); // Warm cream playroom background
+    final playroomBgColor = isDark ? Colors.grey[900] : const Color(0xFFFFFBEF); // More colorful warm playroom background
     final blockBaseColor = isDark ? AppColors.darkSurface : Colors.white;
     final blockShadowColor = isDark ? Colors.black54 : const Color(0xFFDDD7C8);
 
@@ -726,22 +766,22 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
             margin: const EdgeInsets.all(12),
             padding: const EdgeInsets.symmetric(vertical: 4),
             decoration: BoxDecoration(
-              color: isDark ? AppColors.darkSurface : const Color(0xFFB3E5FC),
+              color: isDark ? AppColors.darkSurface : const Color(0xFF80DEEA), // Highly colorful cyan blue shelf
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.12),
+                  color: Colors.black.withOpacity(0.15),
                   offset: const Offset(0, 4),
                   blurRadius: 6,
                 ),
               ],
-              border: Border.all(color: Colors.white.withOpacity(0.5), width: 1.5),
+              border: Border.all(color: Colors.white.withOpacity(0.6), width: 1.5),
             ),
             child: TabBar(
               controller: _tabController,
               isScrollable: true,
               indicatorColor: Colors.transparent,
-              labelColor: AppColors.primaryBlue,
+              labelColor: Colors.white,
               unselectedLabelColor: Colors.black54,
               labelStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
               tabs: const [
@@ -831,10 +871,10 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                   ),
                 ),
 
-                // NUMBERS 1-100 TAB (Highly responsive to avoid wrapping text on phones!)
+                // NUMBERS 1-100 TAB (5 columns in a row, large text size, 3D embossed look)
                 SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   child: Column(
                     children: [
                       const Text(
@@ -847,9 +887,9 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 10,
-                          crossAxisSpacing: 4, // Narrow spacing for small screens
-                          mainAxisSpacing: 4,
+                          crossAxisCount: 5, // Exactly 5 columns in a row for large cell size on phones!
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
                           childAspectRatio: 1.0,
                         ),
                         itemCount: 100,
@@ -866,7 +906,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                             section: "numbers",
                             baseColor: baseColor,
                             shadowColor: shadowColor,
-                            shadowDepth: 4.0, // slightly shallower for grid density
+                            shadowDepth: 6.0,
                             onTap: () {
                               setState(() {
                                 _countingStars = num;
@@ -874,13 +914,13 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                               _speakText(num.toString());
                             },
                             child: Padding(
-                              padding: const EdgeInsets.all(2.0),
+                              padding: const EdgeInsets.all(4.0),
                               child: FittedBox(
-                                fit: BoxFit.scaleDown, // Auto scales text size to fit block cleanly
+                                fit: BoxFit.scaleDown,
                                 child: Text(
                                   '$num',
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 26, // Large bold numbers
                                     fontWeight: FontWeight.w900,
                                     color: textColor,
                                   ),
@@ -966,7 +1006,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                   },
                 ),
 
-                // HINDI VARNMALA TAB
+                // HINDI VARNMALA TAB (Varnmala using real photos only)
                 SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.all(16),
@@ -997,13 +1037,14 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                               "${item["letter"]} से ${item["word"]}",
                               item["emoji"]!,
                               word: item["word"]!,
+                              letter: item["letter"]!,
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(item["letter"]!, style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900)),
                                 const SizedBox(height: 4),
-                                _buildEmojiImage(item["emoji"]!, size: 36, word: item["word"]!),
+                                _buildEmojiImage(item["emoji"]!, size: 36, word: item["word"]!, letter: item["letter"]!),
                               ],
                             ),
                           );
@@ -1034,13 +1075,14 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                               "${item["letter"]} से ${item["word"]}",
                               item["emoji"]!,
                               word: item["word"]!,
+                              letter: item["letter"]!,
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(item["letter"]!, style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900)),
                                 const SizedBox(height: 4),
-                                _buildEmojiImage(item["emoji"]!, size: 36, word: item["word"]!),
+                                _buildEmojiImage(item["emoji"]!, size: 36, word: item["word"]!, letter: item["letter"]!),
                               ],
                             ),
                           );
