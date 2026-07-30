@@ -68,20 +68,21 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     {"letter": "Z", "word": "Zebra", "emoji": "🦓", "color": "0xFFE3F2FD"},
   ];
 
+  // 100% dictionary words in English fallbacks to prevent David/Zira spelling out letters!
   final List<Map<String, String>> _swar = [
-    {"letter": "अ", "word": "अनार", "emoji": "🍒", "english": "uh. uh say uh-naar"},
+    {"letter": "अ", "word": "अनार", "emoji": "🍒", "english": "uh. uh say ana are"},
     {"letter": "आ", "word": "आम", "emoji": "🥭", "english": "ah. ah say alms"},
-    {"letter": "इ", "word": "इमली", "emoji": "🫒", "english": "ee. ee say im-lee"},
-    {"letter": "ई", "word": "ईख", "emoji": "🎋", "english": "eee. eee say eke"},
-    {"letter": "उ", "word": "उल्लू", "emoji": "🦉", "english": "oo. oo say oo-loo"},
-    {"letter": "ऊ", "word": "ऊन", "emoji": "🧶", "english": "ooo. ooo say oon"},
-    {"letter": "ऋ", "word": "ऋषि", "emoji": "🧘", "english": "ree. ree say ree-shee"},
-    {"letter": "ए", "word": "एड़ी", "emoji": "🦶", "english": "ay. ay say ay-dee"},
-    {"letter": "ऐ", "word": "ऐनक", "emoji": "👓", "english": "ay. ay say ay-nuck"},
-    {"letter": "ओ", "word": "ओखली", "emoji": "🥣", "english": "oh. oh say oh-khlee"},
-    {"letter": "औ", "word": "औरत", "emoji": "👩", "english": "ow. ow say ow-rut"},
-    {"letter": "अं", "word": "अंगूर", "emoji": "🍇", "english": "un. un say un-goor"},
-    {"letter": "अः", "word": "खाली", "emoji": "🗣️", "english": "aha. aha say khaali"},
+    {"letter": "इ", "word": "इमली", "emoji": "🫒", "english": "ye. ye say him lee"},
+    {"letter": "ई", "word": "ईख", "emoji": "🎋", "english": "ye. ye say eke"},
+    {"letter": "उ", "word": "उल्लू", "emoji": "🦉", "english": "ooh. ooh say ooh loo"},
+    {"letter": "ऊ", "word": "ऊन", "emoji": "🧶", "english": "ooh. ooh say loon"},
+    {"letter": "ऋ", "word": "ऋषि", "emoji": "🧘", "english": "reef. reef say reach she"},
+    {"letter": "ए", "word": "एड़ी", "emoji": "🦶", "english": "ay. ay say ay dee"},
+    {"letter": "ऐ", "word": "ऐनक", "emoji": "👓", "english": "ay. ay say ay neck"},
+    {"letter": "ओ", "word": "ओखली", "emoji": "🥣", "english": "oh. oh say oh clay"},
+    {"letter": "औ", "word": "औरत", "emoji": "👩", "english": "ow. ow say ow rut"},
+    {"letter": "अं", "word": "अंगूर", "emoji": "🍇", "english": "uh. uh say on gore"},
+    {"letter": "अः", "word": "खाली", "emoji": "🗣️", "english": "aha. aha say car lee"},
   ];
 
   final List<Map<String, String>> _vyanjan = [
@@ -304,7 +305,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     "N": [
       {"word": "NEST", "emoji": "🪺", "meaning": "ghonsla", "sentence": "Birds built a nest on tree."},
       {"word": "NET", "emoji": "🕸️", "meaning": "jaal", "sentence": "Use a net to catch butterflies."},
-      {"word": "NUT", "emoji": "裁", "meaning": "akhrot", "sentence": "Peanuts are a healthy type of nut."}
+      {"word": "NUT", "emoji": "🥜", "meaning": "akhrot", "sentence": "Peanuts are a healthy type of nut."}
     ],
     "O": [
       {"word": "ORANGE", "emoji": "🍊", "meaning": "santra", "sentence": "Orange is a sweet juicy fruit."},
@@ -532,89 +533,106 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
         final jsCode = """
           if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
-            var lines = '$cleanText'.split('\\n');
-            var idx = 0;
-            var gender = '$_selectedVoiceGender';
             
-            function speakLine() {
-              if (idx >= lines.length) return;
-              var line = lines[idx].trim();
-              if (line.length === 0) {
-                idx++;
-                speakLine();
-                return;
-              }
+            // Wait 50ms to allow cleanly canceling channels
+            setTimeout(function() {
+              var lines = '$cleanText'.split('\\n');
+              var idx = 0;
+              var gender = '$_selectedVoiceGender';
               
-              var msg = new SpeechSynthesisUtterance(line);
-              msg.lang = 'en-US';
-              
-              function setSongVoiceAndSpeak() {
-                var voices = window.speechSynthesis.getVoices();
-                var voice = null;
-                
-                function getVoiceGender(v) {
-                  var name = v.name.toLowerCase();
-                  if (name.indexOf('male') !== -1 || name.indexOf('david') !== -1 || name.indexOf('ravi') !== -1 || name.indexOf('-iom') !== -1 || name.indexOf('-iog') !== -1 || name.indexOf('-iol') !== -1) {
-                    return 'male';
-                  }
-                  return 'female';
-                }
-                
-                var langVoices = voices.filter(function(v) {
-                  return v.lang.toLowerCase().indexOf('en') !== -1;
-                });
-                
-                var localVoices = langVoices.filter(function(v) {
-                  return v.localService === true;
-                });
-                
-                var searchSet = localVoices.length > 0 ? localVoices : langVoices;
-                
-                for (var i = 0; i < searchSet.length; i++) {
-                  if (getVoiceGender(searchSet[i]) === gender) {
-                    voice = searchSet[i];
-                    break;
-                  }
-                }
-                
-                if (voice) {
-                  var voiceGender = getVoiceGender(voice);
-                  if (voiceGender !== gender) {
-                    // Drop binding to force pitch shift fallback
-                  } else {
-                    msg.voice = voice;
-                  }
-                }
-                
-                if (gender === 'female') {
-                  var isVoiceMale = voice ? (getVoiceGender(voice) === 'male') : false;
-                  var basePitch = isVoiceMale ? 1.55 : 1.35;
-                  var modulation = [0, 0.18, -0.12, 0.08];
-                  msg.pitch = basePitch + (modulation[idx % 4]);
-                } else {
-                  var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true;
-                  var basePitch = isVoiceFemale ? 0.45 : 0.72;
-                  var modulation = [0, 0.12, -0.08, 0.05];
-                  msg.pitch = basePitch + (modulation[idx % 4]);
-                }
-                
-                msg.rate = 0.72 + (idx % 2 * 0.05); 
-                msg.volume = 1.0;
-                
-                msg.onend = function() {
+              function speakLine() {
+                if (idx >= lines.length) return;
+                var line = lines[idx].trim();
+                if (line.length === 0) {
                   idx++;
-                  setTimeout(speakLine, 450);
-                };
-                window.speechSynthesis.speak(msg);
+                  speakLine();
+                  return;
+                }
+                
+                // Add natural musical comma commas to force expressive pitch shifts and pauses!
+                var musicalLine = line
+                  .replace(/twinkle/gi, 'twinkle,')
+                  .replace(/star/gi, 'star!')
+                  .replace(/johny/gi, 'johny,')
+                  .replace(/papa/gi, 'papa?')
+                  .replace(/humpty/gi, 'humpty,')
+                  .replace(/dumpty/gi, 'dumpty!')
+                  .replace(/wall/gi, 'wall,')
+                  .replace(/fall/gi, 'fall!');
+                  
+                var msg = new SpeechSynthesisUtterance(musicalLine);
+                window.activeUtterance = msg;
+                msg.lang = 'en-US';
+                
+                function setSongVoiceAndSpeak() {
+                  var voices = window.speechSynthesis.getVoices();
+                  var voice = null;
+                  
+                  function getVoiceGender(v) {
+                    var name = v.name.toLowerCase();
+                    if (name.indexOf('male') !== -1 || name.indexOf('david') !== -1 || name.indexOf('ravi') !== -1 || name.indexOf('-iom') !== -1 || name.indexOf('-iog') !== -1 || name.indexOf('-iol') !== -1) {
+                      return 'male';
+                    }
+                    return 'female';
+                  }
+                  
+                  var langVoices = voices.filter(function(v) {
+                    return v.lang.toLowerCase().indexOf('en') !== -1;
+                  });
+                  
+                  var localVoices = langVoices.filter(function(v) {
+                    return v.localService === true;
+                  });
+                  
+                  var searchSet = localVoices.length > 0 ? localVoices : langVoices;
+                  
+                  for (var i = 0; i < searchSet.length; i++) {
+                    if (getVoiceGender(searchSet[i]) === gender) {
+                      voice = searchSet[i];
+                      break;
+                    }
+                  }
+                  
+                  if (voice) {
+                    var voiceGender = getVoiceGender(voice);
+                    if (voiceGender !== gender) {
+                      // Drop binding to force pitch shift fallback
+                    } else {
+                      msg.voice = voice;
+                    }
+                  }
+                  
+                  // Rhythmic, highly-modulated rising and falling singing pitch variations!
+                  if (gender === 'female') {
+                    var isVoiceMale = voice ? (getVoiceGender(voice) === 'male') : false;
+                    var basePitch = isVoiceMale ? 1.55 : 1.35;
+                    var modulation = [0.12, 0.38, -0.22, 0.28];
+                    msg.pitch = basePitch + (modulation[idx % 4]);
+                  } else {
+                    var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true;
+                    var basePitch = isVoiceFemale ? 0.45 : 0.72;
+                    var modulation = [0.08, 0.28, -0.16, 0.22];
+                    msg.pitch = basePitch + (modulation[idx % 4]);
+                  }
+                  
+                  msg.rate = 0.88; // Perfect lively nursery rhythm speed!
+                  msg.volume = 1.0;
+                  
+                  msg.onend = function() {
+                    idx++;
+                    setTimeout(speakLine, 350); // Pause between lines
+                  };
+                  window.speechSynthesis.speak(msg);
+                }
+                
+                if (window.speechSynthesis.getVoices().length > 0) {
+                  setSongVoiceAndSpeak();
+                } else {
+                  window.speechSynthesis.onvoiceschanged = setSongVoiceAndSpeak;
+                }
               }
-              
-              if (window.speechSynthesis.getVoices().length > 0) {
-                setSongVoiceAndSpeak();
-              } else {
-                window.speechSynthesis.onvoiceschanged = setSongVoiceAndSpeak;
-              }
-            }
-            speakLine();
+              speakLine();
+            }, 50);
           }
         """;
         js.context.callMethod('eval', [jsCode]);
@@ -922,7 +940,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
             child: TabBarView(
               controller: _tabController,
               children: [
-                // RHYMES TAB
+                // RHYMES TAB (Song singing rhythm mode)
                 SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.all(24),
