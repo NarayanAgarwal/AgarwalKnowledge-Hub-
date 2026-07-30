@@ -31,8 +31,36 @@ void main() async {
   final storageRepo = StorageRepositoryImpl();
   final notificationService = NotificationService();
 
+  bool firebaseWebInitialized = false;
   if (kIsWeb) {
-    print("Running on Web. Launching Agarwal Knowledge Hub in mock mode directly.");
+    const apiKey = String.fromEnvironment('FIREBASE_API_KEY', defaultValue: '');
+    const projectId = String.fromEnvironment('FIREBASE_PROJECT_ID', defaultValue: '');
+    const appId = String.fromEnvironment('FIREBASE_APP_ID', defaultValue: '');
+    
+    if (apiKey.isNotEmpty && projectId.isNotEmpty && appId.isNotEmpty) {
+      try {
+        await Firebase.initializeApp(
+          options: const FirebaseOptions(
+            apiKey: apiKey,
+            authDomain: String.fromEnvironment('FIREBASE_AUTH_DOMAIN', defaultValue: ''),
+            projectId: projectId,
+            storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET', defaultValue: ''),
+            messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID', defaultValue: ''),
+            appId: appId,
+          ),
+        );
+        firebaseWebInitialized = true;
+        print("Firebase successfully initialized on Web!");
+      } catch (e) {
+        print("Failed to initialize Firebase on Web: $e");
+      }
+    } else {
+      print("No Firebase Web environment configurations found. Running in mock mode.");
+    }
+  }
+
+  if (kIsWeb && !firebaseWebInitialized) {
+    print("Launching Agarwal Knowledge Hub in mock mode.");
     authRepo.enableMockMode(UserProfile(
       uid: "student_user_123",
       role: "Student",
@@ -56,7 +84,7 @@ void main() async {
     firestoreRepo.enableMockMode();
     storageRepo.enableMockMode();
     notificationService.enableMockMode();
-  } else {
+  } else if (!kIsWeb) {
     try {
       // Attempt Firebase initialization for Mobile/Native
       await Firebase.initializeApp();

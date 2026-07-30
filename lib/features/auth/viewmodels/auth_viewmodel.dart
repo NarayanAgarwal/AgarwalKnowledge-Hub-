@@ -22,8 +22,10 @@ class AuthViewModel with ChangeNotifier {
   bool get codeSent => _codeSent;
   bool get rememberMe => _rememberMe;
 
+  late final Future<void> initializationFuture;
+
   AuthViewModel(this._authRepository) {
-    _checkSavedSession();
+    initializationFuture = _checkSavedSession();
   }
 
   void toggleRememberMe(bool value) {

@@ -24,10 +24,18 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToNext() async {
-    await Future.delayed(const Duration(milliseconds: 3000));
-    if (!mounted) return;
-
     final authVm = Provider.of<AuthViewModel>(context, listen: false);
+    
+    // Await the saved login session loading from SharedPreferences/Firestore
+    try {
+      await authVm.initializationFuture;
+    } catch (e) {
+      debugPrint("Error loading initialization session: $e");
+    }
+    
+    // Enforce a minimum display of 2 seconds for visual splash branding
+    await Future.delayed(const Duration(milliseconds: 2000));
+    if (!mounted) return;
     
     if (authVm.userProfile != null) {
       final role = authVm.userProfile!.role;
