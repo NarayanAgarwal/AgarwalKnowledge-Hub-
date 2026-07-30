@@ -221,13 +221,13 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     "फ": "assets/images/fal.jpg",
     "ब": "https://upload.wikimedia.org/wikipedia/commons/a/a1/Mallard2.jpg",
     "भ": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Brown_bear_standing.png",
-    "म": "https://upload.wikimedia.org/wikipedia/commons/d/df/Goldfish_isolated.png",
+    "म": "assets/images/machhli.jpg",
     "य": "assets/images/yajna.jpg",
     "र": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Chariot_drawing.png",
-    "ल": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Wood_spinning_top.jpg",
-    "व": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Sunlight_in_a_forest.jpg",
-    "श": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Turnip_isolated.png",
-    "ष": "https://upload.wikimedia.org/wikipedia/commons/0/03/Hexagon_geometry.png",
+    "ल": "assets/images/lattu.jpg",
+    "व": "assets/images/van.jpg",
+    "श": "assets/images/shalgam.jpg",
+    "ष": "assets/images/shatkon.png",
     "स": "assets/images/sapera.jpg",
     "ह": "https://upload.wikimedia.org/wikipedia/commons/7/75/Boeing_747_isolated.png",
     "क्ष": "assets/images/kshatriya.jpg",
@@ -423,25 +423,40 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
               
               function getVoiceGender(v) {
                 var name = v.name.toLowerCase();
-                if (name.indexOf('male') !== -1 || name.indexOf('david') !== -1 || name.indexOf('ravi') !== -1 || name.indexOf('microsoft') !== -1 || name.indexOf('-hic') !== -1 || name.indexOf('-hif') !== -1 || name.indexOf('-hia') !== -1 || name.indexOf('-iom') !== -1 || name.indexOf('-iog') !== -1 || name.indexOf('-iol') !== -1 || name.indexOf('-iob') !== -1) {
+                // Check male keywords (removed microsoft keyword from mapping match to prevent David/Zira laptop gender conflicts)
+                if (name.indexOf('male') !== -1 || 
+                    name.indexOf('david') !== -1 || 
+                    name.indexOf('ravi') !== -1 || 
+                    name.indexOf('-hic') !== -1 || 
+                    name.indexOf('-hif') !== -1 || 
+                    name.indexOf('-hia') !== -1 || 
+                    name.indexOf('-iom') !== -1 || 
+                    name.indexOf('-iog') !== -1 || 
+                    name.indexOf('-iol') !== -1 || 
+                    name.indexOf('-iob') !== -1 || 
+                    name.indexOf('guy') !== -1 || 
+                    name.indexOf('boy') !== -1 || 
+                    name.indexOf('man') !== -1) {
                   return 'male';
                 }
-                if (name.indexOf('female') !== -1 || name.indexOf('zira') !== -1 || name.indexOf('google') !== -1 || name.indexOf('siri') !== -1 || name.indexOf('hazel') !== -1 || name.indexOf('kalpana') !== -1 || name.indexOf('lekha') !== -1 || name.indexOf('-hie') !== -1 || name.indexOf('-hid') !== -1 || name.indexOf('-sfg') !== -1) {
-                  return 'female';
-                }
-                return 'unknown';
+                return 'female';
               }
               
               var matchingLangVoices = voicesList.filter(function(v) {
                 return v.lang.toLowerCase().indexOf(langFilter) !== -1;
               });
               
-              // Prioritize local service offline voices so browser allows pitch modulation shifts!
-              var localVoices = matchingLangVoices.filter(function(v) {
+              // Filter out Google network voices if there are system local offline voices to prevent pitch block
+              var nonGoogleVoices = matchingLangVoices.filter(function(v) {
+                return v.name.toLowerCase().indexOf('google') === -1;
+              });
+              var candidateVoices = nonGoogleVoices.length > 0 ? nonGoogleVoices : matchingLangVoices;
+              
+              var localVoices = candidateVoices.filter(function(v) {
                 return v.localService === true;
               });
               
-              var searchSet = localVoices.length > 0 ? localVoices : matchingLangVoices;
+              var searchSet = localVoices.length > 0 ? localVoices : candidateVoices;
               
               for (var i = 0; i < searchSet.length; i++) {
                 if (getVoiceGender(searchSet[i]) === gender) {
@@ -472,10 +487,10 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
               // Force symmetric pitch modulation shifts!
               if (gender === 'female') {
                 var isVoiceMale = voice ? (getVoiceGender(voice) === 'male') : false;
-                msg.pitch = isVoiceMale ? 1.45 : 1.25; // Pitch shift male voice up to female range
+                msg.pitch = isVoiceMale ? 1.55 : 1.35; // Pitch shift male voice up to female range
               } else {
                 var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true; // Default to true if no voice matched
-                msg.pitch = isVoiceFemale ? 0.58 : 0.85; // Pitch shift female voice down to male range
+                msg.pitch = isVoiceFemale ? 0.45 : 0.72; // Pitch shift female voice down to male range
               }
               
               msg.rate = (msg.lang === 'hi-IN') ? 0.72 : 0.8;
@@ -528,7 +543,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 
                 function getVoiceGender(v) {
                   var name = v.name.toLowerCase();
-                  if (name.indexOf('male') !== -1 || name.indexOf('david') !== -1 || name.indexOf('ravi') !== -1 || name.indexOf('microsoft') !== -1 || name.indexOf('-iom') !== -1 || name.indexOf('-iog') !== -1 || name.indexOf('-iol') !== -1) {
+                  if (name.indexOf('male') !== -1 || name.indexOf('david') !== -1 || name.indexOf('ravi') !== -1 || name.indexOf('-iom') !== -1 || name.indexOf('-iog') !== -1 || name.indexOf('-iol') !== -1) {
                     return 'male';
                   }
                   return 'female';
@@ -562,12 +577,12 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 
                 if (gender === 'female') {
                   var isVoiceMale = voice ? (getVoiceGender(voice) === 'male') : false;
-                  var basePitch = isVoiceMale ? 1.45 : 1.25;
+                  var basePitch = isVoiceMale ? 1.55 : 1.35;
                   var modulation = [0, 0.18, -0.12, 0.08];
                   msg.pitch = basePitch + (modulation[idx % 4]);
                 } else {
                   var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true;
-                  var basePitch = isVoiceFemale ? 0.58 : 0.85;
+                  var basePitch = isVoiceFemale ? 0.45 : 0.72;
                   var modulation = [0, 0.12, -0.08, 0.05];
                   msg.pitch = basePitch + (modulation[idx % 4]);
                 }
@@ -719,6 +734,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     );
   }
 
+  // Show detailed popup card with tap zoomable full screen image option
   void _showCardDialog(String title, String subtitle, String emoji, {String word = "", String letter = "", String english = ""}) {
     _speakText("$title. $subtitle", phonetic: english);
     showDialog(
@@ -728,11 +744,73 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildEmojiImage(emoji, size: 100, word: word, letter: letter),
+            GestureDetector(
+              onTap: () {
+                // Interactive pinch zoomable full screen dialog
+                showDialog(
+                  context: context,
+                  builder: (context) => Dialog(
+                    backgroundColor: Colors.black,
+                    insetPadding: const EdgeInsets.all(0),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        InteractiveViewer(
+                          panEnabled: true,
+                          minScale: 0.5,
+                          maxScale: 4.0,
+                          child: Center(
+                            child: _buildEmojiImage(emoji, size: MediaQuery.of(context).size.width * 0.95, word: word, letter: letter),
+                          ),
+                        ),
+                        Positioned(
+                          top: 20,
+                          right: 20,
+                          child: CircleAvatar(
+                            backgroundColor: Colors.black54,
+                            child: IconButton(
+                              icon: const Icon(Icons.close, color: Colors.white),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              child: Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade200, width: 2),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: _buildEmojiImage(emoji, size: 140, word: word, letter: letter),
+                  ),
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: CircleAvatar(
+                      radius: 14,
+                      backgroundColor: Colors.black54,
+                      child: Icon(Icons.zoom_in, size: 18, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 16),
             Text(title, style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
             const SizedBox(height: 8),
             Text(subtitle, textAlign: TextAlign.center, style: const TextStyle(fontSize: 22, color: Colors.grey, fontWeight: FontWeight.w500)),
+            const SizedBox(height: 4),
+            const Text(
+              "(Tap image to view full screen 🔍)",
+              style: TextStyle(fontSize: 12, color: Colors.grey, fontStyle: FontStyle.italic),
+            ),
           ],
         ),
         actions: [
