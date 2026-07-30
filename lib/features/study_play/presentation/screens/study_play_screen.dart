@@ -70,16 +70,16 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
 
   final List<Map<String, String>> _swar = [
     {"letter": "अ", "word": "अनार", "emoji": "🍒", "english": "uh. uh say uh-naar"},
-    {"letter": "आ", "word": "आम", "emoji": "🥭", "english": "aa. aa say aam"},
-    {"letter": "इ", "word": "इमली", "emoji": "🫒", "english": "ee. ee say eem-lee"},
-    {"letter": "ई", "word": "ईख", "emoji": "🎋", "english": "eee. eee say eekh"},
-    {"letter": "उ", "word": "उल्लू", "emoji": "🦉", "english": "oo. oo say ool-loo"},
+    {"letter": "आ", "word": "आम", "emoji": "🥭", "english": "ah. ah say alms"},
+    {"letter": "इ", "word": "इमली", "emoji": "🫒", "english": "ee. ee say im-lee"},
+    {"letter": "ई", "word": "ईख", "emoji": "🎋", "english": "eee. eee say eke"},
+    {"letter": "उ", "word": "उल्लू", "emoji": "🦉", "english": "oo. oo say oo-loo"},
     {"letter": "ऊ", "word": "ऊन", "emoji": "🧶", "english": "ooo. ooo say oon"},
     {"letter": "ऋ", "word": "ऋषि", "emoji": "🧘", "english": "ree. ree say ree-shee"},
     {"letter": "ए", "word": "एड़ी", "emoji": "🦶", "english": "ay. ay say ay-dee"},
-    {"letter": "ऐ", "word": "ऐनक", "emoji": "👓", "english": "aye. aye say aye-nuck"},
+    {"letter": "ऐ", "word": "ऐनक", "emoji": "👓", "english": "ay. ay say ay-nuck"},
     {"letter": "ओ", "word": "ओखली", "emoji": "🥣", "english": "oh. oh say oh-khlee"},
-    {"letter": "औ", "word": "औरत", "emoji": "👩", "english": "au. au say ow-rut"},
+    {"letter": "औ", "word": "औरत", "emoji": "👩", "english": "ow. ow say ow-rut"},
     {"letter": "अं", "word": "अंगूर", "emoji": "🍇", "english": "un. un say un-goor"},
     {"letter": "अः", "word": "खाली", "emoji": "🗣️", "english": "aha. aha say khaali"},
   ];
@@ -471,6 +471,10 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                     break;
                   }
                 }
+              }
+              
+              if (!voice && searchSet.length > 0) {
+                voice = searchSet[0]; // Fallback to any voice of target language before falling back to en-US system default
               }
               
               if (voice) {
