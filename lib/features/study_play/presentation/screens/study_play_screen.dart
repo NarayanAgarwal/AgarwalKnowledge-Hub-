@@ -63,7 +63,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     {"letter": "U", "word": "Umbrella", "emoji": "☂️", "color": "0xFFFCE4EC"},
     {"letter": "V", "word": "Van", "emoji": "🚐", "color": "0xFFFFFDE7"},
     {"letter": "W", "word": "Watch", "emoji": "⌚", "color": "0xFFE0F2F1"},
-    {"letter": "X", "word": "Xylophone", "emoji": "🎼", "color": "0xFFFBE9E7"},
+    {"letter": "X", "word": "Box", "emoji": "📦", "color": "0xFFFBE9E7"},
     {"letter": "Y", "word": "Yacht", "emoji": "⛵", "color": "0xFFFFF1F1"},
     {"letter": "Z", "word": "Zebra", "emoji": "🦓", "color": "0xFFE3F2FD"},
   ];
@@ -237,134 +237,134 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
 
   final Map<String, List<Map<String, String>>> _easyWordsGrouped = {
     "A": [
-      {"word": "ANT", "emoji": "🐜", "sentence": "Ants work together in a team."},
-      {"word": "AXE", "emoji": "🪓", "sentence": "An axe is used to cut wood."},
-      {"word": "APPLE", "emoji": "🍎", "sentence": "An apple a day keeps the doctor away."}
+      {"word": "ANT", "emoji": "🐜", "meaning": "cheeti", "sentence": "Ants work together in a team."},
+      {"word": "AXE", "emoji": "🪓", "meaning": "kulhaadi", "sentence": "An axe is used to cut wood."},
+      {"word": "APPLE", "emoji": "🍎", "meaning": "seb", "sentence": "An apple a day keeps the doctor away."}
     ],
     "B": [
-      {"word": "BALL", "emoji": "⚽", "sentence": "Throw the colorful ball."},
-      {"word": "BAT", "emoji": "🏏", "sentence": "Hit the ball with the bat."},
-      {"word": "BOY", "emoji": "👦", "sentence": "The boy is reading a book."}
+      {"word": "BALL", "emoji": "⚽", "meaning": "gend", "sentence": "Throw the colorful ball."},
+      {"word": "BAT", "emoji": "🏏", "meaning": "balla", "sentence": "Hit the ball with the bat."},
+      {"word": "BOY", "emoji": "👦", "meaning": "ladka", "sentence": "The boy is reading a book."}
     ],
     "C": [
-      {"word": "CAT", "emoji": "🐱", "sentence": "The cat drinks milk."},
-      {"word": "CAR", "emoji": "🚗", "sentence": "Drive the red car safely."},
-      {"word": "COW", "emoji": "🐄", "sentence": "The cow gives fresh milk."}
+      {"word": "CAT", "emoji": "🐱", "meaning": "billee", "sentence": "The cat drinks milk."},
+      {"word": "CAR", "emoji": "🚗", "meaning": "gaadi", "sentence": "Drive the red car safely."},
+      {"word": "COW", "emoji": "🐄", "meaning": "gaay", "sentence": "The cow gives fresh milk."}
     ],
     "D": [
-      {"word": "DOG", "emoji": "🐶", "sentence": "The dog is wagging its tail."},
-      {"word": "DOLL", "emoji": "🪆", "sentence": "I have a cute barbie doll."},
-      {"word": "DUCK", "emoji": "🦆", "sentence": "Ducks are swimming in the pond."}
+      {"word": "DOG", "emoji": "🐶", "meaning": "kutta", "sentence": "The dog is wagging its tail."},
+      {"word": "DOLL", "emoji": "🪆", "meaning": "gudiya", "sentence": "I have a cute barbie doll."},
+      {"word": "DUCK", "emoji": "🦆", "meaning": "battakh", "sentence": "Ducks are swimming in the pond."}
     ],
     "E": [
-      {"word": "EGG", "emoji": "🥚", "sentence": "Eat a healthy egg daily."},
-      {"word": "EYE", "emoji": "👁️", "sentence": "Look at the stars with your eyes."},
-      {"word": "EAR", "emoji": "👂", "sentence": "Listen to the birds with your ears."}
+      {"word": "EGG", "emoji": "🥚", "meaning": "anda", "sentence": "Eat a healthy egg daily."},
+      {"word": "EYE", "emoji": "👁️", "meaning": "aankh", "sentence": "Look at the stars with your eyes."},
+      {"word": "EAR", "emoji": "👂", "meaning": "kaan", "sentence": "Listen to the birds with your ears."}
     ],
     "F": [
-      {"word": "FISH", "emoji": "🐟", "sentence": "Fish live under water."},
-      {"word": "FOX", "emoji": "🦊", "sentence": "The fox is a clever animal."},
-      {"word": "FAN", "emoji": "🪭", "sentence": "Switch on the fan to feel cool."}
+      {"word": "FISH", "emoji": "🐟", "meaning": "machhli", "sentence": "Fish live under water."},
+      {"word": "FOX", "emoji": "🦊", "meaning": "lomdi", "sentence": "The fox is a clever animal."},
+      {"word": "FAN", "emoji": "🪭", "meaning": "pankha", "sentence": "Switch on the fan to feel cool."}
     ],
     "G": [
-      {"word": "GRAPES", "emoji": "🍇", "sentence": "Grapes grow in bunches."},
-      {"word": "GIRL", "emoji": "👧", "sentence": "She is a very smart child."},
-      {"word": "GOAT", "emoji": "🐐", "sentence": "Goats eat fresh green leaves."}
+      {"word": "GRAPES", "emoji": "🍇", "meaning": "angoor", "sentence": "Grapes grow in bunches."},
+      {"word": "GIRL", "emoji": "👧", "meaning": "ladkee", "sentence": "She is a very smart child."},
+      {"word": "GOAT", "emoji": "🐐", "meaning": "bakree", "sentence": "Goats eat fresh green leaves."}
     ],
     "H": [
-      {"word": "HOUSE", "emoji": "🏠", "sentence": "This is our beautiful house."},
-      {"word": "HAT", "emoji": "🎩", "sentence": "Wear a sun hat on hot days."},
-      {"word": "HEN", "emoji": "🐔", "sentence": "The hen laid an egg."}
+      {"word": "HOUSE", "emoji": "🏠", "meaning": "ghar", "sentence": "This is our beautiful house."},
+      {"word": "HAT", "emoji": "🎩", "meaning": "topee", "sentence": "Wear a sun hat on hot days."},
+      {"word": "HEN", "emoji": "🐔", "meaning": "murgee", "sentence": "The hen laid an egg."}
     ],
     "I": [
-      {"word": "ICE", "emoji": "🧊", "sentence": "Ice is very cold and solid."},
-      {"word": "INK", "emoji": "✒️", "sentence": "Fill ink in the fountain pen."},
-      {"word": "IRON", "emoji": "🧲", "sentence": "Magnets attract iron nails."}
+      {"word": "ICE", "emoji": "🧊", "meaning": "barf", "sentence": "Ice is very cold and solid."},
+      {"word": "INK", "emoji": "✒️", "meaning": "syaahi", "sentence": "Fill ink in the fountain pen."},
+      {"word": "IRON", "emoji": "🧲", "meaning": "loha", "sentence": "Magnets attract iron nails."}
     ],
     "J": [
-      {"word": "JUG", "emoji": "🏺", "sentence": "Pour water from the jug."},
-      {"word": "JEEP", "emoji": "🚙", "sentence": "We went for a ride in the jeep."},
-      {"word": "JAM", "emoji": "🍓", "sentence": "Spread sweet jam on bread."}
+      {"word": "JUG", "emoji": "🏺", "meaning": "jag", "sentence": "Pour water from the jug."},
+      {"word": "JEEP", "emoji": "🚙", "meaning": "jeep", "sentence": "We went for a ride in the jeep."},
+      {"word": "JAM", "emoji": "🍓", "meaning": "jam", "sentence": "Spread sweet jam on bread."}
     ],
     "K": [
-      {"word": "KITE", "emoji": "🪁", "sentence": "Kites fly high in the air."},
-      {"word": "KEY", "emoji": "🔑", "sentence": "Use the key to open the lock."},
-      {"word": "KING", "emoji": "👑", "sentence": "The king lives in a castle."}
+      {"word": "KITE", "emoji": "🪁", "meaning": "patang", "sentence": "Kites fly high in the air."},
+      {"word": "KEY", "emoji": "🔑", "meaning": "chaabee", "sentence": "Use the key to open the lock."},
+      {"word": "KING", "emoji": "👑", "meaning": "raaja", "sentence": "The king lives in a castle."}
     ],
     "L": [
-      {"word": "LION", "emoji": "🦁", "sentence": "The lion is the king of jungle."},
-      {"word": "LAMP", "emoji": "💡", "sentence": "Turn on the lamp at night."},
-      {"word": "LEAF", "emoji": "🍃", "sentence": "The green leaf fell from tree."}
+      {"word": "LION", "emoji": "🦁", "meaning": "sher", "sentence": "The lion is the king of jungle."},
+      {"word": "LAMP", "emoji": "💡", "meaning": "deepak", "sentence": "Turn on the lamp at night."},
+      {"word": "LEAF", "emoji": "🍃", "meaning": "patta", "sentence": "The green leaf fell from tree."}
     ],
     "M": [
-      {"word": "MONKEY", "emoji": "🐒", "sentence": "Monkey is swinging on branches."},
-      {"word": "MILK", "emoji": "🥛", "sentence": "Drink warm milk for strong bones."},
-      {"word": "MOON", "emoji": "🌙", "sentence": "The moon shines bright at night."}
+      {"word": "MONKEY", "emoji": "🐒", "meaning": "bandar", "sentence": "Monkey is swinging on branches."},
+      {"word": "MILK", "emoji": "🥛", "meaning": "doodh", "sentence": "Drink warm milk for strong bones."},
+      {"word": "MOON", "emoji": "🌙", "meaning": "chaand", "sentence": "The moon shines bright at night."}
     ],
     "N": [
-      {"word": "NEST", "emoji": "🪺", "sentence": "Birds built a nest on tree."},
-      {"word": "NET", "emoji": "🕸️", "sentence": "Use a net to catch butterflies."},
-      {"word": "NUT", "emoji": "🥜", "sentence": "Peanuts are a healthy type of nut."}
+      {"word": "NEST", "emoji": "🪺", "meaning": "ghonsla", "sentence": "Birds built a nest on tree."},
+      {"word": "NET", "emoji": "🕸️", "meaning": "jaal", "sentence": "Use a net to catch butterflies."},
+      {"word": "NUT", "emoji": "裁", "meaning": "akhrot", "sentence": "Peanuts are a healthy type of nut."}
     ],
     "O": [
-      {"word": "ORANGE", "emoji": "🍊", "sentence": "Orange is a sweet juicy fruit."},
-      {"word": "OWL", "emoji": "🦉", "sentence": "The owl stays awake all night."},
-      {"word": "OX", "emoji": "🐂", "sentence": "The strong ox plows the field."}
+      {"word": "ORANGE", "emoji": "🍊", "meaning": "santra", "sentence": "Orange is a sweet juicy fruit."},
+      {"word": "OWL", "emoji": "🦉", "meaning": "ullu", "sentence": "The owl stays awake all night."},
+      {"word": "OX", "emoji": "🐂", "meaning": "bail", "sentence": "The strong ox plows the field."}
     ],
     "P": [
-      {"word": "PENCIL", "emoji": "✏️", "sentence": "Sharpen your pencil before writing."},
-      {"word": "PEN", "emoji": "🖊️", "sentence": "The teacher writes with a blue pen."},
-      {"word": "PIG", "emoji": "🐷", "sentence": "The little pig plays in the mud."}
+      {"word": "PENCIL", "emoji": "✏️", "meaning": "pencil", "sentence": "Sharpen your pencil before writing."},
+      {"word": "PEN", "emoji": "🖊️", "meaning": "pen", "sentence": "The teacher writes with a blue pen."},
+      {"word": "PIG", "emoji": "🐷", "meaning": "suar", "sentence": "The little pig plays in the mud."}
     ],
     "Q": [
-      {"word": "QUEEN", "emoji": "👑", "sentence": "The queen wears a shiny crown."},
-      {"word": "QUILT", "emoji": "🛏️", "sentence": "Use a warm quilt in winter."},
-      {"word": "QUIZ", "emoji": "❓", "sentence": "Answer the fun quiz questions."}
+      {"word": "QUEEN", "emoji": "👑", "meaning": "raanee", "sentence": "The queen wears a shiny crown."},
+      {"word": "QUILT", "emoji": "🛏️", "meaning": "rajaee", "sentence": "Use a warm quilt in winter."},
+      {"word": "QUIZ", "emoji": "❓", "meaning": "prashnottari", "sentence": "Answer the fun quiz questions."}
     ],
     "R": [
-      {"word": "RABBIT", "emoji": "🐇", "sentence": "The white rabbit eats carrots."},
-      {"word": "ROSE", "emoji": "🌹", "sentence": "Rose is a beautiful red flower."},
-      {"word": "RING", "emoji": "💍", "sentence": "She wears a gold ring on her finger."}
+      {"word": "RABBIT", "emoji": "🐇", "meaning": "khargosh", "sentence": "The white rabbit eats carrots."},
+      {"word": "ROSE", "emoji": "🌹", "meaning": "gulaab", "sentence": "Rose is a beautiful red flower."},
+      {"word": "RING", "emoji": "💍", "meaning": "angeothee", "sentence": "She wears a gold ring on her finger."}
     ],
     "S": [
-      {"word": "SUN", "emoji": "☀️", "sentence": "The sun rises in the east."},
-      {"word": "STAR", "emoji": "⭐", "sentence": "A tiny star shines in the sky."},
-      {"word": "SHIP", "emoji": "🚢", "sentence": "The big ship sails on sea."}
+      {"word": "SUN", "emoji": "☀️", "meaning": "sooraj", "sentence": "The sun rises in the east."},
+      {"word": "STAR", "emoji": "⭐", "meaning": "taara", "sentence": "A tiny star shines in the sky."},
+      {"word": "SHIP", "emoji": "🚢", "meaning": "jahaaj", "sentence": "The big ship sails on sea."}
     ],
     "T": [
-      {"word": "TIGER", "emoji": "🐯", "sentence": "The tiger has black stripes."},
-      {"word": "TOY", "emoji": "🧸", "sentence": "I share my toys with friends."},
-      {"word": "TREE", "emoji": "🌳", "sentence": "Trees give us cool shade."}
+      {"word": "TIGER", "emoji": "🐯", "meaning": "baagh", "sentence": "The tiger has black stripes."},
+      {"word": "TOY", "emoji": "🧸", "meaning": "khilona", "sentence": "I share my toys with friends."},
+      {"word": "TREE", "emoji": "🌳", "meaning": "ped", "sentence": "Trees give us cool shade."}
     ],
     "U": [
-      {"word": "UMBRELLA", "emoji": "☂️", "sentence": "Open your umbrella in the rain."},
-      {"word": "UNCLE", "emoji": "👨", "sentence": "My uncle bought me a new toy."},
-      {"word": "UP", "emoji": "⬆️", "sentence": "Look up at the blue sky."}
+      {"word": "UMBRELLA", "emoji": "☂️", "meaning": "chhaata", "sentence": "Open your umbrella in the rain."},
+      {"word": "UNCLE", "emoji": "👨", "meaning": "chaacha", "sentence": "My uncle bought me a new toy."},
+      {"word": "UP", "emoji": "⬆️", "meaning": "oopar", "sentence": "Look up at the blue sky."}
     ],
     "V": [
-      {"word": "VAN", "emoji": "🚐", "sentence": "The school van has arrived."},
-      {"word": "VIOLIN", "emoji": "🎻", "sentence": "Play sweet music on the violin."},
-      {"word": "VASE", "emoji": "🏺", "sentence": "Place fresh flowers in the vase."}
+      {"word": "VAN", "emoji": "🚐", "meaning": "gaadi", "sentence": "The school van has arrived."},
+      {"word": "VIOLIN", "emoji": "🎻", "meaning": "violin", "sentence": "Play sweet music on the violin."},
+      {"word": "VASE", "emoji": "🏺", "meaning": "phooladaan", "sentence": "Place fresh flowers in the vase."}
     ],
     "W": [
-      {"word": "WATCH", "emoji": "⌚", "sentence": "Check the time on your watch."},
-      {"word": "WATER", "emoji": "💧", "sentence": "Water is essential for life."},
-      {"word": "WEB", "emoji": "🕸️", "sentence": "The spider spun a sticky web."}
+      {"word": "WATCH", "emoji": "⌚", "meaning": "ghadee", "sentence": "Check the time on your watch."},
+      {"word": "WATER", "emoji": "💧", "meaning": "paanee", "sentence": "Water is essential for life."},
+      {"word": "WEB", "emoji": "🕸️", "meaning": "jaal", "sentence": "The spider spun a sticky web."}
     ],
     "X": [
-      {"word": "BOX", "emoji": "📦", "sentence": "Put toys inside the cardboard box."},
-      {"word": "FOX", "emoji": "🦊", "sentence": "The red fox has a bushy tail."},
-      {"word": "X-RAY", "emoji": "🩻", "sentence": "The doctor took an X-ray of my hand."}
+      {"word": "BOX", "emoji": "📦", "meaning": "dibba", "sentence": "Put toys inside the cardboard box."},
+      {"word": "FOX", "emoji": "🦊", "meaning": "lomdi", "sentence": "The red fox has a bushy tail."},
+      {"word": "X-RAY", "emoji": "🩻", "meaning": "x-ray", "sentence": "The doctor took an X-ray of my hand."}
     ],
     "Y": [
-      {"word": "YAK", "emoji": "🐂", "sentence": "The yak lives in snowy mountains."},
-      {"word": "YACHT", "emoji": "⛵", "sentence": "The white yacht sails smoothly."},
-      {"word": "YOYO", "emoji": "🪀", "sentence": "Spin the yoyo up and down."}
+      {"word": "YAK", "emoji": "🐂", "meaning": "yak", "sentence": "The yak lives in snowy mountains."},
+      {"word": "YACHT", "emoji": "⛵", "meaning": "naav", "sentence": "The white yacht sails smoothly."},
+      {"word": "YOYO", "emoji": "🪀", "meaning": "yoyo", "sentence": "Spin the yoyo up and down."}
     ],
     "Z": [
-      {"word": "ZEBRA", "emoji": "🦓", "sentence": "The zebra crossed the road."},
-      {"word": "ZIP", "emoji": "🤐", "sentence": "Close the zip of your bag."},
-      {"word": "ZOO", "emoji": "🦁", "sentence": "We saw many wild animals at the zoo."}
+      {"word": "ZEBRA", "emoji": "🦓", "meaning": "zebra", "sentence": "The zebra crossed the road."},
+      {"word": "ZIP", "emoji": "🤐", "meaning": "chain", "sentence": "Close the zip of your bag."},
+      {"word": "ZOO", "emoji": "🦁", "meaning": "chidiyaaghar", "sentence": "We saw many wild animals at the zoo."}
     ]
   };
 
@@ -398,113 +398,116 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
           if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
             
-            var isHindi = /[\\u0900-\\u097F]/.test('$cleanText');
-            var msg = new SpeechSynthesisUtterance();
-            
-            function setVoiceAndSpeak() {
-              var voicesList = window.speechSynthesis.getVoices();
-              var langFilter = isHindi ? 'hi' : 'en';
+            // Wait 50ms before triggering new speech to let async cancel reset Chrome voice channels cleanly!
+            setTimeout(function() {
+              var isHindi = /[\\u0900-\\u097F]/.test('$cleanText');
+              var msg = new SpeechSynthesisUtterance();
               
-              var matchingLangVoices = voicesList.filter(function(v) {
-                return v.lang.toLowerCase().indexOf('hi') !== -1;
-              });
-              
-              // Dynamic text resolution: Fallback to lowercase phonetic english only if no native Hindi TTS is found!
-              if (isHindi && matchingLangVoices.length === 0 && '$cleanPhonetic' !== '') {
-                msg.text = '$cleanPhonetic'.toLowerCase();
-                msg.lang = 'en-US';
-                langFilter = 'en';
-              } else {
-                msg.text = '$cleanText';
-                msg.lang = isHindi ? 'hi-IN' : 'en-US';
-              }
-              
-              var gender = '$_selectedVoiceGender';
-              var voice = null;
-              
-              function getVoiceGender(v) {
-                var name = v.name.toLowerCase();
-                if (name.indexOf('male') !== -1 || 
-                    name.indexOf('david') !== -1 || 
-                    name.indexOf('ravi') !== -1 || 
-                    name.indexOf('-hic') !== -1 || 
-                    name.indexOf('-hif') !== -1 || 
-                    name.indexOf('-hia') !== -1 || 
-                    name.indexOf('-iom') !== -1 || 
-                    name.indexOf('-iog') !== -1 || 
-                    name.indexOf('-iol') !== -1 || 
-                    name.indexOf('-iob') !== -1 || 
-                    name.indexOf('guy') !== -1 || 
-                    name.indexOf('boy') !== -1 || 
-                    name.indexOf('man') !== -1) {
-                  return 'male';
+              function setVoiceAndSpeak() {
+                var voicesList = window.speechSynthesis.getVoices();
+                var langFilter = isHindi ? 'hi' : 'en';
+                
+                var matchingLangVoices = voicesList.filter(function(v) {
+                  return v.lang.toLowerCase().indexOf('hi') !== -1;
+                });
+                
+                // Dynamic text resolution: Fallback to lowercase phonetic english only if no native Hindi TTS is found!
+                if (isHindi && matchingLangVoices.length === 0 && '$cleanPhonetic' !== '') {
+                  msg.text = '$cleanPhonetic'.toLowerCase();
+                  msg.lang = 'en-US';
+                  langFilter = 'en';
+                } else {
+                  msg.text = '$cleanText';
+                  msg.lang = isHindi ? 'hi-IN' : 'en-US';
                 }
-                return 'female';
-              }
-              
-              var candidateLangVoices = voicesList.filter(function(v) {
-                return v.lang.toLowerCase().indexOf(langFilter) !== -1;
-              });
-              
-              var nonGoogleVoices = candidateLangVoices.filter(function(v) {
-                return v.name.toLowerCase().indexOf('google') === -1;
-              });
-              var candidateVoices = nonGoogleVoices.length > 0 ? nonGoogleVoices : candidateLangVoices;
-              
-              var localVoices = candidateVoices.filter(function(v) {
-                return v.localService === true;
-              });
-              
-              var searchSet = localVoices.length > 0 ? localVoices : candidateVoices;
-              
-              for (var i = 0; i < searchSet.length; i++) {
-                if (getVoiceGender(searchSet[i]) === gender) {
-                  voice = searchSet[i];
-                  break;
+                
+                var gender = '$_selectedVoiceGender';
+                var voice = null;
+                
+                function getVoiceGender(v) {
+                  var name = v.name.toLowerCase();
+                  if (name.indexOf('male') !== -1 || 
+                      name.indexOf('david') !== -1 || 
+                      name.indexOf('ravi') !== -1 || 
+                      name.indexOf('-hic') !== -1 || 
+                      name.indexOf('-hif') !== -1 || 
+                      name.indexOf('-hia') !== -1 || 
+                      name.indexOf('-iom') !== -1 || 
+                      name.indexOf('-iog') !== -1 || 
+                      name.indexOf('-iol') !== -1 || 
+                      name.indexOf('-iob') !== -1 || 
+                      name.indexOf('guy') !== -1 || 
+                      name.indexOf('boy') !== -1 || 
+                      name.indexOf('man') !== -1) {
+                    return 'male';
+                  }
+                  return 'female';
                 }
-              }
-              
-              if (!voice) {
-                for (var i = 0; i < voicesList.length; i++) {
-                  if (getVoiceGender(voicesList[i]) === gender && voicesList[i].lang.toLowerCase().indexOf(langFilter) !== -1) {
-                    voice = voicesList[i];
+                
+                var candidateLangVoices = voicesList.filter(function(v) {
+                  return v.lang.toLowerCase().indexOf(langFilter) !== -1;
+                });
+                
+                var nonGoogleVoices = candidateLangVoices.filter(function(v) {
+                  return v.name.toLowerCase().indexOf('google') === -1;
+                });
+                var candidateVoices = nonGoogleVoices.length > 0 ? nonGoogleVoices : candidateLangVoices;
+                
+                var localVoices = candidateVoices.filter(function(v) {
+                  return v.localService === true;
+                });
+                
+                var searchSet = localVoices.length > 0 ? localVoices : candidateVoices;
+                
+                for (var i = 0; i < searchSet.length; i++) {
+                  if (getVoiceGender(searchSet[i]) === gender) {
+                    voice = searchSet[i];
                     break;
                   }
                 }
-              }
-              
-              if (!voice && searchSet.length > 0) {
-                voice = searchSet[0]; // Fallback to any voice of target language before falling back to en-US system default
-              }
-              
-              if (voice) {
-                var voiceGender = getVoiceGender(voice);
-                if (voiceGender !== gender) {
-                  // Mismatched voice gender fallback (network lock): drop object to force default browser pitch shift
-                } else {
-                  msg.voice = voice;
+                
+                if (!voice) {
+                  for (var i = 0; i < voicesList.length; i++) {
+                    if (getVoiceGender(voicesList[i]) === gender && voicesList[i].lang.toLowerCase().indexOf(langFilter) !== -1) {
+                      voice = voicesList[i];
+                      break;
+                    }
+                  }
                 }
+                
+                if (!voice && searchSet.length > 0) {
+                  voice = searchSet[0]; // Fallback to any voice of target language before falling back to en-US system default
+                }
+                
+                if (voice) {
+                  var voiceGender = getVoiceGender(voice);
+                  if (voiceGender !== gender) {
+                    // Mismatched voice gender fallback (network lock): drop object to force default browser pitch shift
+                  } else {
+                    msg.voice = voice;
+                  }
+                }
+                
+                // Force symmetric pitch modulation shifts!
+                if (gender === 'female') {
+                  var isVoiceMale = voice ? (getVoiceGender(voice) === 'male') : false;
+                  msg.pitch = isVoiceMale ? 1.55 : 1.35;
+                } else {
+                  var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true;
+                  msg.pitch = isVoiceFemale ? 0.45 : 0.72;
+                }
+                
+                msg.rate = (msg.lang === 'hi-IN') ? 0.72 : 0.8;
+                msg.volume = 1.0;
+                window.speechSynthesis.speak(msg);
               }
               
-              // Force symmetric pitch modulation shifts!
-              if (gender === 'female') {
-                var isVoiceMale = voice ? (getVoiceGender(voice) === 'male') : false;
-                msg.pitch = isVoiceMale ? 1.55 : 1.35;
+              if (window.speechSynthesis.getVoices().length > 0) {
+                setVoiceAndSpeak();
               } else {
-                var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true;
-                msg.pitch = isVoiceFemale ? 0.45 : 0.72;
+                window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
               }
-              
-              msg.rate = (msg.lang === 'hi-IN') ? 0.72 : 0.8;
-              msg.volume = 1.0;
-              window.speechSynthesis.speak(msg);
-            }
-            
-            if (window.speechSynthesis.getVoices().length > 0) {
-              setVoiceAndSpeak();
-            } else {
-              window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
-            }
+            }, 50);
           }
         """;
         js.context.callMethod('eval', [jsCode]);
@@ -1235,7 +1238,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                   ),
                 ),
 
-                // EASY WORDS TAB
+                // EASY WORDS TAB (A-Z with Hindi translation pronunciation matlabs)
                 ListView.builder(
                   padding: const EdgeInsets.all(16),
                   physics: const BouncingScrollPhysics(),
@@ -1288,7 +1291,14 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                                       section: "easy-$letter",
                                       baseColor: isDark ? AppColors.darkSurface : Colors.grey[50]!,
                                       shadowColor: blockShadowColor,
-                                      onTap: () => _speakText("${item["word"]}. ${item["sentence"]}"),
+                                      onTap: () {
+                                        final cleanWord = item["word"]!.toLowerCase();
+                                        final cleanMeaning = item["meaning"]!.toLowerCase();
+                                        _speakText(
+                                          "$letter. $cleanWord. ${item["word"]} matlab $cleanMeaning. ${item["sentence"]}",
+                                          phonetic: "${letter.toLowerCase()}. ${letter.toLowerCase()} for $cleanWord. $cleanWord matlab $cleanMeaning. ${item["sentence"]!.toLowerCase()}"
+                                        );
+                                      },
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                                         child: Column(
