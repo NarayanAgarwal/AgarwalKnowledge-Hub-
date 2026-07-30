@@ -654,7 +654,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     }
   }
 
-  Widget _buildEmojiImage(String emoji, {double size = 48, String word = "", String letter = ""}) {
+  Widget _buildEmojiImage(String emoji, {double size = 48, String word = "", String letter = "", FilterQuality filterQuality = FilterQuality.medium}) {
     final url = getEmojiUrl(emoji, word: word, letter: letter);
     if (url.isEmpty) {
       return Text(emoji, style: TextStyle(fontSize: size));
@@ -665,6 +665,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
         width: size,
         height: size,
         fit: BoxFit.contain,
+        filterQuality: filterQuality,
         errorBuilder: (c, o, s) => Text(emoji, style: TextStyle(fontSize: size)),
       );
     }
@@ -673,6 +674,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       width: size,
       height: size,
       fit: BoxFit.contain,
+      filterQuality: filterQuality,
       errorBuilder: (c, o, s) => Text(emoji, style: TextStyle(fontSize: size)),
     );
   }
@@ -760,7 +762,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                           minScale: 0.5,
                           maxScale: 4.0,
                           child: Center(
-                            child: _buildEmojiImage(emoji, size: MediaQuery.of(context).size.width * 0.95, word: word, letter: letter),
+                            child: _buildEmojiImage(emoji, size: MediaQuery.of(context).size.width * 0.95, word: word, letter: letter, filterQuality: FilterQuality.high),
                           ),
                         ),
                         Positioned(
@@ -788,7 +790,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                       border: Border.all(color: Colors.grey.shade200, width: 2),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: _buildEmojiImage(emoji, size: 140, word: word, letter: letter),
+                    child: _buildEmojiImage(emoji, size: 140, word: word, letter: letter, filterQuality: FilterQuality.high),
                   ),
                   Positioned(
                     right: 8,
@@ -936,7 +938,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                         padding: const EdgeInsets.all(28),
                         child: Column(
                           children: [
-                            _buildEmojiImage(_rhymes[_activeRhymeIndex]["emoji"]!, size: 90),
+                            _buildEmojiImage(_rhymes[_activeRhymeIndex]["emoji"]!, size: 90, filterQuality: FilterQuality.high),
                             const SizedBox(height: 16),
                             Text(
                               _rhymes[_activeRhymeIndex]["title"]!,
@@ -1110,7 +1112,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                             ),
                           ),
                           const SizedBox(height: 6),
-                          _buildEmojiImage(item["emoji"]!, size: 54, word: item["word"]!),
+                          _buildEmojiImage(item["emoji"]!, size: 54, word: item["word"]!, filterQuality: FilterQuality.high),
                         ],
                       ),
                     );
@@ -1167,7 +1169,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                                       ),
                                     ),
                                     const SizedBox(height: 4),
-                                    _buildEmojiImage(item["emoji"]!, size: 40, word: item["word"]!, letter: item["letter"]!),
+                                    _buildEmojiImage(item["emoji"]!, size: 40, word: item["word"]!, letter: item["letter"]!, filterQuality: FilterQuality.high),
                                   ],
                                 ),
                               ),
@@ -1219,7 +1221,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                                       ),
                                     ),
                                     const SizedBox(height: 4),
-                                    _buildEmojiImage(item["emoji"]!, size: 40, word: item["word"]!, letter: item["letter"]!),
+                                    _buildEmojiImage(item["emoji"]!, size: 40, word: item["word"]!, letter: item["letter"]!, filterQuality: FilterQuality.high),
                                   ],
                                 ),
                               ),
@@ -1289,7 +1291,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                                         child: Column(
                                           children: [
-                                            _buildEmojiImage(item["emoji"]!, size: 40, word: item["word"]!),
+                                            _buildEmojiImage(item["emoji"]!, size: 40, word: item["word"]!, filterQuality: FilterQuality.high),
                                             const SizedBox(height: 6),
                                             Text(item["word"]!, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
                                           ],
