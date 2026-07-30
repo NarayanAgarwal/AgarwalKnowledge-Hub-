@@ -69,58 +69,58 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   ];
 
   final List<Map<String, String>> _swar = [
-    {"letter": "अ", "word": "अनार", "emoji": "🍒"},
-    {"letter": "आ", "word": "आम", "emoji": "🥭"},
-    {"letter": "इ", "word": "इमली", "emoji": "🫒"},
-    {"letter": "ई", "word": "ईख", "emoji": "🎋"},
-    {"letter": "उ", "word": "उल्लू", "emoji": "🦉"},
-    {"letter": "ऊ", "word": "ऊन", "emoji": "🧶"},
-    {"letter": "ऋ", "word": "ऋषि", "emoji": "🧘"},
-    {"letter": "ए", "word": "एड़ी", "emoji": "🦶"},
-    {"letter": "ऐ", "word": "ऐनक", "emoji": "👓"},
-    {"letter": "ओ", "word": "ओखली", "emoji": "🥣"},
-    {"letter": "औ", "word": "औरत", "emoji": "👩"},
-    {"letter": "अं", "word": "अंगूर", "emoji": "🍇"},
-    {"letter": "अः", "word": "खाली", "emoji": "🗣️"},
+    {"letter": "अ", "word": "अनार", "emoji": "🍒", "english": "Uh. Uh say Anaar"},
+    {"letter": "आ", "word": "आम", "emoji": "🥭", "english": "Aa. Aa say Aam"},
+    {"letter": "इ", "word": "इमली", "emoji": "🫒", "english": "Ee. Ee say Imli"},
+    {"letter": "ई", "word": "ईख", "emoji": "🎋", "english": "Eee. Eee say Eekh"},
+    {"letter": "उ", "word": "उल्लू", "emoji": "🦉", "english": "Oo. Oo say Ullu"},
+    {"letter": "ऊ", "word": "ऊन", "emoji": "🧶", "english": "Ooo. Ooo say Oon"},
+    {"letter": "ऋ", "word": "ऋषि", "emoji": "🧘", "english": "Ree. Ree say Rishi"},
+    {"letter": "ए", "word": "एड़ी", "emoji": "🦶", "english": "Ay. Ay say Aydi"},
+    {"letter": "ऐ", "word": "ऐनक", "emoji": "👓", "english": "Aye. Aye say Aynak"},
+    {"letter": "ओ", "word": "ओखली", "emoji": "🥣", "english": "Oh. Oh say Okhli"},
+    {"letter": "औ", "word": "औरत", "emoji": "👩", "english": "Au. Au say Aurat"},
+    {"letter": "अं", "word": "अंगूर", "emoji": "🍇", "english": "Un. Un say Angoor"},
+    {"letter": "अः", "word": "खाली", "emoji": "🗣️", "english": "Aha. Aha say Khaali"},
   ];
 
   final List<Map<String, String>> _vyanjan = [
-    {"letter": "क", "word": "कबूतर", "emoji": "🕊️"},
-    {"letter": "ख", "word": "खरगोश", "emoji": "🐇"},
-    {"letter": "ग", "word": "गमला", "emoji": "🪴"},
-    {"letter": "घ", "word": "घर", "emoji": "🏠"},
-    {"letter": "ङ", "word": "खाली", "emoji": "🔘"},
-    {"letter": "च", "word": "चम्मच", "emoji": "🥄"},
-    {"letter": "छ", "word": "छाता", "emoji": "⛱️"},
-    {"letter": "ज", "word": "जहाज", "emoji": "🚢"},
-    {"letter": "झ", "word": "झंडा", "emoji": "🇮🇳"},
-    {"letter": "ञ", "word": "खाली", "emoji": "🔘"},
-    {"letter": "ट", "word": "टमाटर", "emoji": "🍅"},
-    {"letter": "ठ", "word": "ठठेरा", "emoji": "🔨"},
-    {"letter": "ड", "word": "डमरू", "emoji": "🥁"},
-    {"letter": "ढ", "word": "ढक्कन", "emoji": "🪘"},
-    {"letter": "ण", "word": "खाली", "emoji": "🔘"},
-    {"letter": "त", "word": "तरबूज", "emoji": "🍉"},
-    {"letter": "थ", "word": "थर्मस", "emoji": "🍼"},
-    {"letter": "द", "word": "दवात", "emoji": "🖋️"},
-    {"letter": "ध", "word": "धनुष", "emoji": "🏹"},
-    {"letter": "न", "word": "नल", "emoji": "🚰"},
-    {"letter": "प", "word": "पतंग", "emoji": "🪁"},
-    {"letter": "फ", "word": "फल", "emoji": "🍎"},
-    {"letter": "ब", "word": "बत्तख", "emoji": "🦆"},
-    {"letter": "भ", "word": "भालू", "emoji": "🐻"},
-    {"letter": "म", "word": "मछली", "emoji": "🐟"},
-    {"letter": "य", "word": "यज्ञ", "emoji": "🔥"},
-    {"letter": "र", "word": "रथ", "emoji": "🎠"},
-    {"letter": "ल", "word": "लट्टू", "emoji": "🪀"},
-    {"letter": "व", "word": "वन", "emoji": "🌳"},
-    {"letter": "श", "word": "शलगम", "emoji": "🧅"},
-    {"letter": "ष", "word": "षट्कोण", "emoji": "💠"},
-    {"letter": "स", "word": "सपेरा", "emoji": "🐍"},
-    {"letter": "ह", "word": "हवाई जहाज", "emoji": "✈️"},
-    {"letter": "क्ष", "word": "क्षत्रिय", "emoji": "⚔️"},
-    {"letter": "त्र", "word": "त्रिशूल", "emoji": "🔱"},
-    {"letter": "ज्ञ", "word": "ज्ञानी", "emoji": "👨‍🏫"},
+    {"letter": "क", "word": "कबूतर", "emoji": "🕊️", "english": "Kah. Kah say Kabootar"},
+    {"letter": "ख", "word": "खरगोश", "emoji": "🐇", "english": "Khah. Khah say Khargosh"},
+    {"letter": "ग", "word": "गमला", "emoji": "🪴", "english": "Gah. Gah say Gamla"},
+    {"letter": "घ", "word": "घर", "emoji": "🏠", "english": "Ghah. Ghah say Ghar"},
+    {"letter": "ङ", "word": "खाली", "emoji": "🔘", "english": "Nga. Nga say Khaali"},
+    {"letter": "च", "word": "चम्मच", "emoji": "🥄", "english": "Chah. Chah say Chammach"},
+    {"letter": "छ", "word": "छाता", "emoji": "⛱️", "english": "Chhah. Chhah say Chhaata"},
+    {"letter": "ज", "word": "जहाज", "emoji": "🚢", "english": "Jah. Jah say Jahaaj"},
+    {"letter": "झ", "word": "झंडा", "emoji": "🇮🇳", "english": "Jhah. Jhah say Jhanda"},
+    {"letter": "ञ", "word": "खाली", "emoji": "🔘", "english": "Nya. Nya say Khaali"},
+    {"letter": "ट", "word": "टमाटर", "emoji": "🍅", "english": "Tah. Tah say Tamaatar"},
+    {"letter": "ठ", "word": "ठठेरा", "emoji": "🔨", "english": "Thah. Thah say Thatheyra"},
+    {"letter": "ड", "word": "डमरू", "emoji": "🥁", "english": "Dah. Dah say Damroo"},
+    {"letter": "ढ", "word": "ढक्कन", "emoji": "🪘", "english": "Dhah. Dhah say Dhakkan"},
+    {"letter": "ण", "word": "खाली", "emoji": "🔘", "english": "Na. Na say Khaali"},
+    {"letter": "त", "word": "तरबूज", "emoji": "🍉", "english": "Tah. Tah say Tarbooj"},
+    {"letter": "थ", "word": "थर्मस", "emoji": "🍼", "english": "Thah. Thah say Thermas"},
+    {"letter": "द", "word": "दवात", "emoji": "🖋️", "english": "Dah. Dah say Dawaat"},
+    {"letter": "ध", "word": "धनुष", "emoji": "🏹", "english": "Dhah. Dhah say Dhanush"},
+    {"letter": "न", "word": "नल", "emoji": "🚰", "english": "Nah. Nah say Nal"},
+    {"letter": "प", "word": "पतंग", "emoji": "🪁", "english": "Pah. Pah say Patang"},
+    {"letter": "फ", "word": "फल", "emoji": "🍎", "english": "Fah. Fah say Fal"},
+    {"letter": "ब", "word": "बत्तख", "emoji": "🦆", "english": "Bah. Bah say Battakh"},
+    {"letter": "भ", "word": "भालू", "emoji": "🐻", "english": "Bhah. Bhah say Bhaloo"},
+    {"letter": "म", "word": "मछली", "emoji": "🐟", "english": "Mah. Mah say Machhli"},
+    {"letter": "य", "word": "यज्ञ", "emoji": "🔥", "english": "Yah. Yah say Yajna"},
+    {"letter": "र", "word": "रथ", "emoji": "🎠", "english": "Rah. Rah say Rath"},
+    {"letter": "ल", "word": "लट्टू", "emoji": "🪀", "english": "Lah. Lah say Lattoo"},
+    {"letter": "व", "word": "वन", "emoji": "🌳", "english": "Wah. Wah say Van"},
+    {"letter": "श", "word": "शलगम", "emoji": "🧅", "english": "Shah. Shah say Shalgam"},
+    {"letter": "ष", "word": "षट्कोण", "emoji": "💠", "english": "Shah. Shah say Shatkone"},
+    {"letter": "स", "word": "सपेरा", "emoji": "🐍", "english": "Sah. Sah say Sapera"},
+    {"letter": "ह", "word": "हवाई जहाज", "emoji": "✈️", "english": "Hah. Hah say Hawai Jahaaj"},
+    {"letter": "क्ष", "word": "क्षत्रिय", "emoji": "⚔️", "english": "Kshah. Kshah say Kshatriya"},
+    {"letter": "त्र", "word": "त्रिशूल", "emoji": "🔱", "english": "Trah. Trah say Trishool"},
+    {"letter": "ज्ञ", "word": "ज्ञानी", "emoji": "👨‍🏫", "english": "Gyani. Gyani say Gyani"},
   ];
 
   static const Map<String, String> _emoji3dPaths = {
@@ -209,31 +209,30 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     "ञ": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Empty_circle.png",
     "ट": "https://upload.wikimedia.org/wikipedia/commons/8/89/Tomato_je.jpg",
     "ठ": "assets/images/thathera.jpg",
-    "ड": "assets/images/damru.png",
+    "ड": "assets/images/damru.jpg",
     "ढ": "assets/images/dhakkan.jpg",
     "ण": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Empty_circle.png",
     "त": "https://upload.wikimedia.org/wikipedia/commons/4/47/Watermelon_isolated.png",
     "थ": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Thermos_flask.png",
-    "द": "assets/images/dawat.png",
+    "द": "assets/images/dawat.jpg",
     "ध": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Wooden_bow_and_arrow.png",
     "न": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Water_tap.png",
     "प": "https://upload.wikimedia.org/wikipedia/commons/b/b7/Kite_isolated.png",
-    "फ": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Culinary_fruits_front_view.png",
+    "फ": "assets/images/fal.jpg",
     "ब": "https://upload.wikimedia.org/wikipedia/commons/a/a1/Mallard2.jpg",
     "भ": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Brown_bear_standing.png",
     "म": "https://upload.wikimedia.org/wikipedia/commons/d/df/Goldfish_isolated.png",
-    "य": "https://upload.wikimedia.org/wikipedia/commons/e/ee/Havan_sacred_fire.jpg",
+    "य": "assets/images/yajna.jpg",
     "र": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Chariot_drawing.png",
     "ल": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Wood_spinning_top.jpg",
     "व": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Sunlight_in_a_forest.jpg",
     "श": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Turnip_isolated.png",
     "ष": "https://upload.wikimedia.org/wikipedia/commons/0/03/Hexagon_geometry.png",
-    "स": "https://upload.wikimedia.org/wikipedia/commons/7/76/Snake_charmer.jpg",
+    "स": "assets/images/sapera.jpg",
     "ह": "https://upload.wikimedia.org/wikipedia/commons/7/75/Boeing_747_isolated.png",
-    "क्ष": "https://upload.wikimedia.org/wikipedia/commons/3/30/Rajput_warrior_painting.jpg",
-    "tr": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Trident.png",
+    "क्ष": "assets/images/kshatriya.jpg",
     "त्र": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Trident.png",
-    "ज्ञ": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Indian_Scholar_or_Sadhu.jpg"
+    "ज्ञ": "assets/images/gyani.jpg"
   };
 
   final Map<String, List<Map<String, String>>> _easyWordsGrouped = {
@@ -390,20 +389,35 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     }
   }
 
-  void _speakText(String text) {
+  void _speakText(String text, {String phonetic = ""}) {
     if (kIsWeb) {
       try {
         final cleanText = text.replaceAll("'", "\\'").replaceAll("\n", " ");
+        final cleanPhonetic = phonetic.replaceAll("'", "\\'").replaceAll("\n", " ");
         final jsCode = """
           if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
-            var msg = new SpeechSynthesisUtterance('$cleanText');
+            
             var isHindi = /[\\u0900-\\u097F]/.test('$cleanText');
-            msg.lang = isHindi ? 'hi-IN' : 'en-US';
+            var voices = window.speechSynthesis.getVoices();
+            var langFilter = isHindi ? 'hi' : 'en';
+            
+            var langVoices = voices.filter(function(v) {
+              return v.lang.toLowerCase().indexOf(langFilter) !== -1;
+            });
+            
+            var msg = new SpeechSynthesisUtterance();
+            if (isHindi && langVoices.length === 0 && '$cleanPhonetic' !== '') {
+              msg.text = '$cleanPhonetic';
+              msg.lang = 'en-US';
+              langFilter = 'en';
+            } else {
+              msg.text = '$cleanText';
+              msg.lang = isHindi ? 'hi-IN' : 'en-US';
+            }
             
             function setVoiceAndSpeak() {
-              var voices = window.speechSynthesis.getVoices();
-              var langFilter = isHindi ? 'hi' : 'en';
+              var voicesList = window.speechSynthesis.getVoices();
               var gender = '$_selectedVoiceGender';
               var voice = null;
               
@@ -418,16 +432,16 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 return 'unknown';
               }
               
-              var langVoices = voices.filter(function(v) {
+              var matchingLangVoices = voicesList.filter(function(v) {
                 return v.lang.toLowerCase().indexOf(langFilter) !== -1;
               });
               
-              // Local service offline voices prioritisation
-              var localVoices = langVoices.filter(function(v) {
+              // Prioritize local service offline voices so browser allows pitch modulation shifts!
+              var localVoices = matchingLangVoices.filter(function(v) {
                 return v.localService === true;
               });
               
-              var searchSet = localVoices.length > 0 ? localVoices : langVoices;
+              var searchSet = localVoices.length > 0 ? localVoices : matchingLangVoices;
               
               for (var i = 0; i < searchSet.length; i++) {
                 if (getVoiceGender(searchSet[i]) === gender) {
@@ -437,15 +451,15 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
               }
               
               if (!voice) {
-                for (var i = 0; i < voices.length; i++) {
-                  if (getVoiceGender(voices[i]) === gender && voices[i].lang.toLowerCase().indexOf(langFilter) !== -1) {
-                    voice = voices[i];
+                for (var i = 0; i < voicesList.length; i++) {
+                  if (getVoiceGender(voicesList[i]) === gender && voicesList[i].lang.toLowerCase().indexOf(langFilter) !== -1) {
+                    voice = voicesList[i];
                     break;
                   }
                 }
               }
               
-              // Bind voice object only if it matches selected gender. Otherwise, drop voice object binding to allow free pitch modulation fallbacks
+              // Bind voice object only if it matches selected gender. Otherwise, drop voice object binding to force default browser pitch shift
               if (voice) {
                 var voiceGender = getVoiceGender(voice);
                 if (voiceGender !== gender) {
@@ -464,7 +478,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 msg.pitch = isVoiceFemale ? 0.58 : 0.85; // Pitch shift female voice down to male range
               }
               
-              msg.rate = isHindi ? 0.72 : 0.8;
+              msg.rate = (msg.lang === 'hi-IN') ? 0.72 : 0.8;
               msg.volume = 1.0;
               window.speechSynthesis.speak(msg);
             }
@@ -705,8 +719,8 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     );
   }
 
-  void _showCardDialog(String title, String subtitle, String emoji, {String word = "", String letter = ""}) {
-    _speakText("$title. $subtitle");
+  void _showCardDialog(String title, String subtitle, String emoji, {String word = "", String letter = "", String english = ""}) {
+    _speakText("$title. $subtitle", phonetic: english);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1057,6 +1071,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                               item["emoji"]!,
                               word: item["word"]!,
                               letter: item["letter"]!,
+                              english: item["english"]!,
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(6.0),
@@ -1108,6 +1123,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                               item["emoji"]!,
                               word: item["word"]!,
                               letter: item["letter"]!,
+                              english: item["english"]!,
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(6.0),
