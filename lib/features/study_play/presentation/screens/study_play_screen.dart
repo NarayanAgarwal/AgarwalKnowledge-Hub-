@@ -396,118 +396,124 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
         final cleanPhonetic = phonetic.replaceAll("'", "\\'").replaceAll("\n", " ");
         final jsCode = """
           if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
             
-            // Wait 50ms before triggering new speech to let async cancel reset Chrome voice channels cleanly!
-            setTimeout(function() {
+            function setVoiceAndSpeak() {
+              var voicesList = window.speechSynthesis.getVoices();
               var isHindi = /[\\u0900-\\u097F]/.test('$cleanText');
-              var msg = new SpeechSynthesisUtterance();
+              var langFilter = isHindi ? 'hi' : 'en';
               
-              function setVoiceAndSpeak() {
-                var voicesList = window.speechSynthesis.getVoices();
-                var langFilter = isHindi ? 'hi' : 'en';
-                
-                var matchingLangVoices = voicesList.filter(function(v) {
-                  return v.lang.toLowerCase().indexOf('hi') !== -1;
-                });
-                
-                // Dynamic text resolution: Fallback to lowercase phonetic english only if no native Hindi TTS is found!
-                if (isHindi && matchingLangVoices.length === 0 && '$cleanPhonetic' !== '') {
-                  msg.text = '$cleanPhonetic'.toLowerCase();
-                  msg.lang = 'en-US';
-                  langFilter = 'en';
-                } else {
-                  msg.text = '$cleanText';
-                  msg.lang = isHindi ? 'hi-IN' : 'en-US';
+              var matchingLangVoices = voicesList.filter(function(v) {
+                return v.lang.toLowerCase().indexOf('hi') !== -1;
+              });
+              
+              var msg = new SpeechSynthesisUtterance();
+              window.activeUtterance = msg; // Store globally to prevent garbage collection cutoffs
+              
+              // Fallback to phonetic only if absolutely NO Hindi voice is available on device!
+              if (isHindi && matchingLangVoices.length === 0 && '$cleanPhonetic' !== '') {
+                msg.text = '$cleanPhonetic'.toLowerCase();
+                msg.lang = 'en-US';
+                langFilter = 'en';
+              } else {
+                msg.text = '$cleanText';
+                msg.lang = isHindi ? 'hi-IN' : 'en-US';
+              }
+              
+              var gender = '$_selectedVoiceGender';
+              var voice = null;
+              
+              function getVoiceGender(v) {
+                var name = v.name.toLowerCase();
+                if (name.indexOf('male') !== -1 || 
+                    name.indexOf('david') !== -1 || 
+                    name.indexOf('ravi') !== -1 || 
+                    name.indexOf('-hic') !== -1 || 
+                    name.indexOf('-hif') !== -1 || 
+                    name.indexOf('-hia') !== -1 || 
+                    name.indexOf('-iom') !== -1 || 
+                    name.indexOf('-iog') !== -1 || 
+                    name.indexOf('-iol') !== -1 || 
+                    name.indexOf('-iob') !== -1 || 
+                    name.indexOf('guy') !== -1 || 
+                    name.indexOf('boy') !== -1 || 
+                    name.indexOf('man') !== -1) {
+                  return 'male';
                 }
-                
-                var gender = '$_selectedVoiceGender';
-                var voice = null;
-                
-                function getVoiceGender(v) {
-                  var name = v.name.toLowerCase();
-                  if (name.indexOf('male') !== -1 || 
-                      name.indexOf('david') !== -1 || 
-                      name.indexOf('ravi') !== -1 || 
-                      name.indexOf('-hic') !== -1 || 
-                      name.indexOf('-hif') !== -1 || 
-                      name.indexOf('-hia') !== -1 || 
-                      name.indexOf('-iom') !== -1 || 
-                      name.indexOf('-iog') !== -1 || 
-                      name.indexOf('-iol') !== -1 || 
-                      name.indexOf('-iob') !== -1 || 
-                      name.indexOf('guy') !== -1 || 
-                      name.indexOf('boy') !== -1 || 
-                      name.indexOf('man') !== -1) {
-                    return 'male';
-                  }
-                  return 'female';
+                return 'female';
+              }
+              
+              var candidateLangVoices = voicesList.filter(function(v) {
+                return v.lang.toLowerCase().indexOf(langFilter) !== -1;
+              });
+              
+              var nonGoogleVoices = candidateLangVoices.filter(function(v) {
+                return v.name.toLowerCase().indexOf('google') === -1;
+              });
+              var candidateVoices = nonGoogleVoices.length > 0 ? nonGoogleVoices : candidateLangVoices;
+              
+              var localVoices = candidateVoices.filter(function(v) {
+                return v.localService === true;
+              });
+              
+              var searchSet = localVoices.length > 0 ? localVoices : candidateVoices;
+              
+              for (var i = 0; i < searchSet.length; i++) {
+                if (getVoiceGender(searchSet[i]) === gender) {
+                  voice = searchSet[i];
+                  break;
                 }
-                
-                var candidateLangVoices = voicesList.filter(function(v) {
-                  return v.lang.toLowerCase().indexOf(langFilter) !== -1;
-                });
-                
-                var nonGoogleVoices = candidateLangVoices.filter(function(v) {
-                  return v.name.toLowerCase().indexOf('google') === -1;
-                });
-                var candidateVoices = nonGoogleVoices.length > 0 ? nonGoogleVoices : candidateLangVoices;
-                
-                var localVoices = candidateVoices.filter(function(v) {
-                  return v.localService === true;
-                });
-                
-                var searchSet = localVoices.length > 0 ? localVoices : candidateVoices;
-                
-                for (var i = 0; i < searchSet.length; i++) {
-                  if (getVoiceGender(searchSet[i]) === gender) {
-                    voice = searchSet[i];
+              }
+              
+              if (!voice) {
+                for (var i = 0; i < voicesList.length; i++) {
+                  if (getVoiceGender(voicesList[i]) === gender && voicesList[i].lang.toLowerCase().indexOf(langFilter) !== -1) {
+                    voice = voicesList[i];
                     break;
                   }
                 }
-                
-                if (!voice) {
-                  for (var i = 0; i < voicesList.length; i++) {
-                    if (getVoiceGender(voicesList[i]) === gender && voicesList[i].lang.toLowerCase().indexOf(langFilter) !== -1) {
-                      voice = voicesList[i];
-                      break;
-                    }
-                  }
-                }
-                
-                if (!voice && searchSet.length > 0) {
-                  voice = searchSet[0]; // Fallback to any voice of target language before falling back to en-US system default
-                }
-                
-                if (voice) {
-                  var voiceGender = getVoiceGender(voice);
-                  if (voiceGender !== gender) {
-                    // Mismatched voice gender fallback (network lock): drop object to force default browser pitch shift
-                  } else {
-                    msg.voice = voice;
-                  }
-                }
-                
-                // Force symmetric pitch modulation shifts!
-                if (gender === 'female') {
-                  var isVoiceMale = voice ? (getVoiceGender(voice) === 'male') : false;
-                  msg.pitch = isVoiceMale ? 1.55 : 1.35;
-                } else {
-                  var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true;
-                  msg.pitch = isVoiceFemale ? 0.45 : 0.72;
-                }
-                
-                msg.rate = (msg.lang === 'hi-IN') ? 0.72 : 0.8;
-                msg.volume = 1.0;
-                window.speechSynthesis.speak(msg);
               }
               
+              if (!voice && searchSet.length > 0) {
+                voice = searchSet[0]; // Fallback to any voice of target language
+              }
+              
+              if (voice) {
+                var voiceGender = getVoiceGender(voice);
+                // ALWAYS bind the voice for Hindi, even if gender mismatched, to prevent David fallback!
+                if (isHindi || voiceGender === gender) {
+                  msg.voice = voice;
+                }
+              }
+              
+              // Force symmetric pitch modulation shifts!
+              if (gender === 'female') {
+                var isVoiceMale = voice ? (getVoiceGender(voice) === 'male') : false;
+                msg.pitch = isVoiceMale ? 1.55 : 1.35;
+              } else {
+                var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true;
+                msg.pitch = isVoiceFemale ? 0.45 : 0.72;
+              }
+              
+              msg.rate = (msg.lang === 'hi-IN') ? 0.72 : 0.8;
+              msg.volume = 1.0;
+              window.speechSynthesis.speak(msg);
+            }
+            
+            function triggerSpeech() {
               if (window.speechSynthesis.getVoices().length > 0) {
                 setVoiceAndSpeak();
               } else {
                 window.speechSynthesis.onvoiceschanged = setVoiceAndSpeak;
               }
-            }, 50);
+            }
+            
+            // Only call cancel() if a voice is active to prevent the empty cancel latency bug in Chrome!
+            if (window.speechSynthesis.speaking) {
+              window.speechSynthesis.cancel();
+              setTimeout(triggerSpeech, 50);
+            } else {
+              triggerSpeech(); // Instant response when silent!
+            }
           }
         """;
         js.context.callMethod('eval', [jsCode]);
