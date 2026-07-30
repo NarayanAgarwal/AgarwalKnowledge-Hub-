@@ -185,7 +185,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   static const Map<String, String> _realVarnmalaImages = {
     "अ": "assets/images/anar.jpg",
     "आ": "https://upload.wikimedia.org/wikipedia/commons/9/90/HA_Mango.png",
-    "इ": "https://upload.wikimedia.org/wikipedia/commons/0/07/Tamarind_fruit.png",
+    "इ": "assets/images/imli.jpg",
     "ई": "https://upload.wikimedia.org/wikipedia/commons/4/45/Sugarcane_stalk.png",
     "उ": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Great_Horned_Owl_transparent.png",
     "ऊ": "https://upload.wikimedia.org/wikipedia/commons/7/77/Yarn_ball.png",
@@ -222,17 +222,17 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     "ब": "https://upload.wikimedia.org/wikipedia/commons/a/a1/Mallard2.jpg",
     "भ": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Brown_bear_standing.png",
     "म": "https://upload.wikimedia.org/wikipedia/commons/d/df/Goldfish_isolated.png",
-    "य": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Yajna_fire.png",
+    "य": "https://upload.wikimedia.org/wikipedia/commons/e/ee/Havan_sacred_fire.jpg",
     "र": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Chariot_drawing.png",
-    "ल": "https://upload.wikimedia.org/wikipedia/commons/d/da/Spinning_top.png",
-    "व": "https://upload.wikimedia.org/wikipedia/commons/5/50/Forest_trees.jpg",
+    "ल": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Wood_spinning_top.jpg",
+    "व": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Sunlight_in_a_forest.jpg",
     "श": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Turnip_isolated.png",
     "ष": "https://upload.wikimedia.org/wikipedia/commons/0/03/Hexagon_geometry.png",
     "स": "https://upload.wikimedia.org/wikipedia/commons/7/76/Snake_charmer.jpg",
     "ह": "https://upload.wikimedia.org/wikipedia/commons/7/75/Boeing_747_isolated.png",
-    "क्ष": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Crossed_swords.png",
+    "क्ष": "https://upload.wikimedia.org/wikipedia/commons/3/30/Rajput_warrior_painting.jpg",
     "त्र": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Trident.png",
-    "ज्ञ": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Scholar_silhouette.png"
+    "ज्ञ": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Indian_Scholar_or_Sadhu.jpg"
   };
 
   final Map<String, List<Map<String, String>>> _easyWordsGrouped = {
@@ -406,33 +406,40 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
               var gender = '$_selectedVoiceGender';
               var voice = null;
               
-              for (var i = 0; i < voices.length; i++) {
-                var v = voices[i];
-                var vLang = v.lang.toLowerCase();
-                var vName = v.name.toLowerCase();
-                
-                if (vLang.indexOf(langFilter) !== -1) {
-                  // Precise Android Google TTS voice detection matching schemas
-                  if (vName.indexOf('-x-') !== -1) {
-                    var isMalePattern = vName.indexOf('-hic') !== -1 || vName.indexOf('-hif') !== -1 || vName.indexOf('-hia') !== -1 || vName.indexOf('-iom') !== -1 || vName.indexOf('-iog') !== -1 || vName.indexOf('-iol') !== -1 || vName.indexOf('-iob') !== -1;
-                    if (gender === 'male' && isMalePattern) {
-                      voice = v;
-                      break;
-                    }
-                    var isFemalePattern = vName.indexOf('-hie') !== -1 || vName.indexOf('-hid') !== -1 || vName.indexOf('-sfg') !== -1 || vName.indexOf('-sfd') !== -1 || vName.indexOf('-sfc') !== -1;
-                    if (gender === 'female' && isFemalePattern) {
-                      voice = v;
-                      break;
-                    }
-                  } else {
-                    if (gender === 'female' && (vName.indexOf('zira') !== -1 || vName.indexOf('female') !== -1 || vName.indexOf('google') !== -1 || vName.indexOf('siri') !== -1 || vName.indexOf('hazel') !== -1 || vName.indexOf('kalpana') !== -1)) {
-                      voice = v;
-                      break;
-                    }
-                    if (gender === 'male' && (vName.indexOf('david') !== -1 || vName.indexOf('male') !== -1 || vName.indexOf('ravi') !== -1 || vName.indexOf('microsoft') !== -1 || vName.indexOf('heera') !== -1)) {
-                      voice = v;
-                      break;
-                    }
+              function getVoiceGender(v) {
+                var name = v.name.toLowerCase();
+                if (name.indexOf('male') !== -1 || name.indexOf('david') !== -1 || name.indexOf('ravi') !== -1 || name.indexOf('microsoft') !== -1 || name.indexOf('-hic') !== -1 || name.indexOf('-hif') !== -1 || name.indexOf('-hia') !== -1 || name.indexOf('-iom') !== -1 || name.indexOf('-iog') !== -1 || name.indexOf('-iol') !== -1 || name.indexOf('-iob') !== -1) {
+                  return 'male';
+                }
+                if (name.indexOf('female') !== -1 || name.indexOf('zira') !== -1 || name.indexOf('google') !== -1 || name.indexOf('siri') !== -1 || name.indexOf('hazel') !== -1 || name.indexOf('kalpana') !== -1 || name.indexOf('lekha') !== -1 || name.indexOf('-hie') !== -1 || name.indexOf('-hid') !== -1 || name.indexOf('-sfg') !== -1) {
+                  return 'female';
+                }
+                return 'unknown';
+              }
+              
+              var langVoices = voices.filter(function(v) {
+                return v.lang.toLowerCase().indexOf(langFilter) !== -1;
+              });
+              
+              // Prioritize local service offline voices so browser allows pitch modulation shifts!
+              var localVoices = langVoices.filter(function(v) {
+                return v.localService === true;
+              });
+              
+              var searchSet = localVoices.length > 0 ? localVoices : langVoices;
+              
+              for (var i = 0; i < searchSet.length; i++) {
+                if (getVoiceGender(searchSet[i]) === gender) {
+                  voice = searchSet[i];
+                  break;
+                }
+              }
+              
+              if (!voice) {
+                for (var i = 0; i < voices.length; i++) {
+                  if (getVoiceGender(voices[i]) === gender && voices[i].lang.toLowerCase().indexOf(langFilter) !== -1) {
+                    voice = voices[i];
+                    break;
                   }
                 }
               }
@@ -441,12 +448,12 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 if (voice) msg.voice = voice;
                 msg.pitch = 1.35;
               } else {
-                // If native male voice matched, bind it. Otherwise, drop voice object binding to allow free pitch modulation fallbacks
                 if (voice) {
                   msg.voice = voice;
-                  msg.pitch = 0.9;
+                  // If browser gave us a female voice fallback for male, drop pitch deeply to 0.58
+                  msg.pitch = (getVoiceGender(voice) === 'female') ? 0.58 : 0.85;
                 } else {
-                  msg.pitch = 0.65; // Deepen system default voice
+                  msg.pitch = 0.62;
                 }
               }
               
@@ -497,31 +504,29 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
               function setSongVoiceAndSpeak() {
                 var voices = window.speechSynthesis.getVoices();
                 var voice = null;
-                for (var i = 0; i < voices.length; i++) {
-                  var v = voices[i];
-                  var vName = v.name.toLowerCase();
-                  if (v.lang.toLowerCase().indexOf('en') !== -1) {
-                    if (vName.indexOf('-x-') !== -1) {
-                      var isMalePattern = vName.indexOf('-iom') !== -1 || vName.indexOf('-iog') !== -1 || vName.indexOf('-iol') !== -1;
-                      if (gender === 'male' && isMalePattern) {
-                        voice = v;
-                        break;
-                      }
-                      var isFemalePattern = vName.indexOf('-sfg') !== -1 || vName.indexOf('-sfd') !== -1;
-                      if (gender === 'female' && isFemalePattern) {
-                        voice = v;
-                        break;
-                      }
-                    } else {
-                      if (gender === 'female' && (vName.indexOf('zira') !== -1 || vName.indexOf('female') !== -1 || vName.indexOf('google') !== -1 || vName.indexOf('siri') !== -1)) {
-                        voice = v;
-                        break;
-                      }
-                      if (gender === 'male' && (vName.indexOf('david') !== -1 || vName.indexOf('male') !== -1 || vName.indexOf('microsoft') !== -1)) {
-                        voice = v;
-                        break;
-                      }
-                    }
+                
+                function getVoiceGender(v) {
+                  var name = v.name.toLowerCase();
+                  if (name.indexOf('male') !== -1 || name.indexOf('david') !== -1 || name.indexOf('ravi') !== -1 || name.indexOf('microsoft') !== -1 || name.indexOf('-iom') !== -1 || name.indexOf('-iog') !== -1 || name.indexOf('-iol') !== -1) {
+                    return 'male';
+                  }
+                  return 'female';
+                }
+                
+                var langVoices = voices.filter(function(v) {
+                  return v.lang.toLowerCase().indexOf('en') !== -1;
+                });
+                
+                var localVoices = langVoices.filter(function(v) {
+                  return v.localService === true;
+                });
+                
+                var searchSet = localVoices.length > 0 ? localVoices : langVoices;
+                
+                for (var i = 0; i < searchSet.length; i++) {
+                  if (getVoiceGender(searchSet[i]) === gender) {
+                    voice = searchSet[i];
+                    break;
                   }
                 }
                 
@@ -533,9 +538,9 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 } else {
                   if (voice) {
                     msg.voice = voice;
-                    msg.pitch = 0.85 + ([0, 0.12, -0.08, 0.05][idx % 4]);
+                    msg.pitch = (getVoiceGender(voice) === 'female') ? 0.58 : 0.85 + ([0, 0.12, -0.08, 0.05][idx % 4]);
                   } else {
-                    msg.pitch = 0.65 + ([0, 0.12, -0.08, 0.05][idx % 4]);
+                    msg.pitch = 0.62 + ([0, 0.12, -0.08, 0.05][idx % 4]);
                   }
                 }
                 
