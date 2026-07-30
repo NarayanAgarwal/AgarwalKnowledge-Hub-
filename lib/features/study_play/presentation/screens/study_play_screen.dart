@@ -81,7 +81,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     {"letter": "ओ", "word": "ओखली", "emoji": "🥣"},
     {"letter": "औ", "word": "औरत", "emoji": "👩"},
     {"letter": "अं", "word": "अंगूर", "emoji": "🍇"},
-    {"letter": "अतः", "word": "खाली", "emoji": "🗣️"},
+    {"letter": "अः", "word": "खाली", "emoji": "🗣️"},
   ];
 
   final List<Map<String, String>> _vyanjan = [
@@ -195,7 +195,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     "ओ": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Mortar_and_pestle.png",
     "औ": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Woman_sitting.png",
     "अं": "https://upload.wikimedia.org/wikipedia/commons/b/bb/Table_grapes_on_white.active.png",
-    "अतः": "https://upload.wikimedia.org/wikipedia/commons/d/df/Speaking_silhouette.png",
+    "अः": "https://upload.wikimedia.org/wikipedia/commons/d/df/Speaking_silhouette.png",
     
     "क": "https://upload.wikimedia.org/wikipedia/commons/4/40/Columba_livia_pigeon_transparent.png",
     "ख": "https://upload.wikimedia.org/wikipedia/commons/d/df/Rabbit_eating.png",
@@ -209,7 +209,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     "ञ": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Empty_circle.png",
     "ट": "https://upload.wikimedia.org/wikipedia/commons/8/89/Tomato_je.jpg",
     "ठ": "assets/images/thathera.jpg",
-    "ड": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Damru_drum.png",
+    "ड": "assets/images/damru.png",
     "ढ": "assets/images/dhakkan.jpg",
     "ण": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Empty_circle.png",
     "त": "https://upload.wikimedia.org/wikipedia/commons/4/47/Watermelon_isolated.png",
@@ -231,6 +231,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     "स": "https://upload.wikimedia.org/wikipedia/commons/7/76/Snake_charmer.jpg",
     "ह": "https://upload.wikimedia.org/wikipedia/commons/7/75/Boeing_747_isolated.png",
     "क्ष": "https://upload.wikimedia.org/wikipedia/commons/3/30/Rajput_warrior_painting.jpg",
+    "tr": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Trident.png",
     "त्र": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Trident.png",
     "ज्ञ": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Indian_Scholar_or_Sadhu.jpg"
   };
@@ -421,7 +422,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 return v.lang.toLowerCase().indexOf(langFilter) !== -1;
               });
               
-              // Prioritize local service offline voices so browser allows pitch modulation shifts!
+              // Local service offline voices prioritisation
               var localVoices = langVoices.filter(function(v) {
                 return v.localService === true;
               });
@@ -444,17 +445,23 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 }
               }
               
-              if (gender === 'female') {
-                if (voice) msg.voice = voice;
-                msg.pitch = 1.35;
-              } else {
-                if (voice) {
-                  msg.voice = voice;
-                  // If browser gave us a female voice fallback for male, drop pitch deeply to 0.58
-                  msg.pitch = (getVoiceGender(voice) === 'female') ? 0.58 : 0.85;
+              // Bind voice object only if it matches selected gender. Otherwise, drop voice object binding to allow free pitch modulation fallbacks
+              if (voice) {
+                var voiceGender = getVoiceGender(voice);
+                if (voiceGender !== gender) {
+                  // Mismatched voice gender fallback (network lock): drop object to force default browser pitch shift
                 } else {
-                  msg.pitch = 0.62;
+                  msg.voice = voice;
                 }
+              }
+              
+              // Force symmetric pitch modulation shifts!
+              if (gender === 'female') {
+                var isVoiceMale = voice ? (getVoiceGender(voice) === 'male') : false;
+                msg.pitch = isVoiceMale ? 1.45 : 1.25; // Pitch shift male voice up to female range
+              } else {
+                var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true; // Default to true if no voice matched
+                msg.pitch = isVoiceFemale ? 0.58 : 0.85; // Pitch shift female voice down to male range
               }
               
               msg.rate = isHindi ? 0.72 : 0.8;
@@ -530,18 +537,25 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                   }
                 }
                 
+                if (voice) {
+                  var voiceGender = getVoiceGender(voice);
+                  if (voiceGender !== gender) {
+                    // Drop binding to force pitch shift fallback
+                  } else {
+                    msg.voice = voice;
+                  }
+                }
+                
                 if (gender === 'female') {
-                  if (voice) msg.voice = voice;
-                  var basePitch = 1.35;
+                  var isVoiceMale = voice ? (getVoiceGender(voice) === 'male') : false;
+                  var basePitch = isVoiceMale ? 1.45 : 1.25;
                   var modulation = [0, 0.18, -0.12, 0.08];
                   msg.pitch = basePitch + (modulation[idx % 4]);
                 } else {
-                  if (voice) {
-                    msg.voice = voice;
-                    msg.pitch = (getVoiceGender(voice) === 'female') ? 0.58 : 0.85 + ([0, 0.12, -0.08, 0.05][idx % 4]);
-                  } else {
-                    msg.pitch = 0.62 + ([0, 0.12, -0.08, 0.05][idx % 4]);
-                  }
+                  var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true;
+                  var basePitch = isVoiceFemale ? 0.58 : 0.85;
+                  var modulation = [0, 0.12, -0.08, 0.05];
+                  msg.pitch = basePitch + (modulation[idx % 4]);
                 }
                 
                 msg.rate = 0.72 + (idx % 2 * 0.05); 
@@ -1011,7 +1025,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                   },
                 ),
 
-                // HINDI VARNMALA TAB (Varnmala using real photos only)
+                // HINDI VARNMALA TAB (Varnmala using real photos only, tall cards, scaling prevent overlaps!)
                 SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.all(16),
@@ -1027,7 +1041,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                           crossAxisCount: 4,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
-                          childAspectRatio: 0.82,
+                          childAspectRatio: 0.7, // Taller cards to prevent vertical layout overlaps!
                         ),
                         itemCount: _swar.length,
                         itemBuilder: (context, index) {
@@ -1044,13 +1058,26 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                               word: item["word"]!,
                               letter: item["letter"]!,
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(item["letter"]!, style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900)),
-                                const SizedBox(height: 4),
-                                _buildEmojiImage(item["emoji"]!, size: 36, word: item["word"]!, letter: item["letter"]!),
-                              ],
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown, // Auto scales text + image together to fit card
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      item["letter"]!,
+                                      style: const TextStyle(
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.w900,
+                                        color: AppColors.primaryBlue,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    _buildEmojiImage(item["emoji"]!, size: 40, word: item["word"]!, letter: item["letter"]!),
+                                  ],
+                                ),
+                              ),
                             ),
                           );
                         },
@@ -1065,7 +1092,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                           crossAxisCount: 4,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
-                          childAspectRatio: 0.82,
+                          childAspectRatio: 0.7, // Taller cards to prevent vertical layout overlaps!
                         ),
                         itemCount: _vyanjan.length,
                         itemBuilder: (context, index) {
@@ -1082,13 +1109,26 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                               word: item["word"]!,
                               letter: item["letter"]!,
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(item["letter"]!, style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900)),
-                                const SizedBox(height: 4),
-                                _buildEmojiImage(item["emoji"]!, size: 36, word: item["word"]!, letter: item["letter"]!),
-                              ],
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown, // Auto scales text + image together to fit card
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      item["letter"]!,
+                                      style: const TextStyle(
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.w900,
+                                        color: AppColors.primaryBlue,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    _buildEmojiImage(item["emoji"]!, size: 40, word: item["word"]!, letter: item["letter"]!),
+                                  ],
+                                ),
+                              ),
                             ),
                           );
                         },
