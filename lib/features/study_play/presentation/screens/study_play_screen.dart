@@ -69,58 +69,58 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   ];
 
   final List<Map<String, String>> _swar = [
-    {"letter": "अ", "word": "अनार", "emoji": "🍒", "english": "Uh. Uh say Uh-naar"},
-    {"letter": "आ", "word": "आम", "emoji": "🥭", "english": "Ah. Ah say Ahm"},
-    {"letter": "इ", "word": "इमली", "emoji": "🫒", "english": "Ee. Ee say Eem-lee"},
-    {"letter": "ई", "word": "ईख", "emoji": "🎋", "english": "Eee. Eee say Eekh"},
-    {"letter": "उ", "word": "उल्लू", "emoji": "🦉", "english": "Oo. Oo say Ool-loo"},
-    {"letter": "ऊ", "word": "ऊन", "emoji": "🧶", "english": "Ooo. Ooo say Oon"},
-    {"letter": "ऋ", "word": "ऋषि", "emoji": "🧘", "english": "Ree. Ree say Ree-shee"},
-    {"letter": "ए", "word": "एड़ी", "emoji": "🦶", "english": "Ay. Ay say Ay-dee"},
-    {"letter": "ऐ", "word": "ऐनक", "emoji": "👓", "english": "Aye. Aye say Aye-nuck"},
-    {"letter": "ओ", "word": "ओखली", "emoji": "🥣", "english": "Oh. Oh say Oh-khlee"},
-    {"letter": "औ", "word": "औरत", "emoji": "👩", "english": "Au. Au say Ow-rut"},
-    {"letter": "अं", "word": "अंगूर", "emoji": "🍇", "english": "Un. Un say Un-goor"},
-    {"letter": "अः", "word": "खाली", "emoji": "🗣️", "english": "Aha. Aha say Khaali"},
+    {"letter": "अ", "word": "अनार", "emoji": "🍒", "english": "uh. uh say uh-naar"},
+    {"letter": "आ", "word": "आम", "emoji": "🥭", "english": "aa. aa say aam"},
+    {"letter": "इ", "word": "इमली", "emoji": "🫒", "english": "ee. ee say eem-lee"},
+    {"letter": "ई", "word": "ईख", "emoji": "🎋", "english": "eee. eee say eekh"},
+    {"letter": "उ", "word": "उल्लू", "emoji": "🦉", "english": "oo. oo say ool-loo"},
+    {"letter": "ऊ", "word": "ऊन", "emoji": "🧶", "english": "ooo. ooo say oon"},
+    {"letter": "ऋ", "word": "ऋषि", "emoji": "🧘", "english": "ree. ree say ree-shee"},
+    {"letter": "ए", "word": "एड़ी", "emoji": "🦶", "english": "ay. ay say ay-dee"},
+    {"letter": "ऐ", "word": "ऐनक", "emoji": "👓", "english": "aye. aye say aye-nuck"},
+    {"letter": "ओ", "word": "ओखली", "emoji": "🥣", "english": "oh. oh say oh-khlee"},
+    {"letter": "औ", "word": "औरत", "emoji": "👩", "english": "au. au say ow-rut"},
+    {"letter": "अं", "word": "अंगूर", "emoji": "🍇", "english": "un. un say un-goor"},
+    {"letter": "अः", "word": "खाली", "emoji": "🗣️", "english": "aha. aha say khaali"},
   ];
 
   final List<Map<String, String>> _vyanjan = [
-    {"letter": "क", "word": "कबूतर", "emoji": "🕊️", "english": "Kuh. Kuh say Kuh-boo-tar"},
-    {"letter": "ख", "word": "खरगोश", "emoji": "🐇", "english": "Khuh. Khuh say Khar-gosh"},
-    {"letter": "ग", "word": "गमला", "emoji": "🪴", "english": "Guh. Guh say Gum-la"},
-    {"letter": "घ", "word": "घर", "emoji": "🏠", "english": "Ghuh. Ghuh say Ghar"},
-    {"letter": "ङ", "word": "खाली", "emoji": "🔘", "english": "Nga. Nga say Khaali"},
-    {"letter": "च", "word": "चम्मच", "emoji": "🥄", "english": "Chuh. Chuh say Chum-much"},
-    {"letter": "छ", "word": "छाता", "emoji": "⛱️", "english": "Chhuh. Chhuh say Chhaa-ta"},
-    {"letter": "ज", "word": "जहाज", "emoji": "🚢", "english": "Juh. Juh say Juh-haaj"},
-    {"letter": "झ", "word": "झंडा", "emoji": "🇮🇳", "english": "Jhuh. Jhuh say Jhun-da"},
-    {"letter": "ञ", "word": "खाली", "emoji": "🔘", "english": "Nya. Nya say Khaali"},
-    {"letter": "ट", "word": "टमाटर", "emoji": "🍅", "english": "Tuh. Tuh say Tuh-maa-tar"},
-    {"letter": "ठ", "word": "ठठेरा", "emoji": "🔨", "english": "Thuh. Thuh say Thuh-they-ra"},
-    {"letter": "ड", "word": "डमरू", "emoji": "🥁", "english": "Duh. Duh say Dum-roo"},
-    {"letter": "ढ", "word": "ढक्कन", "emoji": "🪘", "english": "Dhuh. Dhuh say Dhuk-kun"},
-    {"letter": "ण", "word": "खाली", "emoji": "🔘", "english": "Na. Na say Khaali"},
-    {"letter": "त", "word": "तरबूज", "emoji": "🍉", "english": "Tuh. Tuh say Tar-booj"},
-    {"letter": "थ", "word": "थर्मस", "emoji": "🍼", "english": "Thuh. Thuh say Ther-mus"},
-    {"letter": "द", "word": "दवात", "emoji": "🖋️", "english": "Duh. Duh say Duh-vaat"},
-    {"letter": "ध", "word": "धनुष", "emoji": "🏹", "english": "Dhuh. Dhuh say Dhuh-nush"},
-    {"letter": "न", "word": "नल", "emoji": "🚰", "english": "Nuh. Nuh say Nul"},
-    {"letter": "प", "word": "पतंग", "emoji": "🪁", "english": "Puh. Puh say Puh-tung"},
-    {"letter": "फ", "word": "फल", "emoji": "🍎", "english": "Fah. Fah say Fal"},
-    {"letter": "ब", "word": "बत्तख", "emoji": "🦆", "english": "Buh. Buh say But-tukh"},
-    {"letter": "भ", "word": "भालू", "emoji": "🐻", "english": "Bhuh. Bhuh say Bhaa-loo"},
-    {"letter": "म", "word": "मछली", "emoji": "🐟", "english": "Muh. Muh say Muchh-lee"},
-    {"letter": "य", "word": "यज्ञ", "emoji": "🔥", "english": "Yuh. Yuh say Yug-ya"},
-    {"letter": "र", "word": "रथ", "emoji": "🎠", "english": "Ruh. Ruh say Ruth"},
-    {"letter": "ल", "word": "लट्टू", "emoji": "🪀", "english": "Luh. Luh say Lut-too"},
-    {"letter": "व", "word": "वन", "emoji": "🌳", "english": "Wuh. Wuh say Wun"},
-    {"letter": "श", "word": "शलगम", "emoji": "🧅", "english": "Shuh. Shuh say Shul-gum"},
-    {"letter": "ष", "word": "षट्कोण", "emoji": "💠", "english": "Shuh. Shuh say Shut-kone"},
-    {"letter": "स", "word": "सपेरा", "emoji": "🐍", "english": "Suh. Suh say Suh-pay-ra"},
-    {"letter": "ह", "word": "हवाई जहाज", "emoji": "✈️", "english": "Huh. Huh say Huh-wye Juh-haaj"},
-    {"letter": "क्ष", "word": "क्षत्रिय", "emoji": "⚔️", "english": "Kshuh. Kshuh say Kshut-ree-ya"},
-    {"letter": "त्र", "word": "त्रिशूल", "emoji": "🔱", "english": "Truh. Truh say Tree-shool"},
-    {"letter": "ज्ञ", "word": "ज्ञानी", "emoji": "👨‍🏫", "english": "Gyuh. Gyuh say Gya-nee"},
+    {"letter": "क", "word": "कबूतर", "emoji": "🕊️", "english": "kuh. kuh say kuh-boo-tar"},
+    {"letter": "ख", "word": "खरगोश", "emoji": "🐇", "english": "khuh. khuh say khar-gosh"},
+    {"letter": "ग", "word": "गमला", "emoji": "🪴", "english": "guh. guh say gum-la"},
+    {"letter": "घ", "word": "घर", "emoji": "🏠", "english": "ghuh. ghuh say ghar"},
+    {"letter": "ङ", "word": "खाली", "emoji": "🔘", "english": "nga. nga say khaali"},
+    {"letter": "च", "word": "चम्मच", "emoji": "🥄", "english": "chuh. chuh say chum-much"},
+    {"letter": "छ", "word": "छाता", "emoji": "⛱️", "english": "chhuh. chhuh say chhaa-ta"},
+    {"letter": "ज", "word": "जहाज", "emoji": "🚢", "english": "juh. juh say juh-haaj"},
+    {"letter": "झ", "word": "झंडा", "emoji": "🇮🇳", "english": "jhuh. jhuh say jhun-da"},
+    {"letter": "ञ", "word": "खाली", "emoji": "🔘", "english": "nya. nya say khaali"},
+    {"letter": "ट", "word": "टमाटर", "emoji": "🍅", "english": "tuh. tuh say tuh-maa-tar"},
+    {"letter": "ठ", "word": "ठठेरा", "emoji": "🔨", "english": "thuh. thuh say thuh-they-ra"},
+    {"letter": "ड", "word": "डमरू", "emoji": "🥁", "english": "duh. duh say dum-roo"},
+    {"letter": "ढ", "word": "ढक्कन", "emoji": "🪘", "english": "dhuh. dhuh say dhuk-kun"},
+    {"letter": "ण", "word": "खाली", "emoji": "🔘", "english": "na. na say khaali"},
+    {"letter": "त", "word": "तरबूज", "emoji": "🍉", "english": "tuh. tuh say tar-booj"},
+    {"letter": "थ", "word": "थर्मस", "emoji": "🍼", "english": "thuh. thuh say ther-mus"},
+    {"letter": "द", "word": "दवात", "emoji": "🖋️", "english": "duh. duh say duh-vaat"},
+    {"letter": "ध", "word": "धनुष", "emoji": "🏹", "english": "dhuh. dhuh say dhuh-nush"},
+    {"letter": "न", "word": "नल", "emoji": "🚰", "english": "nuh. nuh say nul"},
+    {"letter": "प", "word": "पतंग", "emoji": "🪁", "english": "puh. puh say puh-tung"},
+    {"letter": "फ", "word": "फल", "emoji": "🍎", "english": "fuh. fuh say ful"},
+    {"letter": "ब", "word": "बत्तख", "emoji": "🦆", "english": "buh. buh say but-tukh"},
+    {"letter": "भ", "word": "भालू", "emoji": "🐻", "english": "bhuh. bhuh say bhaa-loo"},
+    {"letter": "म", "word": "मछली", "emoji": "🐟", "english": "muh. muh say muchh-lee"},
+    {"letter": "य", "word": "यज्ञ", "emoji": "🔥", "english": "yuh. yuh say yug-ya"},
+    {"letter": "र", "word": "रथ", "emoji": "🎠", "english": "ruh. ruh say ruth"},
+    {"letter": "ल", "word": "लट्टू", "emoji": "🪀", "english": "luh. luh say lut-too"},
+    {"letter": "व", "word": "वन", "emoji": "🌳", "english": "wuh. wuh say wun"},
+    {"letter": "श", "word": "शलगम", "emoji": "🧅", "english": "shuh. shuh say shul-gum"},
+    {"letter": "ष", "word": "षट्कोण", "emoji": "💠", "english": "shuh. shuh say shut-kone"},
+    {"letter": "स", "word": "सपेरा", "emoji": "🐍", "english": "suh. suh say suh-pay-ra"},
+    {"letter": "ह", "word": "हवाई जहाज", "emoji": "✈️", "english": "huh. huh say huh-wye juh-haaj"},
+    {"letter": "क्ष", "word": "क्षत्रिय", "emoji": "⚔️", "english": "kshuh. kshuh say kshut-ree-ya"},
+    {"letter": "त्र", "word": "त्रिशूल", "emoji": "🔱", "english": "truh. truh say tree-shool"},
+    {"letter": "ज्ञ", "word": "ज्ञानी", "emoji": "👨‍🏫", "english": "gyuh. gyuh say gya-nee"},
   ];
 
   static const Map<String, String> _emoji3dPaths = {
@@ -399,31 +399,31 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
             window.speechSynthesis.cancel();
             
             var isHindi = /[\\u0900-\\u097F]/.test('$cleanText');
-            var voices = window.speechSynthesis.getVoices();
-            var langFilter = isHindi ? 'hi' : 'en';
-            
-            var langVoices = voices.filter(function(v) {
-              return v.lang.toLowerCase().indexOf(langFilter) !== -1;
-            });
-            
             var msg = new SpeechSynthesisUtterance();
-            if (isHindi && langVoices.length === 0 && '$cleanPhonetic' !== '') {
-              msg.text = '$cleanPhonetic';
-              msg.lang = 'en-US';
-              langFilter = 'en';
-            } else {
-              msg.text = '$cleanText';
-              msg.lang = isHindi ? 'hi-IN' : 'en-US';
-            }
             
             function setVoiceAndSpeak() {
               var voicesList = window.speechSynthesis.getVoices();
+              var langFilter = isHindi ? 'hi' : 'en';
+              
+              var matchingLangVoices = voicesList.filter(function(v) {
+                return v.lang.toLowerCase().indexOf('hi') !== -1;
+              });
+              
+              // Dynamic text resolution: Fallback to lowercase phonetic english only if no native Hindi TTS is found!
+              if (isHindi && matchingLangVoices.length === 0 && '$cleanPhonetic' !== '') {
+                msg.text = '$cleanPhonetic'.toLowerCase();
+                msg.lang = 'en-US';
+                langFilter = 'en';
+              } else {
+                msg.text = '$cleanText';
+                msg.lang = isHindi ? 'hi-IN' : 'en-US';
+              }
+              
               var gender = '$_selectedVoiceGender';
               var voice = null;
               
               function getVoiceGender(v) {
                 var name = v.name.toLowerCase();
-                // Check male keywords (removed microsoft keyword from mapping match to prevent David/Zira laptop gender conflicts)
                 if (name.indexOf('male') !== -1 || 
                     name.indexOf('david') !== -1 || 
                     name.indexOf('ravi') !== -1 || 
@@ -442,15 +442,14 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 return 'female';
               }
               
-              var matchingLangVoices = voicesList.filter(function(v) {
+              var candidateLangVoices = voicesList.filter(function(v) {
                 return v.lang.toLowerCase().indexOf(langFilter) !== -1;
               });
               
-              // Filter out Google network voices if there are system local offline voices to prevent pitch block
-              var nonGoogleVoices = matchingLangVoices.filter(function(v) {
+              var nonGoogleVoices = candidateLangVoices.filter(function(v) {
                 return v.name.toLowerCase().indexOf('google') === -1;
               });
-              var candidateVoices = nonGoogleVoices.length > 0 ? nonGoogleVoices : matchingLangVoices;
+              var candidateVoices = nonGoogleVoices.length > 0 ? nonGoogleVoices : candidateLangVoices;
               
               var localVoices = candidateVoices.filter(function(v) {
                 return v.localService === true;
@@ -474,7 +473,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                 }
               }
               
-              // Bind voice object only if it matches selected gender. Otherwise, drop voice object binding to force default browser pitch shift
               if (voice) {
                 var voiceGender = getVoiceGender(voice);
                 if (voiceGender !== gender) {
@@ -487,10 +485,10 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
               // Force symmetric pitch modulation shifts!
               if (gender === 'female') {
                 var isVoiceMale = voice ? (getVoiceGender(voice) === 'male') : false;
-                msg.pitch = isVoiceMale ? 1.55 : 1.35; // Pitch shift male voice up to female range
+                msg.pitch = isVoiceMale ? 1.55 : 1.35;
               } else {
-                var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true; // Default to true if no voice matched
-                msg.pitch = isVoiceFemale ? 0.45 : 0.72; // Pitch shift female voice down to male range
+                var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true;
+                msg.pitch = isVoiceFemale ? 0.45 : 0.72;
               }
               
               msg.rate = (msg.lang === 'hi-IN') ? 0.72 : 0.8;
