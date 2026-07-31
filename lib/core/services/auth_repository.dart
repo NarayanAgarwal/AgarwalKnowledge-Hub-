@@ -18,4 +18,8 @@ abstract class AuthRepository {
   Future<UserProfile?> getUserProfile(String uid);
   Future<void> saveUserProfile(UserProfile profile);
   Future<bool> resetPassword(String phoneOrEmail);
+  Future<UserProfile?> registerStudent(UserProfile profile, String password);
+  Future<UserProfile?> loginWithPassword(String phone, String password);
+  Future<bool> updatePassword(String phone, String newPassword);
+  Future<bool> isPhoneRegistered(String phone);
 }

@@ -15,12 +15,14 @@ class AuthViewModel with ChangeNotifier {
   String? _verificationId;
   bool _codeSent = false;
   bool _rememberMe = true;
+  bool _isOtpLoginMode = false;
 
   UserProfile? get userProfile => _userProfile;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get codeSent => _codeSent;
   bool get rememberMe => _rememberMe;
+  bool get isOtpLoginMode => _isOtpLoginMode;
 
   late final Future<void> initializationFuture;
 
@@ -31,6 +33,139 @@ class AuthViewModel with ChangeNotifier {
   void toggleRememberMe(bool value) {
     _rememberMe = value;
     notifyListeners();
+  }
+
+  void toggleLoginMode(bool value) {
+    _isOtpLoginMode = value;
+    _codeSent = false;
+    _verificationId = null;
+    _errorMessage = null;
+    notifyListeners();
+  }
+
+  Future<bool> isPhoneRegistered(String phone) async {
+    return await _authRepository.isPhoneRegistered(phone);
+  }
+
+  Future<bool> registerStudent({
+    required String name,
+    required String phone,
+    required String password,
+    required String userClass,
+    required String rollNumber,
+    required String parentName,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final bool alreadyRegistered = await _authRepository.isPhoneRegistered(phone);
+      if (alreadyRegistered) {
+        throw Exception("Mobile number is already registered.");
+      }
+
+      final String uniqueUid = "student_${DateTime.now().millisecondsSinceEpoch}";
+      final profile = UserProfile(
+        uid: uniqueUid,
+        role: AppStrings.roleStudent,
+        name: name,
+        phone: phone,
+        email: "",
+        address: "",
+        userClass: userClass,
+        rollNumber: rollNumber,
+        gender: "Male",
+        dob: "",
+        admissionNumber: "ADM${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}",
+        school: "Agarwal Knowledge Hub",
+        parentName: parentName,
+        parentMobile: phone,
+        emergencyContact: "",
+        profilePhotoUrl: "",
+        createdDate: DateTime.now(),
+        lastLogin: DateTime.now(),
+      );
+
+      final registeredProfile = await _authRepository.registerStudent(profile, password);
+      if (registeredProfile != null) {
+        _userProfile = registeredProfile;
+        
+        final prefs = await SharedPreferences.getInstance();
+        if (_rememberMe) {
+          await prefs.setBool('auto_login', true);
+          await prefs.setString('saved_uid', registeredProfile.uid);
+        } else {
+          await prefs.setBool('auto_login', false);
+          await prefs.remove('saved_uid');
+        }
+        
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll("Exception: ", "");
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return false;
+  }
+
+  Future<bool> loginWithPassword(String phone, String password) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final profile = await _authRepository.loginWithPassword(phone, password);
+      if (profile != null) {
+        _userProfile = profile;
+        
+        final prefs = await SharedPreferences.getInstance();
+        if (_rememberMe) {
+          await prefs.setBool('auto_login', true);
+          await prefs.setString('saved_uid', profile.uid);
+        } else {
+          await prefs.setBool('auto_login', false);
+          await prefs.remove('saved_uid');
+        }
+        
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll("Exception: ", "");
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return false;
+  }
+
+  Future<bool> resetPasswordWithOtp(String phone, String newPassword) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final success = await _authRepository.updatePassword(phone, newPassword);
+      if (success) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        throw Exception("Failed to update password. Mobile number not found.");
+      }
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll("Exception: ", "");
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return false;
   }
 
   void clearError() {

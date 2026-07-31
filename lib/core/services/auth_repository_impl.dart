@@ -339,4 +339,209 @@ class AuthRepositoryImpl implements AuthRepository {
       return false;
     }
   }
+
+  @override
+  Future<bool> isPhoneRegistered(String phone) async {
+    if (_useMock) {
+      final prefs = await SharedPreferences.getInstance();
+      final usersJson = prefs.getString('mock_registered_users');
+      if (usersJson != null) {
+        final List<dynamic> usersList = jsonDecode(usersJson);
+        return usersList.any((u) => u['phone'] == phone || u['phone'] == "+91$phone" || phone == "+91${u['phone']}");
+      }
+      return phone == "+919876543210" || phone == "9876543210";
+    }
+
+    try {
+      final query = await _firestore
+          .collection(AppStrings.colUsers)
+          .where('phone', isEqualTo: phone)
+          .limit(1)
+          .get();
+      return query.docs.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  @override
+  Future<UserProfile?> registerStudent(UserProfile profile, String password) async {
+    if (_useMock) {
+      final prefs = await SharedPreferences.getInstance();
+      final usersJson = prefs.getString('mock_registered_users');
+      List<dynamic> usersList = [];
+      if (usersJson != null) {
+        usersList = jsonDecode(usersJson);
+      }
+      
+      usersList.removeWhere((u) => u['phone'] == profile.phone);
+      
+      final userData = {
+        'uid': profile.uid,
+        'role': profile.role,
+        'name': profile.name,
+        'phone': profile.phone,
+        'email': profile.email,
+        'address': profile.address,
+        'class': profile.userClass,
+        'rollNumber': profile.rollNumber,
+        'gender': profile.gender,
+        'dob': profile.dob,
+        'admissionNumber': profile.admissionNumber,
+        'school': profile.school,
+        'parentName': profile.parentName,
+        'parentMobile': profile.parentMobile,
+        'emergencyContact': profile.emergencyContact,
+        'profilePhotoUrl': profile.profilePhotoUrl,
+        'createdDate': profile.createdDate.toIso8601String(),
+        'lastLogin': profile.lastLogin.toIso8601String(),
+        'password': password,
+      };
+      
+      usersList.add(userData);
+      await prefs.setString('mock_registered_users', jsonEncode(usersList));
+      
+      await saveUserProfile(profile);
+      return profile;
+    }
+
+    try {
+      final profileData = profile.toFirestore();
+      profileData['password'] = password;
+      
+      await _firestore
+          .collection(AppStrings.colUsers)
+          .doc(profile.uid)
+          .set(profileData);
+          
+      return profile;
+    } catch (e) {
+      throw Exception("Registration failed: ${e.toString()}");
+    }
+  }
+
+  @override
+  Future<UserProfile?> loginWithPassword(String phone, String password) async {
+    if (_useMock) {
+      final prefs = await SharedPreferences.getInstance();
+      
+      if ((phone == "+919876543210" || phone == "9876543210") && password == "123456") {
+        final defaultProfile = await getUserProfile("mock_uid_123");
+        if (defaultProfile != null) {
+          await saveUserProfile(defaultProfile);
+          return defaultProfile;
+        }
+      }
+      
+      final usersJson = prefs.getString('mock_registered_users');
+      if (usersJson != null) {
+        final List<dynamic> usersList = jsonDecode(usersJson);
+        final match = usersList.firstWhere(
+          (u) => (u['phone'] == phone || u['phone'] == "+91$phone" || phone == "+91\${u['phone']}" || "+91$phone" == u['phone'] || phone == u['phone']) && u['password'] == password,
+          orElse: () => null,
+        );
+        if (match != null) {
+          final matchedProfile = UserProfile(
+            uid: match['uid'],
+            role: match['role'] ?? AppStrings.roleStudent,
+            name: match['name'],
+            phone: match['phone'],
+            email: match['email'] ?? "",
+            address: match['address'] ?? "",
+            userClass: match['class'] ?? "",
+            rollNumber: match['rollNumber'] ?? "",
+            gender: match['gender'] ?? "",
+            dob: match['dob'] ?? "",
+            admissionNumber: match['admissionNumber'] ?? "",
+            school: match['school'] ?? "Agarwal Knowledge Hub",
+            parentName: match['parentName'] ?? "",
+            parentMobile: match['parentMobile'] ?? "",
+            emergencyContact: match['emergencyContact'] ?? "",
+            profilePhotoUrl: match['profilePhotoUrl'] ?? "",
+            createdDate: DateTime.parse(match['createdDate']),
+            lastLogin: DateTime.now(),
+          );
+          await saveUserProfile(matchedProfile);
+          return matchedProfile;
+        }
+      }
+      throw Exception("Incorrect mobile number or password.");
+    }
+
+    try {
+      final query = await _firestore
+          .collection(AppStrings.colUsers)
+          .where('phone', isEqualTo: phone)
+          .limit(1)
+          .get();
+          
+      if (query.docs.isEmpty) {
+        throw Exception("Mobile number is not registered.");
+      }
+      
+      final doc = query.docs.first;
+      final data = doc.data();
+      if (data['password'] != password) {
+        throw Exception("Incorrect password entered.");
+      }
+      
+      final profile = UserProfile.fromFirestore(data, doc.id);
+      await _firestore
+          .collection(AppStrings.colUsers)
+          .doc(profile.uid)
+          .update({'lastLogin': Timestamp.fromDate(DateTime.now())});
+          
+      return profile.copyWith(lastLogin: DateTime.now());
+    } catch (e) {
+      throw Exception(e.toString().replaceAll("Exception: ", ""));
+    }
+  }
+
+  @override
+  Future<bool> updatePassword(String phone, String newPassword) async {
+    if (_useMock) {
+      final prefs = await SharedPreferences.getInstance();
+      final usersJson = prefs.getString('mock_registered_users');
+      if (usersJson != null) {
+        final List<dynamic> usersList = jsonDecode(usersJson);
+        for (var u in usersList) {
+          if (u['phone'] == phone || u['phone'] == "+91$phone" || phone == "+91\${u['phone']}" || "+91$phone" == u['phone'] || phone == u['phone']) {
+            u['password'] = newPassword;
+            await prefs.setString('mock_registered_users', jsonEncode(usersList));
+            return true;
+          }
+        }
+      }
+      if (phone == "+919876543210" || phone == "9876543210") {
+        final defaultProfile = await getUserProfile("mock_uid_123");
+        if (defaultProfile != null) {
+          await registerStudent(defaultProfile, newPassword);
+          return true;
+        }
+      }
+      return false;
+    }
+
+    try {
+      final query = await _firestore
+          .collection(AppStrings.colUsers)
+          .where('phone', isEqualTo: phone)
+          .limit(1)
+          .get();
+          
+      if (query.docs.isEmpty) {
+        return false;
+      }
+      
+      final docId = query.docs.first.id;
+      await _firestore
+          .collection(AppStrings.colUsers)
+          .doc(docId)
+          .update({'password': newPassword});
+          
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
