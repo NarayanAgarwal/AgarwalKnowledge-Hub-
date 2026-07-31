@@ -150,8 +150,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 6),
                         CustomTextField(
                           controller: _nameController,
+                          labelText: 'Name',
                           hintText: 'Enter student name',
-                          prefixIcon: const Icon(Icons.person, color: AppColors.primaryBlue),
+                          prefixIcon: Icons.person,
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) return 'Please enter your full name';
                             return null;
@@ -164,8 +165,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 6),
                         CustomTextField(
                           controller: _phoneController,
+                          labelText: 'Mobile Number',
                           hintText: 'Enter mobile number',
-                          prefixIcon: const Icon(Icons.phone, color: AppColors.primaryBlue),
+                          prefixIcon: Icons.phone,
                           keyboardType: TextInputType.phone,
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) return 'Please enter mobile number';
@@ -233,8 +235,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   const SizedBox(height: 6),
                                   CustomTextField(
                                     controller: _rollController,
+                                    labelText: 'Roll Number',
                                     hintText: 'e.g. 15',
-                                    prefixIcon: const Icon(Icons.tag, color: AppColors.primaryBlue),
+                                    prefixIcon: Icons.tag,
                                     keyboardType: TextInputType.number,
                                     validator: (val) {
                                       if (val == null || val.trim().isEmpty) return 'Required';
@@ -253,8 +256,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 6),
                         CustomTextField(
                           controller: _parentController,
+                          labelText: "Parent's Name",
                           hintText: "Enter parent name",
-                          prefixIcon: const Icon(Icons.supervisor_account, color: AppColors.primaryBlue),
+                          prefixIcon: Icons.supervisor_account,
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) return "Please enter parent name";
                             return null;
@@ -267,9 +271,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 6),
                         CustomTextField(
                           controller: _passwordController,
+                          labelText: 'Password',
                           hintText: 'Set password',
-                          prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primaryBlue),
-                          obscureText: true,
+                          prefixIcon: Icons.lock_outline,
+                          isPassword: true,
                           validator: (val) {
                             if (val == null || val.isEmpty) return 'Please set a password';
                             if (val.length < 6) return 'Password must be at least 6 characters';
@@ -283,9 +288,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 6),
                         CustomTextField(
                           controller: _confirmPasswordController,
+                          labelText: 'Confirm Password',
                           hintText: 'Confirm password',
-                          prefixIcon: const Icon(Icons.lock, color: AppColors.primaryBlue),
-                          obscureText: true,
+                          prefixIcon: Icons.lock,
+                          isPassword: true,
                           validator: (val) {
                             if (val == null || val.isEmpty) return 'Please confirm your password';
                             if (val != _passwordController.text) return 'Passwords do not match';

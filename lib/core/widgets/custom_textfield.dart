@@ -13,6 +13,8 @@ class CustomTextField extends StatefulWidget {
   final FocusNode? focusNode;
   final ValueChanged<String>? onFieldSubmitted;
 
+  final bool enabled;
+
   const CustomTextField({
     super.key,
     required this.controller,
@@ -25,6 +27,7 @@ class CustomTextField extends StatefulWidget {
     this.textInputAction,
     this.focusNode,
     this.onFieldSubmitted,
+    this.enabled = true,
   });
 
   @override
@@ -46,6 +49,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       textInputAction: widget.textInputAction,
       focusNode: widget.focusNode,
       onFieldSubmitted: widget.onFieldSubmitted,
+      enabled: widget.enabled,
       style: TextStyle(
         color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
         fontSize: 16,

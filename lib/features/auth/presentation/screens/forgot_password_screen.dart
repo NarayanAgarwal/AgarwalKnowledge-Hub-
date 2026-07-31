@@ -202,8 +202,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       const SizedBox(height: 6),
                       CustomTextField(
                         controller: _phoneController,
+                        labelText: 'Mobile Number',
                         hintText: 'Enter mobile number',
-                        prefixIcon: const Icon(Icons.phone, color: AppColors.primaryBlue),
+                        prefixIcon: Icons.phone,
                         keyboardType: TextInputType.phone,
                         enabled: !_isOtpSent,
                         validator: (val) {
@@ -227,8 +228,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         const SizedBox(height: 6),
                         CustomTextField(
                           controller: _otpController,
+                          labelText: 'Reset OTP Code',
                           hintText: 'Enter OTP code',
-                          prefixIcon: const Icon(Icons.sms_outlined, color: AppColors.primaryBlue),
+                          prefixIcon: Icons.sms_outlined,
                           keyboardType: TextInputType.number,
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) return 'Please enter OTP';
@@ -242,9 +244,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         const SizedBox(height: 6),
                         CustomTextField(
                           controller: _passwordController,
+                          labelText: 'New Password',
                           hintText: 'Enter new password',
-                          prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primaryBlue),
-                          obscureText: true,
+                          prefixIcon: Icons.lock_outline,
+                          isPassword: true,
                           validator: (val) {
                             if (val == null || val.isEmpty) return 'Please set a password';
                             if (val.length < 6) return 'Password must be at least 6 characters';
@@ -257,9 +260,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         const SizedBox(height: 6),
                         CustomTextField(
                           controller: _confirmPasswordController,
+                          labelText: 'Confirm Password',
                           hintText: 'Confirm new password',
-                          prefixIcon: const Icon(Icons.lock, color: AppColors.primaryBlue),
-                          obscureText: true,
+                          prefixIcon: Icons.lock,
+                          isPassword: true,
                           validator: (val) {
                             if (val == null || val.isEmpty) return 'Please confirm your password';
                             if (val != _passwordController.text) return 'Passwords do not match';
