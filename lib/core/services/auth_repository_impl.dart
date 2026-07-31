@@ -16,10 +16,11 @@ class AuthRepositoryImpl implements AuthRepository {
   bool _useMock = false;
   String? _pendingVerifyPhone;
 
-  String _normalizePhone(String phone) {
+  String _normalizePhone(String? phone) {
+    if (phone == null || phone.isEmpty) return '';
     final clean = phone.replaceAll(RegExp(r'\D'), '');
-    if (clean.length == 12 && clean.startsWith('91')) {
-      return clean.substring(2);
+    if (clean.length >= 10) {
+      return clean.substring(clean.length - 10);
     }
     return clean;
   }
