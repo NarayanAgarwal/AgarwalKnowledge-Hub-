@@ -1349,13 +1349,10 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                                       section: "easy-$letter",
                                       baseColor: isDark ? AppColors.darkSurface : Colors.grey[50]!,
                                       shadowColor: blockShadowColor,
-                                      onTap: () {
-                                        final cleanWord = item["word"]!.toLowerCase();
-                                        final cleanMeaning = item["meaning"]!.toLowerCase();
-                                        _speakText("$letter. $cleanWord. | ${item["word"]} का मतलब ${item["meaning"]} है। | ${item["sentence"]}",phonetic: "${letter.toLowerCase()}. ${letter.toLowerCase()} for $cleanWord. | ${item["word"]} ka matlab ${item["meaningRoman"]} hai. | ${item["sentence"]!.toLowerCase()}");
-                                        );
-                                        );
-                                      },
+                                       onTap: () {
+                                         final cleanWord = item["word"]!.toLowerCase();
+                                         _speakText("$letter. $cleanWord. | ${item["word"]} का मतलब ${item["meaning"]} है। | ${item["sentence"]}",phonetic: "${letter.toLowerCase()}. ${letter.toLowerCase()} for $cleanWord. | ${item["word"]} ka matlab ${item["meaningRoman"]} hai. | ${item["sentence"]!.toLowerCase()}");
+                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                                         child: Column(
