@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_profile.dart';
 import 'auth_repository.dart';
 import '../constants/app_strings.dart';
@@ -13,9 +15,39 @@ class AuthRepositoryImpl implements AuthRepository {
   UserProfile? _mockUser;
   bool _useMock = false;
 
-  void enableMockMode(UserProfile mockUser) {
-    _mockUser = mockUser;
+  void enableMockMode(UserProfile mockUser) async {
     _useMock = true;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedMockJson = prefs.getString('mock_user_profile');
+      if (savedMockJson != null) {
+        final data = jsonDecode(savedMockJson) as Map<String, dynamic>;
+        _mockUser = UserProfile(
+          uid: data['uid'] ?? mockUser.uid,
+          role: data['role'] ?? mockUser.role,
+          name: data['name'] ?? mockUser.name,
+          phone: data['phone'] ?? mockUser.phone,
+          email: data['email'] ?? mockUser.email,
+          address: data['address'] ?? mockUser.address,
+          userClass: data['class'] ?? mockUser.userClass,
+          rollNumber: data['rollNumber'] ?? mockUser.rollNumber,
+          gender: data['gender'] ?? mockUser.gender,
+          dob: data['dob'] ?? mockUser.dob,
+          admissionNumber: data['admissionNumber'] ?? mockUser.admissionNumber,
+          school: data['school'] ?? mockUser.school,
+          parentName: data['parentName'] ?? mockUser.parentName,
+          parentMobile: data['parentMobile'] ?? mockUser.parentMobile,
+          emergencyContact: data['emergencyContact'] ?? mockUser.emergencyContact,
+          profilePhotoUrl: data['profilePhotoUrl'] ?? mockUser.profilePhotoUrl,
+          createdDate: data['createdDate'] != null ? DateTime.parse(data['createdDate']) : mockUser.createdDate,
+          lastLogin: data['lastLogin'] != null ? DateTime.parse(data['lastLogin']) : mockUser.lastLogin,
+        );
+      } else {
+        _mockUser = mockUser;
+      }
+    } catch (_) {
+      _mockUser = mockUser;
+    }
   }
 
   @override
@@ -185,6 +217,30 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> saveUserProfile(UserProfile profile) async {
     if (_useMock) {
       _mockUser = profile;
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final mockData = {
+          'uid': profile.uid,
+          'role': profile.role,
+          'name': profile.name,
+          'phone': profile.phone,
+          'email': profile.email,
+          'address': profile.address,
+          'class': profile.userClass,
+          'rollNumber': profile.rollNumber,
+          'gender': profile.gender,
+          'dob': profile.dob,
+          'admissionNumber': profile.admissionNumber,
+          'school': profile.school,
+          'parentName': profile.parentName,
+          'parentMobile': profile.parentMobile,
+          'emergencyContact': profile.emergencyContact,
+          'profilePhotoUrl': profile.profilePhotoUrl,
+          'createdDate': profile.createdDate.toIso8601String(),
+          'lastLogin': profile.lastLogin.toIso8601String(),
+        };
+        await prefs.setString('mock_user_profile', jsonEncode(mockData));
+      } catch (_) {}
       return;
     }
     await _firestore

@@ -64,7 +64,7 @@ void main() async {
     authRepo.enableMockMode(UserProfile(
       uid: "student_user_123",
       role: "Student",
-      name: "Aman Agarwal",
+      name: "Narayan Agarwal",
       phone: "+919876543210",
       email: "aman@agarwal.com",
       address: "Mithapur, Patna",
@@ -97,7 +97,7 @@ void main() async {
       authRepo.enableMockMode(UserProfile(
         uid: "student_user_123",
         role: "Student",
-        name: "Aman Agarwal",
+        name: "Narayan Agarwal",
         phone: "+919876543210",
         email: "aman@agarwal.com",
         address: "Mithapur, Patna",
