@@ -228,134 +228,134 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   };
   final Map<String, List<Map<String, String>>> _easyWordsGrouped = {
     "A": [
-      {"word": "ANT", "emoji": "🐜", "meaning": "चींटी", "sentence": "Ants work together in a team."},
-      {"word": "AXE", "emoji": "🪓", "meaning": "कुल्हाड़ी", "sentence": "An axe is used to cut wood."},
-      {"word": "APPLE", "emoji": "🍎", "meaning": "सेब", "sentence": "An apple a day keeps the doctor away."}
+      {"word": "ANT", "emoji": "🐜", "meaning": "चींटी", "meaningRoman": "cheeti", "sentence": "Ants work together in a team."},
+      {"word": "AXE", "emoji": "🪓", "meaning": "कुल्हाड़ी", "meaningRoman": "kulhaadi", "sentence": "An axe is used to cut wood."},
+      {"word": "APPLE", "emoji": "🍎", "meaning": "सेब", "meaningRoman": "seb", "sentence": "An apple a day keeps the doctor away."}
     ],
     "B": [
-      {"word": "BALL", "emoji": "⚽", "meaning": "गेँद", "sentence": "Throw the colorful ball."},
-      {"word": "BAT", "emoji": "🏏", "meaning": "बल्ला", "sentence": "Hit the ball with the bat."},
-      {"word": "BOY", "emoji": "👦", "meaning": "लड़का", "sentence": "The boy is reading a book."}
+      {"word": "BALL", "emoji": "⚽", "meaning": "गेँद", "meaningRoman": "gend", "sentence": "Throw the colorful ball."},
+      {"word": "BAT", "emoji": "🏏", "meaning": "बल्ला", "meaningRoman": "balla", "sentence": "Hit the ball with the bat."},
+      {"word": "BOY", "emoji": "👦", "meaning": "लड़का", "meaningRoman": "ladka", "sentence": "The boy is reading a book."}
     ],
     "C": [
-      {"word": "CAT", "emoji": "🐱", "meaning": "बिल्ली", "sentence": "The cat drinks milk."},
-      {"word": "CAR", "emoji": "🚗", "meaning": "गाड़ी", "sentence": "Drive the red car safely."},
-      {"word": "COW", "emoji": "🐄", "meaning": "गाय", "sentence": "The cow gives fresh milk."}
+      {"word": "CAT", "emoji": "🐱", "meaning": "बिल्ली", "meaningRoman": "billee", "sentence": "The cat drinks milk."},
+      {"word": "CAR", "emoji": "🚗", "meaning": "गाड़ी", "meaningRoman": "gaadi", "sentence": "Drive the red car safely."},
+      {"word": "COW", "emoji": "🐄", "meaning": "गाय", "meaningRoman": "gaay", "sentence": "The cow gives fresh milk."}
     ],
     "D": [
-      {"word": "DOG", "emoji": "🐶", "meaning": "कुत्ता", "sentence": "The dog is wagging its tail."},
-      {"word": "DOLL", "emoji": "🪆", "meaning": "गुड़िया", "sentence": "I have a cute barbie doll."},
-      {"word": "DUCK", "emoji": "🦆", "meaning": "बतख", "sentence": "Ducks are swimming in the pond."}
+      {"word": "DOG", "emoji": "🐶", "meaning": "कुत्ता", "meaningRoman": "kutta", "sentence": "The dog is wagging its tail."},
+      {"word": "DOLL", "emoji": "🪆", "meaning": "गुड़िया", "meaningRoman": "gudiya", "sentence": "I have a cute barbie doll."},
+      {"word": "DUCK", "emoji": "🦆", "meaning": "बतख", "meaningRoman": "battakh", "sentence": "Ducks are swimming in the pond."}
     ],
     "E": [
-      {"word": "EGG", "emoji": "🥚", "meaning": "अंडा", "sentence": "Eat a healthy egg daily."},
-      {"word": "EYE", "emoji": "👁️", "meaning": "आँख", "sentence": "Look at the stars with your eyes."},
-      {"word": "EAR", "emoji": "👂", "meaning": "कान", "sentence": "Listen to the birds with your ears."}
+      {"word": "EGG", "emoji": "🥚", "meaning": "अंडा", "meaningRoman": "anda", "sentence": "Eat a healthy egg daily."},
+      {"word": "EYE", "emoji": "👁️", "meaning": "आँख", "meaningRoman": "aankh", "sentence": "Look at the stars with your eyes."},
+      {"word": "EAR", "emoji": "👂", "meaning": "कान", "meaningRoman": "kaan", "sentence": "Listen to the birds with your ears."}
     ],
     "F": [
-      {"word": "FISH", "emoji": "🐟", "meaning": "मछली", "sentence": "Fish live under water."},
-      {"word": "FOX", "emoji": "🦊", "meaning": "लोमड़ी", "sentence": "The fox is a clever animal."},
-      {"word": "FAN", "emoji": "🪭", "meaning": "पंखा", "sentence": "Switch on the fan to feel cool."}
+      {"word": "FISH", "emoji": "🐟", "meaning": "मछली", "meaningRoman": "machhli", "sentence": "Fish live under water."},
+      {"word": "FOX", "emoji": "🦊", "meaning": "लोमड़ी", "meaningRoman": "lomdi", "sentence": "The fox is a clever animal."},
+      {"word": "FAN", "emoji": "🪭", "meaning": "पंखा", "meaningRoman": "pankha", "sentence": "Switch on the fan to feel cool."}
     ],
     "G": [
-      {"word": "GRAPES", "emoji": "🍇", "meaning": "अंगूर", "sentence": "Grapes grow in bunches."},
-      {"word": "GIRL", "emoji": "👧", "meaning": "लड़की", "sentence": "She is a very smart child."},
-      {"word": "GOAT", "emoji": "🐐", "meaning": "बकरी", "sentence": "Goats eat fresh green leaves."}
+      {"word": "GRAPES", "emoji": "🍇", "meaning": "अंगूर", "meaningRoman": "angoor", "sentence": "Grapes grow in bunches."},
+      {"word": "GIRL", "emoji": "👧", "meaning": "लड़की", "meaningRoman": "ladkee", "sentence": "She is a very smart child."},
+      {"word": "GOAT", "emoji": "🐐", "meaning": "बकरी", "meaningRoman": "bakree", "sentence": "Goats eat fresh green leaves."}
     ],
     "H": [
-      {"word": "HOUSE", "emoji": "🏠", "meaning": "घर", "sentence": "This is our beautiful house."},
-      {"word": "HAT", "emoji": "🎩", "meaning": "टोपी", "sentence": "Wear a sun hat on hot days."},
-      {"word": "HEN", "emoji": "🐔", "meaning": "मुर्गी", "sentence": "The hen laid an egg."}
+      {"word": "HOUSE", "emoji": "🏠", "meaning": "घर", "meaningRoman": "ghar", "sentence": "This is our beautiful house."},
+      {"word": "HAT", "emoji": "🎩", "meaning": "टोपी", "meaningRoman": "topee", "sentence": "Wear a sun hat on hot days."},
+      {"word": "HEN", "emoji": "🐔", "meaning": "मुर्गी", "meaningRoman": "murgee", "sentence": "The hen laid an egg."}
     ],
     "I": [
-      {"word": "ICE", "emoji": "🧊", "meaning": "बर्फ", "sentence": "Ice is very cold and solid."},
-      {"word": "INK", "emoji": "✒️", "meaning": "स्याही", "sentence": "Fill ink in the fountain pen."},
-      {"word": "IRON", "emoji": "🧲", "meaning": "लोहा", "sentence": "Magnets attract iron nails."}
+      {"word": "ICE", "emoji": "🧊", "meaning": "बर्फ", "meaningRoman": "barf", "sentence": "Ice is very cold and solid."},
+      {"word": "INK", "emoji": "✒️", "meaning": "स्याही", "meaningRoman": "syaahi", "sentence": "Fill ink in the fountain pen."},
+      {"word": "IRON", "emoji": "🧲", "meaning": "लोहा", "meaningRoman": "loha", "sentence": "Magnets attract iron nails."}
     ],
     "J": [
-      {"word": "JUG", "emoji": "🏺", "meaning": "जग", "sentence": "Pour water from the jug."},
-      {"word": "JEEP", "emoji": "🚙", "meaning": "जीप", "sentence": "We went for a ride in the jeep."},
-      {"word": "JAM", "emoji": "🍓", "meaning": "जैम", "sentence": "Spread sweet jam on bread."}
+      {"word": "JUG", "emoji": "🏺", "meaning": "जग", "meaningRoman": "jag", "sentence": "Pour water from the jug."},
+      {"word": "JEEP", "emoji": "🚙", "meaning": "जीप", "meaningRoman": "jeep", "sentence": "We went for a ride in the jeep."},
+      {"word": "JAM", "emoji": "🍓", "meaning": "जैम", "meaningRoman": "jam", "sentence": "Spread sweet jam on bread."}
     ],
     "K": [
-      {"word": "KITE", "emoji": "🪁", "meaning": "पतंग", "sentence": "Kites fly high in the air."},
-      {"word": "KEY", "emoji": "🔑", "meaning": "चाबी", "sentence": "Use the key to open the lock."},
-      {"word": "KING", "emoji": "👑", "meaning": "राजा", "sentence": "The king lives in a castle."}
+      {"word": "KITE", "emoji": "🪁", "meaning": "पतंग", "meaningRoman": "patang", "sentence": "Kites fly high in the air."},
+      {"word": "KEY", "emoji": "🔑", "meaning": "चाबी", "meaningRoman": "chaabee", "sentence": "Use the key to open the lock."},
+      {"word": "KING", "emoji": "👑", "meaning": "राजा", "meaningRoman": "raaja", "sentence": "The king lives in a castle."}
     ],
     "L": [
-      {"word": "LION", "emoji": "🦁", "meaning": "शेर", "sentence": "The lion is the king of jungle."},
-      {"word": "LAMP", "emoji": "💡", "meaning": "दीपक", "sentence": "Turn on the lamp at night."},
-      {"word": "LEAF", "emoji": "🍃", "meaning": "पत्ता", "sentence": "The green leaf fell from tree."}
+      {"word": "LION", "emoji": "🦁", "meaning": "शेर", "meaningRoman": "sher", "sentence": "The lion is the king of jungle."},
+      {"word": "LAMP", "emoji": "💡", "meaning": "दीपक", "meaningRoman": "deepak", "sentence": "Turn on the lamp at night."},
+      {"word": "LEAF", "emoji": "🍃", "meaning": "पत्ता", "meaningRoman": "patta", "sentence": "The green leaf fell from tree."}
     ],
     "M": [
-      {"word": "MONKEY", "emoji": "🐒", "meaning": "बन्दर", "sentence": "Monkey is swinging on branches."},
-      {"word": "MILK", "emoji": "🥛", "meaning": "दूध", "sentence": "Drink warm milk for strong bones."},
-      {"word": "MOON", "emoji": "🌙", "meaning": "चाँद", "sentence": "The moon shines bright at night."}
+      {"word": "MONKEY", "emoji": "🐒", "meaning": "बन्दर", "meaningRoman": "bandar", "sentence": "Monkey is swinging on branches."},
+      {"word": "MILK", "emoji": "🥛", "meaning": "दूध", "meaningRoman": "doodh", "sentence": "Drink warm milk for strong bones."},
+      {"word": "MOON", "emoji": "🌙", "meaning": "चाँद", "meaningRoman": "chaand", "sentence": "The moon shines bright at night."}
     ],
     "N": [
-      {"word": "NEST", "emoji": "🪺", "meaning": "घोंसला", "sentence": "Birds built a nest on tree."},
-      {"word": "NET", "emoji": "🕸️", "meaning": "जाल", "sentence": "Use a net to catch butterflies."},
-      {"word": "NUT", "emoji": "🥜", "meaning": "अखरोट", "sentence": "Peanuts are a healthy type of nut."}
+      {"word": "NEST", "emoji": "🪺", "meaning": "घोंसला", "meaningRoman": "ghonsla", "sentence": "Birds built a nest on tree."},
+      {"word": "NET", "emoji": "🕸️", "meaning": "जाल", "meaningRoman": "jaal", "sentence": "Use a net to catch butterflies."},
+      {"word": "NUT", "emoji": "🥜", "meaning": "अखरोट", "meaningRoman": "akhrot", "sentence": "Peanuts are a healthy type of nut."}
     ],
     "O": [
-      {"word": "ORANGE", "emoji": "🍊", "meaning": "संतरा", "sentence": "Orange is a sweet juicy fruit."},
-      {"word": "OWL", "emoji": "🦉", "meaning": "उल्लू", "sentence": "The owl stays awake all night."},
-      {"word": "OX", "emoji": "🐂", "meaning": "बैल", "sentence": "The strong ox plows the field."}
+      {"word": "ORANGE", "emoji": "🍊", "meaning": "संतरा", "meaningRoman": "santra", "sentence": "Orange is a sweet juicy fruit."},
+      {"word": "OWL", "emoji": "🦉", "meaning": "उल्लू", "meaningRoman": "ullu", "sentence": "The owl stays awake all night."},
+      {"word": "OX", "emoji": "🐂", "meaning": "बैल", "meaningRoman": "bail", "sentence": "The strong ox plows the field."}
     ],
     "P": [
-      {"word": "PENCIL", "emoji": "✏️", "meaning": "पेंसिल", "sentence": "Sharpen your pencil before writing."},
-      {"word": "PEN", "emoji": "🖊️", "meaning": "पेन", "sentence": "The teacher writes with a blue pen."},
-      {"word": "PIG", "emoji": "🐷", "meaning": "सुअर", "sentence": "The little pig plays in the mud."}
+      {"word": "PENCIL", "emoji": "✏️", "meaning": "पेंसिल", "meaningRoman": "pencil", "sentence": "Sharpen your pencil before writing."},
+      {"word": "PEN", "emoji": "🖊️", "meaning": "पेन", "meaningRoman": "pen", "sentence": "The teacher writes with a blue pen."},
+      {"word": "PIG", "emoji": "🐷", "meaning": "सुअर", "meaningRoman": "suar", "sentence": "The little pig plays in the mud."}
     ],
     "Q": [
-      {"word": "QUEEN", "emoji": "👑", "meaning": "रानी", "sentence": "The queen wears a shiny crown."},
-      {"word": "QUILT", "emoji": "🛏️", "meaning": "रजाई", "sentence": "Use a warm quilt in winter."},
-      {"word": "QUIZ", "emoji": "❓", "meaning": "प्रश्नोत्तरी", "sentence": "Answer the fun quiz questions."}
+      {"word": "QUEEN", "emoji": "👑", "meaning": "रानी", "meaningRoman": "raanee", "sentence": "The queen wears a shiny crown."},
+      {"word": "QUILT", "emoji": "🛏️", "meaning": "रजाई", "meaningRoman": "rajaee", "sentence": "Use a warm quilt in winter."},
+      {"word": "QUIZ", "emoji": "❓", "meaning": "प्रश्नोत्तरी", "meaningRoman": "prashnottari", "sentence": "Answer the fun quiz questions."}
     ],
     "R": [
-      {"word": "RABBIT", "emoji": "🐇", "meaning": "खरगोश", "sentence": "The white rabbit eats carrots."},
-      {"word": "ROSE", "emoji": "🌹", "meaning": "गुलाब", "sentence": "Rose is a beautiful red flower."},
-      {"word": "RING", "emoji": "💍", "meaning": "अंगूठी", "sentence": "She wears a gold ring on her finger."}
+      {"word": "RABBIT", "emoji": "🐇", "meaning": "खरगोश", "meaningRoman": "khargosh", "sentence": "The white rabbit eats carrots."},
+      {"word": "ROSE", "emoji": "🌹", "meaning": "गुलाब", "meaningRoman": "gulaab", "sentence": "Rose is a beautiful red flower."},
+      {"word": "RING", "emoji": "💍", "meaning": "अंगूठी", "meaningRoman": "angeothee", "sentence": "She wears a gold ring on her finger."}
     ],
     "S": [
-      {"word": "SUN", "emoji": "☀️", "meaning": "सूरज", "sentence": "The sun rises in the east."},
-      {"word": "STAR", "emoji": "⭐", "meaning": "तारा", "sentence": "A tiny star shines in the sky."},
-      {"word": "SHIP", "emoji": "🚢", "meaning": "जहाज", "sentence": "The big ship sails on sea."}
+      {"word": "SUN", "emoji": "☀️", "meaning": "सूरज", "meaningRoman": "sooraj", "sentence": "The sun rises in the east."},
+      {"word": "STAR", "emoji": "⭐", "meaning": "तारा", "meaningRoman": "taara", "sentence": "A tiny star shines in the sky."},
+      {"word": "SHIP", "emoji": "🚢", "meaning": "जहाज", "meaningRoman": "jahaaj", "sentence": "The big ship sails on sea."}
     ],
     "T": [
-      {"word": "TIGER", "emoji": "🐯", "meaning": "बाघ", "sentence": "The tiger has black stripes."},
-      {"word": "TOY", "emoji": "🧸", "meaning": "खिलौना", "sentence": "I share my toys with friends."},
-      {"word": "TREE", "emoji": "🌳", "meaning": "पेड़", "sentence": "Trees give us cool shade."}
+      {"word": "TIGER", "emoji": "🐯", "meaning": "बाघ", "meaningRoman": "baagh", "sentence": "The tiger has black stripes."},
+      {"word": "TOY", "emoji": "🧸", "meaning": "खिलौना", "meaningRoman": "khilona", "sentence": "I share my toys with friends."},
+      {"word": "TREE", "emoji": "🌳", "meaning": "पेड़", "meaningRoman": "ped", "sentence": "Trees give us cool shade."}
     ],
     "U": [
-      {"word": "UMBRELLA", "emoji": "☂️", "meaning": "छाता", "sentence": "Open your umbrella in the rain."},
-      {"word": "UNCLE", "emoji": "👨", "meaning": "चाचा", "sentence": "My uncle bought me a new toy."},
-      {"word": "UP", "emoji": "⬆️", "meaning": "ऊपर", "sentence": "Look up at the blue sky."}
+      {"word": "UMBRELLA", "emoji": "☂️", "meaning": "छाता", "meaningRoman": "chhaata", "sentence": "Open your umbrella in the rain."},
+      {"word": "UNCLE", "emoji": "👨", "meaning": "चाचा", "meaningRoman": "chaacha", "sentence": "My uncle bought me a new toy."},
+      {"word": "UP", "emoji": "⬆️", "meaning": "ऊपर", "meaningRoman": "oopar", "sentence": "Look up at the blue sky."}
     ],
     "V": [
-      {"word": "VAN", "emoji": "🚐", "meaning": "गाड़ी", "sentence": "The school van has arrived."},
-      {"word": "VIOLIN", "emoji": "🎻", "meaning": "वायलिन", "sentence": "Play sweet music on the violin."},
-      {"word": "VASE", "emoji": "🏺", "meaning": "फूलदान", "sentence": "Place fresh flowers in the vase."}
+      {"word": "VAN", "emoji": "🚐", "meaning": "गाड़ी", "meaningRoman": "gaadi", "sentence": "The school van has arrived."},
+      {"word": "VIOLIN", "emoji": "🎻", "meaning": "वायलिन", "meaningRoman": "violin", "sentence": "Play sweet music on the violin."},
+      {"word": "VASE", "emoji": "🏺", "meaning": "फूलदान", "meaningRoman": "phooladaan", "sentence": "Place fresh flowers in the vase."}
     ],
     "W": [
-      {"word": "WATCH", "emoji": "⌚", "meaning": "घड़ी", "sentence": "Check the time on your watch."},
-      {"word": "WATER", "emoji": "💧", "meaning": "पानी", "sentence": "Water is essential for life."},
-      {"word": "WEB", "emoji": "🕸️", "meaning": "जाल", "sentence": "The spider spun a sticky web."}
+      {"word": "WATCH", "emoji": "⌚", "meaning": "घड़ी", "meaningRoman": "ghadee", "sentence": "Check the time on your watch."},
+      {"word": "WATER", "emoji": "💧", "meaning": "पानी", "meaningRoman": "paanee", "sentence": "Water is essential for life."},
+      {"word": "WEB", "emoji": "🕸️", "meaning": "जाल", "meaningRoman": "jaal", "sentence": "The spider spun a sticky web."}
     ],
     "X": [
-      {"word": "BOX", "emoji": "📦", "meaning": "डिब्बा", "sentence": "Put toys inside the cardboard box."},
-      {"word": "FOX", "emoji": "🦊", "meaning": "लोमड़ी", "sentence": "The red fox has a bushy tail."},
-      {"word": "X-RAY", "emoji": "🩻", "meaning": "एक्स-रे", "sentence": "The doctor took an X-ray of my hand."}
+      {"word": "BOX", "emoji": "📦", "meaning": "डिब्बा", "meaningRoman": "dibba", "sentence": "Put toys inside the cardboard box."},
+      {"word": "FOX", "emoji": "🦊", "meaning": "लोमड़ी", "meaningRoman": "lomdi", "sentence": "The red fox has a bushy tail."},
+      {"word": "X-RAY", "emoji": "🩻", "meaning": "एक्स-रे", "meaningRoman": "x-ray", "sentence": "The doctor took an X-ray of my hand."}
     ],
     "Y": [
-      {"word": "YAK", "emoji": "🐂", "meaning": "याक", "sentence": "The yak lives in snowy mountains."},
-      {"word": "YACHT", "emoji": "⛵", "meaning": "नाव", "sentence": "The white yacht sails smoothly."},
-      {"word": "YOYO", "emoji": "🪀", "meaning": "योयो", "sentence": "Spin the yoyo up and down."}
+      {"word": "YAK", "emoji": "🐂", "meaning": "याक", "meaningRoman": "yak", "sentence": "The yak lives in snowy mountains."},
+      {"word": "YACHT", "emoji": "⛵", "meaning": "नाव", "meaningRoman": "naav", "sentence": "The white yacht sails smoothly."},
+      {"word": "YOYO", "emoji": "🪀", "meaning": "योयो", "meaningRoman": "yoyo", "sentence": "Spin the yoyo up and down."}
     ],
     "Z": [
-      {"word": "ZEBRA", "emoji": "🦓", "meaning": "जेब्रा", "sentence": "The zebra crossed the road."},
-      {"word": "ZIP", "emoji": "🤐", "meaning": "चैन", "sentence": "Close the zip of your bag."},
-      {"word": "ZOO", "emoji": "🦁", "meaning": "चिड़ियाघर", "sentence": "We saw many wild animals at the zoo."}
+      {"word": "ZEBRA", "emoji": "🦓", "meaning": "जेब्रा", "meaningRoman": "zebra", "sentence": "The zebra crossed the road."},
+      {"word": "ZIP", "emoji": "🤐", "meaning": "चैन", "meaningRoman": "chain", "sentence": "Close the zip of your bag."},
+      {"word": "ZOO", "emoji": "🦁", "meaning": "चिड़ियाघर", "meaningRoman": "chidiyaaghar", "sentence": "We saw many wild animals at the zoo."}
     ]
   };
   @override
@@ -1352,7 +1352,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                                       onTap: () {
                                         final cleanWord = item["word"]!.toLowerCase();
                                         final cleanMeaning = item["meaning"]!.toLowerCase();
-                                        _speakText("$letter. $cleanWord. | ${item["word"]} का मतलब ${item["meaning"]} है। | ${item["sentence"]}",phonetic: "${letter.toLowerCase()}. ${letter.toLowerCase()} for $cleanWord. | ${item["word"]} का मतलब ${item["meaning"]} है। | ${item["sentence"]!.toLowerCase()}"
+                                        _speakText("$letter. $cleanWord. | ${item["word"]} का मतलब ${item["meaning"]} है। | ${item["sentence"]}",phonetic: "${letter.toLowerCase()}. ${letter.toLowerCase()} for $cleanWord. | ${item["word"]} ka matlab ${item["meaningRoman"]} hai. | ${item["sentence"]!.toLowerCase()}");
                                         );
                                         );
                                       },
