@@ -307,7 +307,7 @@ class DashboardScreen extends StatelessWidget {
       children: [
         const Text(
           'Quick Access ⚡',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold, color: AppColors.primaryBlue),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.primaryBlue),
         ),
         const SizedBox(height: 14),
         GridView.count(
@@ -618,7 +618,7 @@ class DashboardScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Today\'s Schedule 📅', style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold)),
+        const Text('Today\'s Schedule 📅', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
@@ -686,7 +686,7 @@ class DashboardScreen extends StatelessWidget {
               color: AppColors.secondaryOrange.withOpacity(0.15),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Text('Live', style: TextStyle(color: AppColors.secondaryOrange, fontSize: 10, fontWeight: FontWeight.extrabold)),
+            child: const Text('Live', style: TextStyle(color: AppColors.secondaryOrange, fontSize: 10, fontWeight: FontWeight.w800)),
           ),
       ],
     );
@@ -699,7 +699,7 @@ class DashboardScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Latest Notice 📢', style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold)),
+        const Text('Latest Notice 📢', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
         const SizedBox(height: 12),
         Container(
           width: double.infinity,
@@ -720,7 +720,7 @@ class DashboardScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(child: Text(notice.title, style: const TextStyle(fontWeight: FontWeight.extrabold, fontSize: 16))),
+                  Expanded(child: Text(notice.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16))),
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -730,7 +730,7 @@ class DashboardScreen extends StatelessWidget {
                     ),
                     child: Text(
                       notice.type,
-                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.extrabold),
+                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w800),
                     ),
                   ),
                 ],
@@ -753,7 +753,7 @@ class DashboardScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Homework Due 📝', style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold)),
+        const Text('Homework Due 📝', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
@@ -802,7 +802,7 @@ class DashboardScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Lecture Materials 📚', style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold)),
+        const Text('Lecture Materials 📚', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
         const SizedBox(height: 12),
         Row(
           children: [
@@ -885,7 +885,7 @@ class DashboardScreen extends StatelessWidget {
       children: [
         const Text(
           'Classroom Stories 🎬',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 12),
         SizedBox(
