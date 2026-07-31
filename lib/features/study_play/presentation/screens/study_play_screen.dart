@@ -4,14 +4,11 @@ import 'package:universal_html/html.dart' as html;
 import 'package:universal_html/js.dart' as js;
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/glass_container.dart';
-
 class StudyPlayScreen extends StatefulWidget {
   const StudyPlayScreen({super.key});
-
   @override
   State<StudyPlayScreen> createState() => _StudyPlayScreenState();
 }
-
 class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _activeRhymeIndex = 0;
@@ -20,7 +17,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
   String _selectedVoiceGender = 'female'; // 'female' or 'male'
   int? _pressedGridIndex; // For 3D press animation on grids
   String? _pressedSection; // Track active tab section for grid presses
-
   final List<Map<String, String>> _rhymes = [
     {
       "title": "Twinkle Twinkle Little Star",
@@ -38,7 +34,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       "emoji": "🥚"
     }
   ];
-
   final List<Map<String, String>> _alphabets = [
     {"letter": "A", "word": "Apple", "emoji": "🍎", "color": "0xFFFFF1F1"},
     {"letter": "B", "word": "Ball", "emoji": "⚽", "color": "0xFFE3F2FD"},
@@ -67,7 +62,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     {"letter": "Y", "word": "Yacht", "emoji": "⛵", "color": "0xFFFFF1F1"},
     {"letter": "Z", "word": "Zebra", "emoji": "🦓", "color": "0xFFE3F2FD"},
   ];
-
   // 100% dictionary words in English fallbacks to prevent David/Zira spelling out letters!
   final List<Map<String, String>> _swar = [
     {"letter": "अ", "word": "अनार", "emoji": "🍒", "english": "uh. uh say ana are"},
@@ -84,7 +78,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     {"letter": "अं", "word": "अंगूर", "emoji": "🍇", "english": "uh. uh say on gore"},
     {"letter": "अः", "word": "खाली", "emoji": "🗣️", "english": "aha. aha say car lee"},
   ];
-
   final List<Map<String, String>> _vyanjan = [
     {"letter": "क", "word": "कबूतर", "emoji": "🕊️", "english": "kuh. kuh say kuh-boo-tar"},
     {"letter": "ख", "word": "खरगोश", "emoji": "🐇", "english": "khuh. khuh say khar-gosh"},
@@ -123,7 +116,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     {"letter": "त्र", "word": "त्रिशूल", "emoji": "🔱", "english": "truh. truh say tree-shool"},
     {"letter": "ज्ञ", "word": "ज्ञानी", "emoji": "👨‍🏫", "english": "gyuh. gyuh say gya-nee"},
   ];
-
   static const Map<String, String> _emoji3dPaths = {
     "🍎": "Red apple/red_apple",
     "⚽": "Soccer ball/soccer_ball",
@@ -181,7 +173,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     "👶": "Baby/baby",
     "🥚": "Egg/egg"
   };
-
   // Real photos and illustration URLs for all Varnmala cards to prevent cartoon icons!
   static const Map<String, String> _realVarnmalaImages = {
     "अ": "assets/images/anar.jpg",
@@ -235,153 +226,154 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     "त्र": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Trident.png",
     "ज्ञ": "assets/images/gyani.jpg"
   };
-
   final Map<String, List<Map<String, String>>> _easyWordsGrouped = {
     "A": [
-      {"word": "ANT", "emoji": "🐜", "meaning": "cheeti", "sentence": "Ants work together in a team."},
-      {"word": "AXE", "emoji": "🪓", "meaning": "kulhaadi", "sentence": "An axe is used to cut wood."},
-      {"word": "APPLE", "emoji": "🍎", "meaning": "seb", "sentence": "An apple a day keeps the doctor away."}
+      {"word": "ANT", "emoji": "🐜", "meaning": "चींटी", "sentence": "Ants work together in a team."},
+      {"word": "AXE", "emoji": "🪓", "meaning": "कुल्हाड़ी", "sentence": "An axe is used to cut wood."},
+      {"word": "APPLE", "emoji": "🍎", "meaning": "सेब", "sentence": "An apple a day keeps the doctor away."}
     ],
     "B": [
-      {"word": "BALL", "emoji": "⚽", "meaning": "gend", "sentence": "Throw the colorful ball."},
-      {"word": "BAT", "emoji": "🏏", "meaning": "balla", "sentence": "Hit the ball with the bat."},
-      {"word": "BOY", "emoji": "👦", "meaning": "ladka", "sentence": "The boy is reading a book."}
+      {"word": "BALL", "emoji": "⚽", "meaning": "गेँद", "sentence": "Throw the colorful ball."},
+      {"word": "BAT", "emoji": "🏏", "meaning": "बल्ला", "sentence": "Hit the ball with the bat."},
+      {"word": "BOY", "emoji": "👦", "meaning": "लड़का", "sentence": "The boy is reading a book."}
     ],
     "C": [
-      {"word": "CAT", "emoji": "🐱", "meaning": "billee", "sentence": "The cat drinks milk."},
-      {"word": "CAR", "emoji": "🚗", "meaning": "gaadi", "sentence": "Drive the red car safely."},
-      {"word": "COW", "emoji": "🐄", "meaning": "gaay", "sentence": "The cow gives fresh milk."}
+      {"word": "CAT", "emoji": "🐱", "meaning": "बिल्ली", "sentence": "The cat drinks milk."},
+      {"word": "CAR", "emoji": "🚗", "meaning": "गाड़ी", "sentence": "Drive the red car safely."},
+      {"word": "COW", "emoji": "🐄", "meaning": "गाय", "sentence": "The cow gives fresh milk."}
     ],
     "D": [
-      {"word": "DOG", "emoji": "🐶", "meaning": "kutta", "sentence": "The dog is wagging its tail."},
-      {"word": "DOLL", "emoji": "🪆", "meaning": "gudiya", "sentence": "I have a cute barbie doll."},
-      {"word": "DUCK", "emoji": "🦆", "meaning": "battakh", "sentence": "Ducks are swimming in the pond."}
+      {"word": "DOG", "emoji": "🐶", "meaning": "कुत्ता", "sentence": "The dog is wagging its tail."},
+      {"word": "DOLL", "emoji": "🪆", "meaning": "गुड़िया", "sentence": "I have a cute barbie doll."},
+      {"word": "DUCK", "emoji": "🦆", "meaning": "बतख", "sentence": "Ducks are swimming in the pond."}
     ],
     "E": [
-      {"word": "EGG", "emoji": "🥚", "meaning": "anda", "sentence": "Eat a healthy egg daily."},
-      {"word": "EYE", "emoji": "👁️", "meaning": "aankh", "sentence": "Look at the stars with your eyes."},
-      {"word": "EAR", "emoji": "👂", "meaning": "kaan", "sentence": "Listen to the birds with your ears."}
+      {"word": "EGG", "emoji": "🥚", "meaning": "अंडा", "sentence": "Eat a healthy egg daily."},
+      {"word": "EYE", "emoji": "👁️", "meaning": "आँख", "sentence": "Look at the stars with your eyes."},
+      {"word": "EAR", "emoji": "👂", "meaning": "कान", "sentence": "Listen to the birds with your ears."}
     ],
     "F": [
-      {"word": "FISH", "emoji": "🐟", "meaning": "machhli", "sentence": "Fish live under water."},
-      {"word": "FOX", "emoji": "🦊", "meaning": "lomdi", "sentence": "The fox is a clever animal."},
-      {"word": "FAN", "emoji": "🪭", "meaning": "pankha", "sentence": "Switch on the fan to feel cool."}
+      {"word": "FISH", "emoji": "🐟", "meaning": "मछली", "sentence": "Fish live under water."},
+      {"word": "FOX", "emoji": "🦊", "meaning": "लोमड़ी", "sentence": "The fox is a clever animal."},
+      {"word": "FAN", "emoji": "🪭", "meaning": "पंखा", "sentence": "Switch on the fan to feel cool."}
     ],
     "G": [
-      {"word": "GRAPES", "emoji": "🍇", "meaning": "angoor", "sentence": "Grapes grow in bunches."},
-      {"word": "GIRL", "emoji": "👧", "meaning": "ladkee", "sentence": "She is a very smart child."},
-      {"word": "GOAT", "emoji": "🐐", "meaning": "bakree", "sentence": "Goats eat fresh green leaves."}
+      {"word": "GRAPES", "emoji": "🍇", "meaning": "अंगूर", "sentence": "Grapes grow in bunches."},
+      {"word": "GIRL", "emoji": "👧", "meaning": "लड़की", "sentence": "She is a very smart child."},
+      {"word": "GOAT", "emoji": "🐐", "meaning": "बकरी", "sentence": "Goats eat fresh green leaves."}
     ],
     "H": [
-      {"word": "HOUSE", "emoji": "🏠", "meaning": "ghar", "sentence": "This is our beautiful house."},
-      {"word": "HAT", "emoji": "🎩", "meaning": "topee", "sentence": "Wear a sun hat on hot days."},
-      {"word": "HEN", "emoji": "🐔", "meaning": "murgee", "sentence": "The hen laid an egg."}
+      {"word": "HOUSE", "emoji": "🏠", "meaning": "घर", "sentence": "This is our beautiful house."},
+      {"word": "HAT", "emoji": "🎩", "meaning": "टोपी", "sentence": "Wear a sun hat on hot days."},
+      {"word": "HEN", "emoji": "🐔", "meaning": "मुर्गी", "sentence": "The hen laid an egg."}
     ],
     "I": [
-      {"word": "ICE", "emoji": "🧊", "meaning": "barf", "sentence": "Ice is very cold and solid."},
-      {"word": "INK", "emoji": "✒️", "meaning": "syaahi", "sentence": "Fill ink in the fountain pen."},
-      {"word": "IRON", "emoji": "🧲", "meaning": "loha", "sentence": "Magnets attract iron nails."}
+      {"word": "ICE", "emoji": "🧊", "meaning": "बर्फ", "sentence": "Ice is very cold and solid."},
+      {"word": "INK", "emoji": "✒️", "meaning": "स्याही", "sentence": "Fill ink in the fountain pen."},
+      {"word": "IRON", "emoji": "🧲", "meaning": "लोहा", "sentence": "Magnets attract iron nails."}
     ],
     "J": [
-      {"word": "JUG", "emoji": "🏺", "meaning": "jag", "sentence": "Pour water from the jug."},
-      {"word": "JEEP", "emoji": "🚙", "meaning": "jeep", "sentence": "We went for a ride in the jeep."},
-      {"word": "JAM", "emoji": "🍓", "meaning": "jam", "sentence": "Spread sweet jam on bread."}
+      {"word": "JUG", "emoji": "🏺", "meaning": "जग", "sentence": "Pour water from the jug."},
+      {"word": "JEEP", "emoji": "🚙", "meaning": "जीप", "sentence": "We went for a ride in the jeep."},
+      {"word": "JAM", "emoji": "🍓", "meaning": "जैम", "sentence": "Spread sweet jam on bread."}
     ],
     "K": [
-      {"word": "KITE", "emoji": "🪁", "meaning": "patang", "sentence": "Kites fly high in the air."},
-      {"word": "KEY", "emoji": "🔑", "meaning": "chaabee", "sentence": "Use the key to open the lock."},
-      {"word": "KING", "emoji": "👑", "meaning": "raaja", "sentence": "The king lives in a castle."}
+      {"word": "KITE", "emoji": "🪁", "meaning": "पतंग", "sentence": "Kites fly high in the air."},
+      {"word": "KEY", "emoji": "🔑", "meaning": "चाबी", "sentence": "Use the key to open the lock."},
+      {"word": "KING", "emoji": "👑", "meaning": "राजा", "sentence": "The king lives in a castle."}
     ],
     "L": [
-      {"word": "LION", "emoji": "🦁", "meaning": "sher", "sentence": "The lion is the king of jungle."},
-      {"word": "LAMP", "emoji": "💡", "meaning": "deepak", "sentence": "Turn on the lamp at night."},
-      {"word": "LEAF", "emoji": "🍃", "meaning": "patta", "sentence": "The green leaf fell from tree."}
+      {"word": "LION", "emoji": "🦁", "meaning": "शेर", "sentence": "The lion is the king of jungle."},
+      {"word": "LAMP", "emoji": "💡", "meaning": "दीपक", "sentence": "Turn on the lamp at night."},
+      {"word": "LEAF", "emoji": "🍃", "meaning": "पत्ता", "sentence": "The green leaf fell from tree."}
     ],
     "M": [
-      {"word": "MONKEY", "emoji": "🐒", "meaning": "bandar", "sentence": "Monkey is swinging on branches."},
-      {"word": "MILK", "emoji": "🥛", "meaning": "doodh", "sentence": "Drink warm milk for strong bones."},
-      {"word": "MOON", "emoji": "🌙", "meaning": "chaand", "sentence": "The moon shines bright at night."}
+      {"word": "MONKEY", "emoji": "🐒", "meaning": "बन्दर", "sentence": "Monkey is swinging on branches."},
+      {"word": "MILK", "emoji": "🥛", "meaning": "दूध", "sentence": "Drink warm milk for strong bones."},
+      {"word": "MOON", "emoji": "🌙", "meaning": "चाँद", "sentence": "The moon shines bright at night."}
     ],
     "N": [
-      {"word": "NEST", "emoji": "🪺", "meaning": "ghonsla", "sentence": "Birds built a nest on tree."},
-      {"word": "NET", "emoji": "🕸️", "meaning": "jaal", "sentence": "Use a net to catch butterflies."},
-      {"word": "NUT", "emoji": "🥜", "meaning": "akhrot", "sentence": "Peanuts are a healthy type of nut."}
+      {"word": "NEST", "emoji": "🪺", "meaning": "घोंसला", "sentence": "Birds built a nest on tree."},
+      {"word": "NET", "emoji": "🕸️", "meaning": "जाल", "sentence": "Use a net to catch butterflies."},
+      {"word": "NUT", "emoji": "🥜", "meaning": "अखरोट", "sentence": "Peanuts are a healthy type of nut."}
     ],
     "O": [
-      {"word": "ORANGE", "emoji": "🍊", "meaning": "santra", "sentence": "Orange is a sweet juicy fruit."},
-      {"word": "OWL", "emoji": "🦉", "meaning": "ullu", "sentence": "The owl stays awake all night."},
-      {"word": "OX", "emoji": "🐂", "meaning": "bail", "sentence": "The strong ox plows the field."}
+      {"word": "ORANGE", "emoji": "🍊", "meaning": "संतरा", "sentence": "Orange is a sweet juicy fruit."},
+      {"word": "OWL", "emoji": "🦉", "meaning": "उल्लू", "sentence": "The owl stays awake all night."},
+      {"word": "OX", "emoji": "🐂", "meaning": "बैल", "sentence": "The strong ox plows the field."}
     ],
     "P": [
-      {"word": "PENCIL", "emoji": "✏️", "meaning": "pencil", "sentence": "Sharpen your pencil before writing."},
-      {"word": "PEN", "emoji": "🖊️", "meaning": "pen", "sentence": "The teacher writes with a blue pen."},
-      {"word": "PIG", "emoji": "🐷", "meaning": "suar", "sentence": "The little pig plays in the mud."}
+      {"word": "PENCIL", "emoji": "✏️", "meaning": "पेंसिल", "sentence": "Sharpen your pencil before writing."},
+      {"word": "PEN", "emoji": "🖊️", "meaning": "पेन", "sentence": "The teacher writes with a blue pen."},
+      {"word": "PIG", "emoji": "🐷", "meaning": "सुअर", "sentence": "The little pig plays in the mud."}
     ],
     "Q": [
-      {"word": "QUEEN", "emoji": "👑", "meaning": "raanee", "sentence": "The queen wears a shiny crown."},
-      {"word": "QUILT", "emoji": "🛏️", "meaning": "rajaee", "sentence": "Use a warm quilt in winter."},
-      {"word": "QUIZ", "emoji": "❓", "meaning": "prashnottari", "sentence": "Answer the fun quiz questions."}
+      {"word": "QUEEN", "emoji": "👑", "meaning": "रानी", "sentence": "The queen wears a shiny crown."},
+      {"word": "QUILT", "emoji": "🛏️", "meaning": "रजाई", "sentence": "Use a warm quilt in winter."},
+      {"word": "QUIZ", "emoji": "❓", "meaning": "प्रश्नोत्तरी", "sentence": "Answer the fun quiz questions."}
     ],
     "R": [
-      {"word": "RABBIT", "emoji": "🐇", "meaning": "khargosh", "sentence": "The white rabbit eats carrots."},
-      {"word": "ROSE", "emoji": "🌹", "meaning": "gulaab", "sentence": "Rose is a beautiful red flower."},
-      {"word": "RING", "emoji": "💍", "meaning": "angeothee", "sentence": "She wears a gold ring on her finger."}
+      {"word": "RABBIT", "emoji": "🐇", "meaning": "खरगोश", "sentence": "The white rabbit eats carrots."},
+      {"word": "ROSE", "emoji": "🌹", "meaning": "गुलाब", "sentence": "Rose is a beautiful red flower."},
+      {"word": "RING", "emoji": "💍", "meaning": "अंगूठी", "sentence": "She wears a gold ring on her finger."}
     ],
     "S": [
-      {"word": "SUN", "emoji": "☀️", "meaning": "sooraj", "sentence": "The sun rises in the east."},
-      {"word": "STAR", "emoji": "⭐", "meaning": "taara", "sentence": "A tiny star shines in the sky."},
-      {"word": "SHIP", "emoji": "🚢", "meaning": "jahaaj", "sentence": "The big ship sails on sea."}
+      {"word": "SUN", "emoji": "☀️", "meaning": "सूरज", "sentence": "The sun rises in the east."},
+      {"word": "STAR", "emoji": "⭐", "meaning": "तारा", "sentence": "A tiny star shines in the sky."},
+      {"word": "SHIP", "emoji": "🚢", "meaning": "जहाज", "sentence": "The big ship sails on sea."}
     ],
     "T": [
-      {"word": "TIGER", "emoji": "🐯", "meaning": "baagh", "sentence": "The tiger has black stripes."},
-      {"word": "TOY", "emoji": "🧸", "meaning": "khilona", "sentence": "I share my toys with friends."},
-      {"word": "TREE", "emoji": "🌳", "meaning": "ped", "sentence": "Trees give us cool shade."}
+      {"word": "TIGER", "emoji": "🐯", "meaning": "बाघ", "sentence": "The tiger has black stripes."},
+      {"word": "TOY", "emoji": "🧸", "meaning": "खिलौना", "sentence": "I share my toys with friends."},
+      {"word": "TREE", "emoji": "🌳", "meaning": "पेड़", "sentence": "Trees give us cool shade."}
     ],
     "U": [
-      {"word": "UMBRELLA", "emoji": "☂️", "meaning": "chhaata", "sentence": "Open your umbrella in the rain."},
-      {"word": "UNCLE", "emoji": "👨", "meaning": "chaacha", "sentence": "My uncle bought me a new toy."},
-      {"word": "UP", "emoji": "⬆️", "meaning": "oopar", "sentence": "Look up at the blue sky."}
+      {"word": "UMBRELLA", "emoji": "☂️", "meaning": "छाता", "sentence": "Open your umbrella in the rain."},
+      {"word": "UNCLE", "emoji": "👨", "meaning": "चाचा", "sentence": "My uncle bought me a new toy."},
+      {"word": "UP", "emoji": "⬆️", "meaning": "ऊपर", "sentence": "Look up at the blue sky."}
     ],
     "V": [
-      {"word": "VAN", "emoji": "🚐", "meaning": "gaadi", "sentence": "The school van has arrived."},
-      {"word": "VIOLIN", "emoji": "🎻", "meaning": "violin", "sentence": "Play sweet music on the violin."},
-      {"word": "VASE", "emoji": "🏺", "meaning": "phooladaan", "sentence": "Place fresh flowers in the vase."}
+      {"word": "VAN", "emoji": "🚐", "meaning": "गाड़ी", "sentence": "The school van has arrived."},
+      {"word": "VIOLIN", "emoji": "🎻", "meaning": "वायलिन", "sentence": "Play sweet music on the violin."},
+      {"word": "VASE", "emoji": "🏺", "meaning": "फूलदान", "sentence": "Place fresh flowers in the vase."}
     ],
     "W": [
-      {"word": "WATCH", "emoji": "⌚", "meaning": "ghadee", "sentence": "Check the time on your watch."},
-      {"word": "WATER", "emoji": "💧", "meaning": "paanee", "sentence": "Water is essential for life."},
-      {"word": "WEB", "emoji": "🕸️", "meaning": "jaal", "sentence": "The spider spun a sticky web."}
+      {"word": "WATCH", "emoji": "⌚", "meaning": "घड़ी", "sentence": "Check the time on your watch."},
+      {"word": "WATER", "emoji": "💧", "meaning": "पानी", "sentence": "Water is essential for life."},
+      {"word": "WEB", "emoji": "🕸️", "meaning": "जाल", "sentence": "The spider spun a sticky web."}
     ],
     "X": [
-      {"word": "BOX", "emoji": "📦", "meaning": "dibba", "sentence": "Put toys inside the cardboard box."},
-      {"word": "FOX", "emoji": "🦊", "meaning": "lomdi", "sentence": "The red fox has a bushy tail."},
-      {"word": "X-RAY", "emoji": "🩻", "meaning": "x-ray", "sentence": "The doctor took an X-ray of my hand."}
+      {"word": "BOX", "emoji": "📦", "meaning": "डिब्बा", "sentence": "Put toys inside the cardboard box."},
+      {"word": "FOX", "emoji": "🦊", "meaning": "लोमड़ी", "sentence": "The red fox has a bushy tail."},
+      {"word": "X-RAY", "emoji": "🩻", "meaning": "एक्स-रे", "sentence": "The doctor took an X-ray of my hand."}
     ],
     "Y": [
-      {"word": "YAK", "emoji": "🐂", "meaning": "yak", "sentence": "The yak lives in snowy mountains."},
-      {"word": "YACHT", "emoji": "⛵", "meaning": "naav", "sentence": "The white yacht sails smoothly."},
-      {"word": "YOYO", "emoji": "🪀", "meaning": "yoyo", "sentence": "Spin the yoyo up and down."}
+      {"word": "YAK", "emoji": "🐂", "meaning": "याक", "sentence": "The yak lives in snowy mountains."},
+      {"word": "YACHT", "emoji": "⛵", "meaning": "नाव", "sentence": "The white yacht sails smoothly."},
+      {"word": "YOYO", "emoji": "🪀", "meaning": "योयो", "sentence": "Spin the yoyo up and down."}
     ],
     "Z": [
-      {"word": "ZEBRA", "emoji": "🦓", "meaning": "zebra", "sentence": "The zebra crossed the road."},
-      {"word": "ZIP", "emoji": "🤐", "meaning": "chain", "sentence": "Close the zip of your bag."},
-      {"word": "ZOO", "emoji": "🦁", "meaning": "chidiyaaghar", "sentence": "We saw many wild animals at the zoo."}
+      {"word": "ZEBRA", "emoji": "🦓", "meaning": "जेब्रा", "sentence": "The zebra crossed the road."},
+      {"word": "ZIP", "emoji": "🤐", "meaning": "चैन", "sentence": "Close the zip of your bag."},
+      {"word": "ZOO", "emoji": "🦁", "meaning": "चिड़ियाघर", "sentence": "We saw many wild animals at the zoo."}
     ]
   };
-
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        setState(() {});
+      }
+    });
   }
-
   @override
   void dispose() {
     _tabController.dispose();
     _stopTextSpeech();
     super.dispose();
   }
-
   void _stopTextSpeech() {
     if (kIsWeb) {
       try {
@@ -389,7 +381,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       } catch (_) {}
     }
   }
-
   void _speakText(String text, {String phonetic = ""}) {
     if (kIsWeb) {
       try {
@@ -400,104 +391,112 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
             
             function setVoiceAndSpeak() {
               var voicesList = window.speechSynthesis.getVoices();
-              var isHindi = /[\\u0900-\\u097F]/.test('$cleanText');
-              var langFilter = isHindi ? 'hi' : 'en';
               
-              var matchingLangVoices = voicesList.filter(function(v) {
-                return v.lang.toLowerCase().indexOf('hi') !== -1;
-              });
+              var textParts = '$cleanText'.split('|');
+              var phoneticParts = '$cleanPhonetic'.split('|');
               
-              var msg = new SpeechSynthesisUtterance();
-              window.activeUtterance = msg; // Store globally to prevent garbage collection cutoffs
-              
-              // Fallback to phonetic only if absolutely NO Hindi voice is available on device!
-              if (isHindi && matchingLangVoices.length === 0 && '$cleanPhonetic' !== '') {
-                msg.text = '$cleanPhonetic'.toLowerCase();
-                msg.lang = 'en-US';
-                langFilter = 'en';
-              } else {
-                msg.text = '$cleanText';
-                msg.lang = isHindi ? 'hi-IN' : 'en-US';
-              }
-              
-              var gender = '$_selectedVoiceGender';
-              var voice = null;
-              
-              function getVoiceGender(v) {
-                var name = v.name.toLowerCase();
-                if (name.indexOf('male') !== -1 || 
-                    name.indexOf('david') !== -1 || 
-                    name.indexOf('ravi') !== -1 || 
-                    name.indexOf('-hic') !== -1 || 
-                    name.indexOf('-hif') !== -1 || 
-                    name.indexOf('-hia') !== -1 || 
-                    name.indexOf('-iom') !== -1 || 
-                    name.indexOf('-iog') !== -1 || 
-                    name.indexOf('-iol') !== -1 || 
-                    name.indexOf('-iob') !== -1 || 
-                    name.indexOf('guy') !== -1 || 
-                    name.indexOf('boy') !== -1 || 
-                    name.indexOf('man') !== -1) {
-                  return 'male';
+              // Queue each part in sequence
+              for (var idx = 0; idx < textParts.length; idx++) {
+                var pText = textParts[idx].trim();
+                var pPhonetic = phoneticParts[idx] ? phoneticParts[idx].trim() : '';
+                if (!pText) continue;
+                
+                var isPartHindi = /[\\u0900-\\u097F]/.test(pText);
+                var langFilter = isPartHindi ? 'hi' : 'en';
+                
+                var matchingLangVoices = voicesList.filter(function(v) {
+                  return v.lang.toLowerCase().indexOf('hi') !== -1;
+                });
+                
+                var msg = new SpeechSynthesisUtterance();
+                
+                if (isPartHindi && matchingLangVoices.length === 0 && pPhonetic !== '') {
+                  msg.text = pPhonetic.toLowerCase();
+                  msg.lang = 'en-US';
+                  langFilter = 'en';
+                } else {
+                  msg.text = pText;
+                  msg.lang = isPartHindi ? 'hi-IN' : 'en-US';
                 }
-                return 'female';
-              }
-              
-              var candidateLangVoices = voicesList.filter(function(v) {
-                return v.lang.toLowerCase().indexOf(langFilter) !== -1;
-              });
-              
-              var nonGoogleVoices = candidateLangVoices.filter(function(v) {
-                return v.name.toLowerCase().indexOf('google') === -1;
-              });
-              var candidateVoices = nonGoogleVoices.length > 0 ? nonGoogleVoices : candidateLangVoices;
-              
-              var localVoices = candidateVoices.filter(function(v) {
-                return v.localService === true;
-              });
-              
-              var searchSet = localVoices.length > 0 ? localVoices : candidateVoices;
-              
-              for (var i = 0; i < searchSet.length; i++) {
-                if (getVoiceGender(searchSet[i]) === gender) {
-                  voice = searchSet[i];
-                  break;
+                
+                var gender = '$_selectedVoiceGender';
+                var voice = null;
+                
+                function getVoiceGender(v) {
+                  var name = v.name.toLowerCase();
+                  if (name.indexOf('male') !== -1 || 
+                      name.indexOf('david') !== -1 || 
+                      name.indexOf('ravi') !== -1 || 
+                      name.indexOf('-hic') !== -1 || 
+                      name.indexOf('-hif') !== -1 || 
+                      name.indexOf('-hia') !== -1 || 
+                      name.indexOf('-iom') !== -1 || 
+                      name.indexOf('-iog') !== -1 || 
+                      name.indexOf('-iol') !== -1 || 
+                      name.indexOf('-iob') !== -1 || 
+                      name.indexOf('guy') !== -1 || 
+                      name.indexOf('boy') !== -1 || 
+                      name.indexOf('man') !== -1) {
+                    return 'male';
+                  }
+                  return 'female';
                 }
-              }
-              
-              if (!voice) {
-                for (var i = 0; i < voicesList.length; i++) {
-                  if (getVoiceGender(voicesList[i]) === gender && voicesList[i].lang.toLowerCase().indexOf(langFilter) !== -1) {
-                    voice = voicesList[i];
+                
+                var candidateLangVoices = voicesList.filter(function(v) {
+                  return v.lang.toLowerCase().indexOf(langFilter) !== -1;
+                });
+                
+                var nonGoogleVoices = candidateLangVoices.filter(function(v) {
+                  return v.name.toLowerCase().indexOf('google') === -1;
+                });
+                var candidateVoices = nonGoogleVoices.length > 0 ? nonGoogleVoices : candidateLangVoices;
+                
+                var localVoices = candidateVoices.filter(function(v) {
+                  return v.localService === true;
+                });
+                
+                var searchSet = localVoices.length > 0 ? localVoices : candidateVoices;
+                
+                for (var i = 0; i < searchSet.length; i++) {
+                  if (getVoiceGender(searchSet[i]) === gender) {
+                    voice = searchSet[i];
                     break;
                   }
                 }
-              }
-              
-              if (!voice && searchSet.length > 0) {
-                voice = searchSet[0]; // Fallback to any voice of target language
-              }
-              
-              if (voice) {
-                var voiceGender = getVoiceGender(voice);
-                // ALWAYS bind the voice for Hindi, even if gender mismatched, to prevent David fallback!
-                if (isHindi || voiceGender === gender) {
-                  msg.voice = voice;
+                
+                if (!voice) {
+                  for (var i = 0; i < voicesList.length; i++) {
+                    if (getVoiceGender(voicesList[i]) === gender && voicesList[i].lang.toLowerCase().indexOf(langFilter) !== -1) {
+                      voice = voicesList[i];
+                      break;
+                    }
+                  }
                 }
+                
+                if (!voice && searchSet.length > 0) {
+                  voice = searchSet[0];
+                }
+                
+                if (voice) {
+                  var voiceGender = getVoiceGender(voice);
+                  if (isPartHindi || voiceGender === gender) {
+                    msg.voice = voice;
+                  }
+                }
+                
+                if (gender === 'female') {
+                  var isVoiceMale = voice ? (getVoiceGender(voice) === 'male') : false;
+                  msg.pitch = isVoiceMale ? 1.55 : 1.35;
+                } else {
+                  var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true;
+                  msg.pitch = isVoiceFemale ? 0.45 : 0.72;
+                }
+                
+                msg.rate = isPartHindi ? 0.72 : 0.8;
+                msg.volume = 1.0;
+                
+                window.speechSynthesis.speak(msg);
               }
-              
-              // Force symmetric pitch modulation shifts!
-              if (gender === 'female') {
-                var isVoiceMale = voice ? (getVoiceGender(voice) === 'male') : false;
-                msg.pitch = isVoiceMale ? 1.55 : 1.35;
-              } else {
-                var isVoiceFemale = voice ? (getVoiceGender(voice) === 'female') : true;
-                msg.pitch = isVoiceFemale ? 0.45 : 0.72;
-              }
-              
-              msg.rate = (msg.lang === 'hi-IN') ? 0.72 : 0.8;
-              msg.volume = 1.0;
-              window.speechSynthesis.speak(msg);
             }
             
             function triggerSpeech() {
@@ -508,12 +507,11 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
               }
             }
             
-            // Only call cancel() if a voice is active to prevent the empty cancel latency bug in Chrome!
             if (window.speechSynthesis.speaking) {
               window.speechSynthesis.cancel();
               setTimeout(triggerSpeech, 50);
             } else {
-              triggerSpeech(); // Instant response when silent!
+              triggerSpeech();
             }
           }
         """;
@@ -525,7 +523,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       debugPrint("TTS voice simulation: $text");
     }
   }
-
   void _playRhymeAsSong(String lyrics) {
     if (kIsWeb) {
       try {
@@ -643,7 +640,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       debugPrint("Song simulation: $lyrics");
     }
   }
-
   String getEmojiUrl(String emoji, {String word = "", String letter = ""}) {
     if (emoji.isEmpty) return "";
     
@@ -682,7 +678,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       return "";
     }
   }
-
   Widget _buildEmojiImage(String emoji, {double size = 48, String word = "", String letter = "", FilterQuality filterQuality = FilterQuality.medium}) {
     final url = getEmojiUrl(emoji, word: word, letter: letter);
     if (url.isEmpty) {
@@ -707,7 +702,54 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       errorBuilder: (c, o, s) => Text(emoji, style: TextStyle(fontSize: size)),
     );
   }
-
+  Widget _buildTabBlock(int index, String title, Color baseColor, Color shadowColor, Color textColor) {
+    final bool isSelected = _tabController.index == index;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _tabController.animateTo(index);
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? (isDark ? Colors.white : textColor)
+              : (isDark ? AppColors.darkSurface : baseColor),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: isSelected
+                ? (isDark ? Colors.white : textColor)
+                : (isDark ? Colors.white10 : baseColor.withOpacity(0.5)),
+            width: 1.5,
+          ),
+          boxShadow: isDark
+              ? []
+              : [
+                  BoxShadow(
+                    color: isSelected
+                        ? textColor.withOpacity(0.3)
+                        : shadowColor,
+                    offset: isSelected ? const Offset(0, 2) : const Offset(0, 5),
+                    blurRadius: isSelected ? 2 : 0,
+                  ),
+                ],
+        ),
+        child: Text(
+          title,
+          style: TextStyle(
+            color: isSelected
+                ? (isDark ? Colors.black : Colors.white)
+                : (isDark ? Colors.white70 : textColor),
+            fontWeight: FontWeight.w900,
+            fontSize: 13,
+          ),
+        ),
+      ),
+    );
+  }
   // 3D Embossed toy-blocks button layout (Duolingo 3D style)
   Widget _build3DBlock({
     required Widget child,
@@ -764,7 +806,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       ),
     );
   }
-
   // Show detailed popup card with tap zoomable full screen image option
   void _showCardDialog(String title, String subtitle, String emoji, {String word = "", String letter = "", String english = ""}) {
     _speakText("$title. $subtitle", phonetic: english);
@@ -858,14 +899,12 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final playroomBgColor = isDark ? Colors.grey[900] : const Color(0xFFFFFBEF); // More colorful warm playroom background
     final blockBaseColor = isDark ? AppColors.darkSurface : Colors.white;
     final blockShadowColor = isDark ? Colors.black54 : const Color(0xFFDDD7C8);
-
     return Scaffold(
       backgroundColor: playroomBgColor,
       appBar: AppBar(
@@ -919,48 +958,19 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       ),
       body: Column(
         children: [
-          // Styled 3D Blue Shelf TabBar
-          Container(
-            margin: const EdgeInsets.all(12),
-            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.darkSurface : const Color(0xFF80DEEA), // Highly colorful cyan blue shelf
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  offset: const Offset(0, 4),
-                  blurRadius: 6,
-                ),
-              ],
-              border: Border.all(color: Colors.white.withOpacity(0.6), width: 1.5),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              dividerColor: Colors.transparent,
-              indicator: BoxDecoration(
-                color: const Color(0xFF1E3C72), // Premium deep blue for selected tab capsule
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF1E3C72).withOpacity(0.3),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  )
-                ],
-              ),
-              labelColor: Colors.white,
-              unselectedLabelColor: const Color(0xFF004D40), // High contrast deep teal for readability
-              labelStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
-              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-              tabs: const [
-                Tab(text: 'Rhymes 🎵', icon: Icon(Icons.music_note)),
-                Tab(text: 'Numbers 1-100 🔟', icon: Icon(Icons.pin)),
-                Tab(text: 'A B C D 🔠', icon: Icon(Icons.abc)),
-                Tab(text: 'Varnmala ✍️', icon: Icon(Icons.font_download_outlined)),
-                Tab(text: 'Easy Words 🐱', icon: Icon(Icons.child_care)),
+          // Styled 3D Playroom Tab Shelf (Wrap layout for 100% visibility on all screens)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 10,
+              alignment: WrapAlignment.center,
+              children: [
+                _buildTabBlock(0, 'Rhymes 🎵', const Color(0xFFFFECEF), const Color(0xFFFFB3C1), const Color(0xFFC71585)),
+                _buildTabBlock(1, 'Numbers 🔟', const Color(0xFFE8F0FE), const Color(0xFF90CAF9), const Color(0xFF0D47A1)),
+                _buildTabBlock(2, 'ABCD 🔠', const Color(0xFFFFFDE7), const Color(0xFFFFF59D), const Color(0xFFF57F17)),
+                _buildTabBlock(3, 'Varnmala ✍️', const Color(0xFFE8F5E9), const Color(0xFFA5D6A7), const Color(0xFF1B5E20)),
+                _buildTabBlock(4, 'Easy Words 🐱', const Color(0xFFF3E5F5), const Color(0xFFCE93D8), const Color(0xFF4A148C)),
               ],
             ),
           ),
@@ -1041,7 +1051,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                     ],
                   ),
                 ),
-
                 // NUMBERS 1-100 TAB (5 columns in a row, large text size, 3D embossed look)
                 SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
@@ -1071,7 +1080,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                           final baseColor = isSelected ? Colors.deepOrange : blockBaseColor;
                           final shadowColor = isSelected ? Colors.red[900]! : blockShadowColor;
                           final textColor = isSelected ? Colors.white : AppColors.primaryBlue;
-
                           return _build3DBlock(
                             index: index,
                             section: "numbers",
@@ -1131,7 +1139,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                     ],
                   ),
                 ),
-
                 // ALPHABET A-Z TAB
                 GridView.builder(
                   padding: const EdgeInsets.all(16),
@@ -1176,7 +1183,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                     );
                   },
                 ),
-
                 // HINDI VARNMALA TAB (Varnmala using real photos only, tall cards, scaling prevent overlaps!)
                 SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
@@ -1290,7 +1296,6 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                     ],
                   ),
                 ),
-
                 // EASY WORDS TAB (A-Z with Hindi translation pronunciation matlabs)
                 ListView.builder(
                   padding: const EdgeInsets.all(16),
@@ -1347,9 +1352,8 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                                       onTap: () {
                                         final cleanWord = item["word"]!.toLowerCase();
                                         final cleanMeaning = item["meaning"]!.toLowerCase();
-                                        _speakText(
-                                          "$letter. $cleanWord. ${item["word"]} matlab $cleanMeaning. ${item["sentence"]}",
-                                          phonetic: "${letter.toLowerCase()}. ${letter.toLowerCase()} for $cleanWord. $cleanWord matlab $cleanMeaning. ${item["sentence"]!.toLowerCase()}"
+                                        _speakText("$letter. $cleanWord. | ${item["word"]} का मतलब ${item["meaning"]} है। | ${item["sentence"]}",phonetic: "${letter.toLowerCase()}. ${letter.toLowerCase()} for $cleanWord. | ${item["word"]} का मतलब ${item["meaning"]} है। | ${item["sentence"]!.toLowerCase()}"
+                                        );
                                         );
                                       },
                                       child: Padding(
