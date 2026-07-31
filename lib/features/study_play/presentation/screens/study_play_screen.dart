@@ -58,7 +58,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     {"letter": "U", "word": "Umbrella", "emoji": "☂️", "color": "0xFFFCE4EC"},
     {"letter": "V", "word": "Van", "emoji": "🚐", "color": "0xFFFFFDE7"},
     {"letter": "W", "word": "Watch", "emoji": "⌚", "color": "0xFFE0F2F1"},
-    {"letter": "X", "word": "Box", "emoji": "📦", "color": "0xFFFBE9E7"},
+    {"letter": "X", "word": "Xylophone", "emoji": "🎼", "color": "0xFFFBE9E7"},
     {"letter": "Y", "word": "Yacht", "emoji": "⛵", "color": "0xFFFFF1F1"},
     {"letter": "Z", "word": "Zebra", "emoji": "🦓", "color": "0xFFE3F2FD"},
   ];
@@ -649,6 +649,12 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
     }
     
     // Hardcoded fallback checks for custom words
+    if (word.toLowerCase() == "xylophone") {
+      return "assets/images/xylophone.jpg";
+    }
+    if (word.toLowerCase() == "queen") {
+      return "assets/images/queen.jpg";
+    }
     if (emoji == "🍒" || emoji.contains("🍒") || word == "अनार" || word == "ANAR" || word.toLowerCase() == "anar") {
       return "assets/images/anar.jpg";
     }
@@ -1196,9 +1202,9 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
+                          crossAxisCount: 5,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
                           childAspectRatio: 0.7, // Taller cards to prevent vertical layout overlaps!
                         ),
                         itemCount: _swar.length,
@@ -1248,9 +1254,9 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
+                          crossAxisCount: 5,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
                           childAspectRatio: 0.7, // Taller cards to prevent vertical layout overlaps!
                         ),
                         itemCount: _vyanjan.length,

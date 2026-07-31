@@ -176,12 +176,9 @@ class AuthViewModel with ChangeNotifier {
   Future<void> _checkSavedSession() async {
     final prefs = await SharedPreferences.getInstance();
     
-    final isMock = _authRepository.isMockMode;
-    final bool defaultAutoLogin = isMock ? true : false;
-    final String? defaultUid = isMock ? "mock_uid_123" : null;
-
-    final bool autoLogin = prefs.getBool('auto_login') ?? defaultAutoLogin;
-    final String? savedUid = prefs.getString('saved_uid') ?? defaultUid;
+    // Require explicit login on first launch (no default true fallback)
+    final bool autoLogin = prefs.getBool('auto_login') ?? false;
+    final String? savedUid = prefs.getString('saved_uid');
     
     if (autoLogin && savedUid != null) {
       _isLoading = true;
