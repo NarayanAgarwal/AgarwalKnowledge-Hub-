@@ -25,19 +25,21 @@ class DashboardScreen extends StatelessWidget {
     final dashVm = Provider.of<DashboardViewModel>(context);
     final user = authVm.userProfile;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final playroomBgColor = isDark ? Colors.grey[900] : const Color(0xFFF5F7FB);
 
     if (user == null) {
       return const Center(child: CircularProgressIndicator());
     }
 
     return Scaffold(
+      backgroundColor: playroomBgColor,
       body: dashVm.isLoading
           ? _buildLoadingSkeleton()
           : RefreshIndicator(
               onRefresh: () => dashVm.loadDashboardData(user.userClass, user.uid),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(18.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -45,11 +47,11 @@ class DashboardScreen extends StatelessWidget {
                     _buildGreetingCard(user, isDark),
                     
                     if (dashVm.stories.isNotEmpty) ...[
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                       _buildStoriesRow(dashVm, context),
                     ],
                     
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     
                     // Search Bar
                     _buildSearchBar(dashVm, isDark),
@@ -101,97 +103,131 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildGreetingCard(dynamic user, bool isDark) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: AppColors.primaryGradient,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryBlue.withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          )
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Hello,',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.8),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  user.name.isNotEmpty ? user.name : 'Learner',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    user.userClass.isNotEmpty ? user.userClass : 'General Course',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(22),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF2A5298), Color(0xFF1E3C72)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF1E3C72).withOpacity(0.35),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              )
+            ],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hello,',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white.withOpacity(0.85),
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 4),
+                    Text(
+                      user.name.isNotEmpty ? user.name : 'Learner',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
+                      ),
+                      child: Text(
+                        user.userClass.isNotEmpty ? user.userClass : 'General Course',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 16),
+              CircleAvatar(
+                radius: 38,
+                backgroundColor: Colors.white24,
+                child: CircleAvatar(
+                  radius: 34,
+                  backgroundColor: Colors.white,
+                  child: user.profilePhotoUrl.isNotEmpty
+                      ? ClipOval(child: Image.network(user.profilePhotoUrl, fit: BoxFit.cover))
+                      : const Icon(Icons.person, size: 38, color: AppColors.primaryBlue),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 16),
-          CircleAvatar(
-            radius: 35,
-            backgroundColor: Colors.white24,
-            child: CircleAvatar(
-              radius: 32,
-              backgroundColor: Colors.white,
-              child: user.profilePhotoUrl.isNotEmpty
-                  ? ClipOval(child: Image.network(user.profilePhotoUrl, fit: BoxFit.cover))
-                  : const Icon(Icons.person, size: 36, color: AppColors.primaryBlue),
-            ),
+        ),
+        // Translucent background blobs for premium depth
+        Positioned(
+          right: -25,
+          top: -25,
+          child: CircleAvatar(
+            radius: 65,
+            backgroundColor: Colors.white.withOpacity(0.08),
           ),
-        ],
-      ),
-    ).animate().fade(duration: 350.ms).slideY(begin: 0.1, end: 0.0);
+        ),
+        Positioned(
+          left: -35,
+          bottom: -35,
+          child: CircleAvatar(
+            radius: 55,
+            backgroundColor: Colors.white.withOpacity(0.06),
+          ),
+        ),
+      ],
+    ).animate().fade(duration: 400.ms).scale(begin: const Offset(0.95, 0.95), end: const Offset(1.0, 1.0));
   }
 
   Widget _buildSearchBar(DashboardViewModel dashVm, bool isDark) {
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? AppColors.darkSurface : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark ? Colors.white12 : Colors.grey.shade100,
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: 12,
+            offset: const Offset(0, 5),
           )
         ],
       ),
       child: TextField(
         onChanged: dashVm.updateSearchQuery,
+        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         decoration: InputDecoration(
           hintText: 'Search notes, videos, quizzes, notices...',
+          hintStyle: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.w500),
           prefixIcon: const Icon(Icons.search, color: AppColors.primaryBlue),
           suffixIcon: dashVm.searchQuery.isNotEmpty
               ? IconButton(
@@ -202,7 +238,7 @@ class DashboardScreen extends StatelessWidget {
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 16),
+          contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         ),
       ),
     );
@@ -270,23 +306,24 @@ class DashboardScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Quick Access',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          'Quick Access ⚡',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold, color: AppColors.primaryBlue),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 4,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
           childAspectRatio: 0.85,
           children: [
             _buildActionItem(
               context: context,
               icon: Icons.school_outlined,
               title: 'Classes',
-              color: AppColors.primaryBlue,
+              baseColor: const Color(0xFFE8F0FE),
+              textColor: const Color(0xFF1A73E8),
               onTap: () {
                 Navigator.push(
                   context,
@@ -298,7 +335,8 @@ class DashboardScreen extends StatelessWidget {
               context: context,
               icon: Icons.psychology_outlined,
               title: 'AI Support',
-              color: AppColors.secondaryOrange,
+              baseColor: const Color(0xFFFFEFEF),
+              textColor: const Color(0xFFFF5722),
               onTap: () {
                 Navigator.push(
                   context,
@@ -310,7 +348,8 @@ class DashboardScreen extends StatelessWidget {
               context: context,
               icon: Icons.qr_code_scanner_outlined,
               title: 'QR Scan',
-              color: Colors.purple,
+              baseColor: const Color(0xFFF3E8FD),
+              textColor: const Color(0xFF9C27B0),
               onTap: () {
                 Navigator.push(
                   context,
@@ -322,7 +361,8 @@ class DashboardScreen extends StatelessWidget {
               context: context,
               icon: Icons.toys_outlined,
               title: 'Play Study',
-              color: Colors.pink,
+              baseColor: const Color(0xFFFFF0F5),
+              textColor: const Color(0xFFE91E63),
               onTap: () {
                 Navigator.push(
                   context,
@@ -334,7 +374,8 @@ class DashboardScreen extends StatelessWidget {
               context: context,
               icon: Icons.quiz_outlined,
               title: 'Quizzes',
-              color: AppColors.accentGreen,
+              baseColor: const Color(0xFFE6F4EA),
+              textColor: const Color(0xFF2E7D32),
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Quiz module is accessible via individual classes!')),
@@ -345,7 +386,8 @@ class DashboardScreen extends StatelessWidget {
               context: context,
               icon: Icons.download_for_offline_outlined,
               title: 'Downloads',
-              color: Colors.amber,
+              baseColor: const Color(0xFFFFF8E1),
+              textColor: const Color(0xFFFFB300),
               onTap: () {
                 Navigator.push(
                   context,
@@ -357,7 +399,8 @@ class DashboardScreen extends StatelessWidget {
               context: context,
               icon: Icons.notifications_active_outlined,
               title: 'Notices',
-              color: Colors.indigo,
+              baseColor: const Color(0xFFE8EAF6),
+              textColor: const Color(0xFF3F51B5),
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Notice board is accessible in the Notice tab below!')),
@@ -368,7 +411,8 @@ class DashboardScreen extends StatelessWidget {
               context: context,
               icon: Icons.settings_outlined,
               title: 'Settings',
-              color: Colors.teal,
+              baseColor: const Color(0xFFE0F2F1),
+              textColor: const Color(0xFF00695C),
               onTap: () {
                 Navigator.push(
                   context,
@@ -386,46 +430,65 @@ class DashboardScreen extends StatelessWidget {
     required BuildContext context,
     required IconData icon,
     required String title,
-    required Color color,
+    required Color baseColor,
+    required Color textColor,
     required VoidCallback onTap,
   }) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkSurface : baseColor,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDark ? Colors.white10 : baseColor.withOpacity(0.2),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: isDark ? Colors.transparent : textColor.withOpacity(0.06),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              )
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+                child: Icon(icon, color: textColor, size: 24),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: isDark ? Colors.white : textColor,
+                ),
+              ),
+            ],
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 22,
-              backgroundColor: color.withOpacity(0.12),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-            ),
-          ],
-        ),
       ),
-    );
+    ).animate().scale(delay: 50.ms, duration: 200.ms);
   }
 
   Widget _buildAttendanceCard(BuildContext context, DashboardViewModel dashVm, bool isDark) {
-    // Calculate attendance percentage
     final total = dashVm.attendance.length;
     final present = dashVm.attendance.where((a) => a.status == 'Present').length;
-    final percentage = total == 0 ? 0.85 : present / total; // Mock high if empty
+    final percentage = total == 0 ? 0.85 : present / total;
 
     return GestureDetector(
       onTap: () {
@@ -434,7 +497,23 @@ class DashboardScreen extends StatelessWidget {
           MaterialPageRoute(builder: (context) => const AttendanceDashboardScreen()),
         );
       },
-      child: GlassContainer(
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.darkSurface : Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: isDark ? Colors.white12 : Colors.grey.shade100,
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 15,
+              offset: const Offset(0, 6),
+            )
+          ],
+        ),
         child: Row(
           children: [
             CircularPercentIndicator(
@@ -443,10 +522,10 @@ class DashboardScreen extends StatelessWidget {
               percent: percentage,
               center: Text(
                 "${(percentage * 100).toInt()}%",
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppColors.primaryBlue),
               ),
               progressColor: AppColors.accentGreen,
-              backgroundColor: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+              backgroundColor: isDark ? AppColors.darkBorder : Colors.grey.shade100,
               circularStrokeCap: CircularStrokeCap.round,
             ),
             const SizedBox(width: 20),
@@ -463,6 +542,7 @@ class DashboardScreen extends StatelessWidget {
                     'Keep it above 75% to remain eligible for term exams.',
                     style: TextStyle(
                       fontSize: 12,
+                      fontWeight: FontWeight.w500,
                       color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                     ),
                   ),
@@ -478,14 +558,25 @@ class DashboardScreen extends StatelessWidget {
   Widget _buildAiSupportBanner(BuildContext context, bool isDark) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: AppColors.orangeGradient,
-        borderRadius: BorderRadius.circular(16),
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFF9900), Color(0xFFF15A24), Color(0xFFEC008C)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF15A24).withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
+          )
+        ],
       ),
       child: Row(
         children: [
-          const Icon(Icons.rocket_launch_outlined, color: Colors.white, size: 36),
+          const Icon(Icons.rocket_launch_outlined, color: Colors.white, size: 38),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -493,11 +584,12 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 const Text(
                   'Stuck with Homework?',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   'Get instant assistance with AI Doubt Support!',
-                  style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12),
+                  style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -506,8 +598,8 @@ class DashboardScreen extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: AppColors.secondaryOrange,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
             onPressed: () {
               Navigator.push(
@@ -515,7 +607,7 @@ class DashboardScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => const DoubtSupportScreen()),
               );
             },
-            child: const Text('Ask AI', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text('Ask AI', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
           )
         ],
       ),
@@ -526,20 +618,33 @@ class DashboardScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Today\'s Schedule', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const Text('Today\'s Schedule 📅', style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold)),
         const SizedBox(height: 12),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                _buildClassTimeItem('09:00 AM', 'Mathematics - Fractions', 'Room 12', true),
-                const Divider(),
-                _buildClassTimeItem('11:00 AM', 'English Literature', 'Room 12', false),
-                const Divider(),
-                _buildClassTimeItem('02:00 PM', 'Computer Theory', 'Lab 1', false),
-              ],
+        Container(
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkSurface : Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: isDark ? Colors.white12 : Colors.grey.shade100,
+              width: 1.5,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              )
+            ],
+          ),
+          padding: const EdgeInsets.all(18.0),
+          child: Column(
+            children: [
+              _buildClassTimeItem('09:00 AM', 'Mathematics - Fractions', 'Room 12', true),
+              const Divider(height: 24),
+              _buildClassTimeItem('11:00 AM', 'English Literature', 'Room 12', false),
+              const Divider(height: 24),
+              _buildClassTimeItem('02:00 PM', 'Computer Theory', 'Lab 1', false),
+            ],
           ),
         )
       ],
@@ -552,8 +657,8 @@ class DashboardScreen extends StatelessWidget {
         Text(
           time,
           style: TextStyle(
-            fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-            color: isCurrent ? AppColors.secondaryOrange : null,
+            fontWeight: FontWeight.bold,
+            color: isCurrent ? AppColors.secondaryOrange : Colors.grey,
           ),
         ),
         const SizedBox(width: 24),
@@ -563,20 +668,25 @@ class DashboardScreen extends StatelessWidget {
             children: [
               Text(
                 subject,
-                style: TextStyle(fontWeight: FontWeight.bold, color: isCurrent ? AppColors.primaryBlue : null),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: isCurrent ? AppColors.primaryBlue : null,
+                ),
               ),
-              Text(room, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              const SizedBox(height: 2),
+              Text(room, style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500)),
             ],
           ),
         ),
         if (isCurrent)
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: AppColors.secondaryOrange.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(8),
+              color: AppColors.secondaryOrange.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: const Text('Live', style: TextStyle(color: AppColors.secondaryOrange, fontSize: 10, fontWeight: FontWeight.bold)),
+            child: const Text('Live', style: TextStyle(color: AppColors.secondaryOrange, fontSize: 10, fontWeight: FontWeight.extrabold)),
           ),
       ],
     );
@@ -589,18 +699,19 @@ class DashboardScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Latest Notice', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const Text('Latest Notice 📢', style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold)),
         const SizedBox(height: 12),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: notice.type == 'Urgent'
-                ? AppColors.error.withOpacity(0.08)
-                : AppColors.primaryBlue.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(16),
+                ? AppColors.error.withOpacity(0.06)
+                : AppColors.primaryBlue.withOpacity(0.04),
+            borderRadius: BorderRadius.circular(22),
             border: Border.all(
-              color: notice.type == 'Urgent' ? AppColors.error.withOpacity(0.3) : AppColors.primaryBlue.withOpacity(0.2),
+              color: notice.type == 'Urgent' ? AppColors.error.withOpacity(0.25) : AppColors.primaryBlue.withOpacity(0.15),
+              width: 1.5,
             ),
           ),
           child: Column(
@@ -609,16 +720,17 @@ class DashboardScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(notice.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                  Expanded(child: Text(notice.title, style: const TextStyle(fontWeight: FontWeight.extrabold, fontSize: 16))),
+                  const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: notice.type == 'Urgent' ? AppColors.error : AppColors.primaryBlue,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       notice.type,
-                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.extrabold),
                     ),
                   ),
                 ],
@@ -626,7 +738,7 @@ class DashboardScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 notice.content,
-                style: const TextStyle(fontSize: 13, height: 1.4),
+                style: const TextStyle(fontSize: 13, height: 1.4, fontWeight: FontWeight.w500),
               ),
             ],
           ),
@@ -641,15 +753,34 @@ class DashboardScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Homework Due', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const Text('Homework Due 📝', style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold)),
         const SizedBox(height: 12),
-        Card(
+        Container(
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkSurface : Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: isDark ? Colors.white12 : Colors.grey.shade100,
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              )
+            ],
+          ),
           child: Column(
             children: dashVm.homeworkList.take(2).map((hw) {
               return ListTile(
-                leading: const Icon(Icons.assignment_outlined, color: AppColors.secondaryOrange),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+                leading: const CircleAvatar(
+                  backgroundColor: Color(0xFFFEF3EB),
+                  child: Icon(Icons.assignment_outlined, color: AppColors.secondaryOrange),
+                ),
                 title: Text(hw.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text('Deadline: ${hw.deadline.day}/${hw.deadline.month}'),
+                subtitle: Text('Deadline: ${hw.deadline.day}/${hw.deadline.month}', style: const TextStyle(fontWeight: FontWeight.w500)),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 14),
                 onTap: () {
                   Navigator.push(
@@ -671,40 +802,74 @@ class DashboardScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Recent Lecture Material', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const Text('Lecture Materials 📚', style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold)),
         const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
-              child: Card(
-                color: isDark ? AppColors.darkSurface : Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      const Icon(Icons.picture_as_pdf_outlined, color: AppColors.error, size: 32),
-                      const SizedBox(height: 8),
-                      const Text('Notes PDFs', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                      Text('${dashVm.notes.length} items', style: const TextStyle(fontSize: 11, color: Colors.grey)),
-                    ],
+              child: Container(
+                padding: const EdgeInsets.all(18.0),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.darkSurface : Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: isDark ? Colors.white12 : Colors.grey.shade100,
+                    width: 1.5,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    )
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const CircleAvatar(
+                      backgroundColor: Color(0xFFFFEBEE),
+                      radius: 24,
+                      child: Icon(Icons.picture_as_pdf_outlined, color: AppColors.error, size: 26),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text('Notes PDFs', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    const SizedBox(height: 2),
+                    Text('${dashVm.notes.length} items', style: const TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w600)),
+                  ],
                 ),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Card(
-                color: isDark ? AppColors.darkSurface : Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      const Icon(Icons.video_library_outlined, color: AppColors.primaryBlue, size: 32),
-                      const SizedBox(height: 8),
-                      const Text('Lecture Videos', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                      Text('${dashVm.videos.length} videos', style: const TextStyle(fontSize: 11, color: Colors.grey)),
-                    ],
+              child: Container(
+                padding: const EdgeInsets.all(18.0),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.darkSurface : Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: isDark ? Colors.white12 : Colors.grey.shade100,
+                    width: 1.5,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    )
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const CircleAvatar(
+                      backgroundColor: Color(0xFFE8F0FE),
+                      radius: 24,
+                      child: Icon(Icons.video_library_outlined, color: AppColors.primaryBlue, size: 26),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text('Lecture Videos', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    const SizedBox(height: 2),
+                    Text('${dashVm.videos.length} videos', style: const TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w600)),
+                  ],
                 ),
               ),
             ),
@@ -719,19 +884,19 @@ class DashboardScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Classroom Stories',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          'Classroom Stories 🎬',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.extrabold),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
         SizedBox(
-          height: 80,
+          height: 82,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: dashVm.stories.length,
             itemBuilder: (context, index) {
               final story = dashVm.stories[index];
               return Padding(
-                padding: const EdgeInsets.only(right: 12.0),
+                padding: const EdgeInsets.only(right: 14.0),
                 child: GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -742,16 +907,26 @@ class DashboardScreen extends StatelessWidget {
                     );
                   },
                   child: Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
+                    width: 76,
+                    height: 76,
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.secondaryOrange, width: 3),
+                      gradient: SweepGradient(
+                        colors: [Colors.purple, Colors.pink, Colors.orange, Colors.purple],
+                      ),
                     ),
                     padding: const EdgeInsets.all(3),
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage(story.mediaUrl),
-                      backgroundColor: Colors.grey[200],
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                      padding: const EdgeInsets.all(2),
+                      child: CircleAvatar(
+                        backgroundImage: story.mediaUrl.isNotEmpty ? NetworkImage(story.mediaUrl) : null,
+                        backgroundColor: Colors.amber[100],
+                        child: story.mediaUrl.isEmpty ? const Text("📖", style: TextStyle(fontSize: 24)) : null,
+                      ),
                     ),
                   ),
                 ),
