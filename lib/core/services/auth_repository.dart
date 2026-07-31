@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_profile.dart';
 
 abstract class AuthRepository {
+  bool get isMockMode;
   Stream<User?> get authStateChanges;
   User? get currentUser;
   Future<void> sendOtp({

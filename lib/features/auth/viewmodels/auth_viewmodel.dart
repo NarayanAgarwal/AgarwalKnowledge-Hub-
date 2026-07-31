@@ -40,8 +40,13 @@ class AuthViewModel with ChangeNotifier {
 
   Future<void> _checkSavedSession() async {
     final prefs = await SharedPreferences.getInstance();
-    final bool autoLogin = prefs.getBool('auto_login') ?? false;
-    final String? savedUid = prefs.getString('saved_uid');
+    
+    final isMock = _authRepository.isMockMode;
+    final bool defaultAutoLogin = isMock ? true : false;
+    final String? defaultUid = isMock ? "mock_uid_123" : null;
+
+    final bool autoLogin = prefs.getBool('auto_login') ?? defaultAutoLogin;
+    final String? savedUid = prefs.getString('saved_uid') ?? defaultUid;
     
     if (autoLogin && savedUid != null) {
       _isLoading = true;
@@ -139,7 +144,7 @@ class AuthViewModel with ChangeNotifier {
       _codeSent = false;
       _verificationId = null;
       final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('auto_login');
+      await prefs.setBool('auto_login', false);
       await prefs.remove('saved_uid');
     } catch (e) {
       _errorMessage = e.toString();

@@ -15,6 +15,9 @@ class AuthRepositoryImpl implements AuthRepository {
   UserProfile? _mockUser;
   bool _useMock = false;
 
+  @override
+  bool get isMockMode => _useMock;
+
   void enableMockMode(UserProfile mockUser) async {
     _useMock = true;
     try {
@@ -204,8 +207,71 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserProfile?> getUserProfile(String uid) async {
-    if (_useMock && _mockUser?.uid == uid) {
-      return _mockUser;
+    if (_useMock) {
+      if (_mockUser?.uid == uid) {
+        return _mockUser;
+      }
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final savedMockJson = prefs.getString('mock_user_profile');
+        if (savedMockJson != null) {
+          final data = jsonDecode(savedMockJson) as Map<String, dynamic>;
+          var name = data['name'] ?? "Narayan Agarwal";
+          if (name == "Aman Agarwal") {
+            name = "Narayan Agarwal";
+          }
+          final loadedUser = UserProfile(
+            uid: data['uid'] ?? uid,
+            role: data['role'] ?? AppStrings.roleStudent,
+            name: name,
+            phone: data['phone'] ?? "",
+            email: data['email'] ?? "",
+            address: data['address'] ?? "",
+            userClass: data['class'] ?? "",
+            rollNumber: data['rollNumber'] ?? "",
+            gender: data['gender'] ?? "",
+            dob: data['dob'] ?? "",
+            admissionNumber: data['admissionNumber'] ?? "",
+            school: data['school'] ?? "Agarwal Knowledge Hub",
+            parentName: data['parentName'] ?? "",
+            parentMobile: data['parentMobile'] ?? "",
+            emergencyContact: data['emergencyContact'] ?? "",
+            profilePhotoUrl: data['profilePhotoUrl'] ?? "",
+            createdDate: data['createdDate'] != null ? DateTime.parse(data['createdDate']) : DateTime.now(),
+            lastLogin: data['lastLogin'] != null ? DateTime.parse(data['lastLogin']) : DateTime.now(),
+          );
+          if (loadedUser.uid == uid) {
+            _mockUser = loadedUser;
+            return _mockUser;
+          }
+        }
+      } catch (_) {}
+
+      // Fallback default mock user profile
+      if (uid == "mock_uid_123" || uid == "student_user_123") {
+        _mockUser = _mockUser ?? UserProfile(
+          uid: uid,
+          role: AppStrings.roleStudent,
+          name: "Narayan Agarwal",
+          phone: "+919876543210",
+          email: "aman@agarwal.com",
+          address: "Mithapur, Patna",
+          userClass: "Class 5",
+          rollNumber: "12",
+          gender: "Male",
+          dob: "2015-02-10",
+          admissionNumber: "ADM2026512",
+          school: "Agarwal Knowledge Hub",
+          parentName: "Suresh Agarwal",
+          parentMobile: "+919876543220",
+          emergencyContact: "+919876543221",
+          profilePhotoUrl: "",
+          createdDate: DateTime.now(),
+          lastLogin: DateTime.now(),
+        );
+        return _mockUser;
+      }
+      return null;
     }
 
     try {
