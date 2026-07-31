@@ -18,19 +18,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _rollController = TextEditingController();
   final _parentController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  String _selectedClass = 'Class 1';
-  final List<String> _classes = List.generate(12, (index) => 'Class ${index + 1}');
+  String _selectedClass = 'Nursery';
+  final List<String> _classes = ['Nursery', 'LKG', 'UKG', ...List.generate(12, (index) => 'Class ${index + 1}')];
 
   @override
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
-    _rollController.dispose();
     _parentController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -47,7 +45,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       phone: _phoneController.text.trim(),
       password: _passwordController.text,
       userClass: _selectedClass,
-      rollNumber: _rollController.text.trim(),
+      rollNumber: "",
       parentName: _parentController.text.trim(),
     );
 
@@ -177,77 +175,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: 14),
 
-                        // Row: Class Dropdown and Roll Number
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Class Dropdown
-                            Expanded(
-                              flex: 3,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('Class 🏫', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                                  const SizedBox(height: 6),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: isDark ? AppColors.darkSurface : Colors.grey[50],
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(
-                                        color: isDark ? Colors.white24 : Colors.grey[300]!,
-                                        width: 1.5,
-                                      ),
-                                    ),
-                                    child: DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                        value: _selectedClass,
-                                        isExpanded: true,
-                                        dropdownColor: isDark ? AppColors.darkSurface : Colors.white,
-                                        icon: const Icon(Icons.arrow_drop_down, color: AppColors.primaryBlue),
-                                        items: _classes.map((cls) {
-                                          return DropdownMenuItem<String>(
-                                            value: cls,
-                                            child: Text(cls, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                          );
-                                        }).toList(),
-                                        onChanged: (val) {
-                                          if (val != null) {
-                                            setState(() {
-                                              _selectedClass = val;
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                        // Class Dropdown
+                        const Text('Class 🏫', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: isDark ? AppColors.darkSurface : Colors.grey[50],
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: isDark ? Colors.white24 : Colors.grey[300]!,
+                              width: 1.5,
                             ),
-                            const SizedBox(width: 12),
-                            // Roll Number
-                            Expanded(
-                              flex: 2,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('Roll No. 🔢', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                                  const SizedBox(height: 6),
-                                  CustomTextField(
-                                    controller: _rollController,
-                                    labelText: 'Roll Number',
-                                    hintText: 'e.g. 15',
-                                    prefixIcon: Icons.tag,
-                                    keyboardType: TextInputType.number,
-                                    validator: (val) {
-                                      if (val == null || val.trim().isEmpty) return 'Required';
-                                      return null;
-                                    },
-                                  ),
-                                ],
-                              ),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: _selectedClass,
+                              isExpanded: true,
+                              dropdownColor: isDark ? AppColors.darkSurface : Colors.white,
+                              icon: const Icon(Icons.arrow_drop_down, color: AppColors.primaryBlue),
+                              items: _classes.map((cls) {
+                                return DropdownMenuItem<String>(
+                                  value: cls,
+                                  child: Text(cls, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                );
+                              }).toList(),
+                              onChanged: (val) {
+                                if (val != null) {
+                                  setState(() {
+                                    _selectedClass = val;
+                                  });
+                                }
+                              },
                             ),
-                          ],
+                          ),
                         ),
                         const SizedBox(height: 14),
 

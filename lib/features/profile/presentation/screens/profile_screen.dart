@@ -40,6 +40,84 @@ class ProfileScreen extends StatelessWidget {
     }
   }
 
+  void _showProfilePhotoOptions(BuildContext context, AuthViewModel authVm, UserProfile user) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo, color: AppColors.primaryBlue),
+                title: const Text('View Profile Photo 🔍', style: TextStyle(fontWeight: FontWeight.bold)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _viewFullProfilePhoto(context, user);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library, color: AppColors.accentGreen),
+                title: const Text('Upload New Photo 📷', style: TextStyle(fontWeight: FontWeight.bold)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImageFromGallery(context, authVm, user);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.cancel, color: Colors.grey),
+                title: const Text('Cancel'),
+                onTap: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _viewFullProfilePhoto(BuildContext context, UserProfile user) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.black,
+        insetPadding: const EdgeInsets.all(0),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            InteractiveViewer(
+              panEnabled: true,
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: Center(
+                child: user.profilePhotoUrl.isNotEmpty
+                    ? Image.network(
+                        user.profilePhotoUrl,
+                        fit: BoxFit.contain,
+                        errorBuilder: (c, o, s) => const Icon(Icons.person, size: 200, color: Colors.white),
+                      )
+                    : const Icon(Icons.person, size: 200, color: Colors.white),
+              ),
+            ),
+            Positioned(
+              top: 20,
+              right: 20,
+              child: CircleAvatar(
+                backgroundColor: Colors.black54,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showEditProfileDialog(BuildContext context, AuthViewModel authVm, UserProfile user) {
     final formKey = GlobalKey<FormState>();
     final nameController = TextEditingController(text: user.name);
@@ -253,7 +331,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => _pickImageFromGallery(context, authVm, user),
+                    onTap: () => _showProfilePhotoOptions(context, authVm, user),
                     child: Stack(
                       children: [
                         CircleAvatar(
