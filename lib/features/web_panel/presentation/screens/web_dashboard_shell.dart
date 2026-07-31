@@ -120,29 +120,35 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
       return Container(
         height: 80,
         alignment: Alignment.center,
-        child: const Icon(Icons.school, color: AppColors.primaryBlue, size: 28),
+        child: const Icon(Icons.school, color: AppColors.secondaryOrange, size: 28),
       );
     }
 
     return Container(
-      padding: const EdgeInsets.all(20),
-      height: 100,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Row(
         children: [
-          const Icon(Icons.school, color: AppColors.primaryBlue, size: 36),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              gradient: AppColors.primaryGradient,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.school, color: Colors.white, size: 24),
+          ),
           const SizedBox(width: 12),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Agarwal Knowledge',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                Text(
+                  'Agarwal Hub',
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 0.5),
                 ),
                 Text(
-                  'Hub Portal',
-                  style: TextStyle(color: Colors.grey[500], fontSize: 12, fontWeight: FontWeight.bold),
+                  'ADMIN PORTAL',
+                  style: TextStyle(color: AppColors.secondaryOrange, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 1.0),
                 ),
               ],
             ),
@@ -153,52 +159,72 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
   }
 
   Widget _buildSidebarItem(Map<String, dynamic> item, bool isSelected, int index, bool isDark) {
-    return ListTile(
-      leading: Icon(
-        item['icon'],
-        color: isSelected ? AppColors.primaryBlue : Colors.grey,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+      decoration: BoxDecoration(
+        color: isSelected
+            ? (isDark ? Colors.white.withOpacity(0.1) : AppColors.primaryBlue.withOpacity(0.08))
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
       ),
-      title: _isSidebarCollapsed
-          ? null
-          : Text(
-              item['title'],
-              style: TextStyle(
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                fontSize: 13,
-                color: isSelected
-                    ? (isDark ? Colors.white : AppColors.primaryBlue)
-                    : Colors.grey,
+      child: ListTile(
+        dense: true,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        leading: Icon(
+          item['icon'],
+          color: isSelected ? AppColors.secondaryOrange : (isDark ? Colors.white60 : Colors.black54),
+          size: 20,
+        ),
+        title: _isSidebarCollapsed
+            ? null
+            : Text(
+                item['title'],
+                style: TextStyle(
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                  fontSize: 13,
+                  color: isSelected
+                      ? (isDark ? Colors.white : AppColors.primaryBlue)
+                      : (isDark ? Colors.white70 : Colors.black87),
+                ),
               ),
-            ),
-      selected: isSelected,
-      selectedTileColor: AppColors.primaryBlue.withOpacity(0.08),
-      onTap: () {
-        setState(() {
-          _selectedMenuIndex = index;
-        });
-      },
+        selected: isSelected,
+        onTap: () {
+          setState(() {
+            _selectedMenuIndex = index;
+          });
+        },
+      ),
     );
   }
 
   Widget _buildSidebarFooter(BuildContext context, bool isDark) {
-    return ListTile(
-      leading: const Icon(Icons.logout, color: AppColors.secondaryOrange),
-      title: _isSidebarCollapsed
-          ? null
-          : const Text(
-              'Sign Out',
-              style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.secondaryOrange, fontSize: 13),
-            ),
-      onTap: () async {
-        final authVm = Provider.of<AuthViewModel>(context, listen: false);
-        await authVm.logout();
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
-          );
-        }
-      },
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.red.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ListTile(
+        dense: true,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        leading: const Icon(Icons.logout, color: Colors.redAccent, size: 20),
+        title: _isSidebarCollapsed
+            ? null
+            : const Text(
+                'Sign Out',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent, fontSize: 13),
+              ),
+        onTap: () async {
+          final authVm = Provider.of<AuthViewModel>(context, listen: false);
+          await authVm.logout();
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+            );
+          }
+        },
+      ),
     );
   }
 

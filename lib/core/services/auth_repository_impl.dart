@@ -14,6 +14,15 @@ class AuthRepositoryImpl implements AuthRepository {
   // Local state for fallback when running without Firebase config
   UserProfile? _mockUser;
   bool _useMock = false;
+  String? _pendingVerifyPhone;
+
+  String _normalizePhone(String phone) {
+    final clean = phone.replaceAll(RegExp(r'\D'), '');
+    if (clean.length == 12 && clean.startsWith('91')) {
+      return clean.substring(2);
+    }
+    return clean;
+  }
 
   @override
   bool get isMockMode => _useMock;
@@ -85,6 +94,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required Function(String verificationId, int? resendToken) onCodeSent,
     required Function(FirebaseAuthException e) onVerificationFailed,
   }) async {
+    _pendingVerifyPhone = phoneNumber;
     if (_useMock) {
       // Simulate OTP delay
       await Future.delayed(const Duration(seconds: 1));
@@ -125,32 +135,77 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     if (_useMock || verificationId == "mock_verification_id") {
       await Future.delayed(const Duration(seconds: 1));
-      if (smsCode == "123456" || _mockUser != null) {
-        _mockUser = _mockUser ??
-            UserProfile(
-              uid: "mock_uid_123",
-              role: AppStrings.roleStudent,
-              name: "Narayan Agarwal",
-              phone: "+919876543210",
-              email: "narayan@agarwal.com",
-              address: "Patna, Bihar",
-              userClass: "Class 5",
-              rollNumber: "21",
-              gender: "Male",
-              dob: "2015-05-15",
-              admissionNumber: "ADM2026105",
-              school: "Agarwal Knowledge Hub",
-              parentName: "Sanjay Agarwal",
-              parentMobile: "+919876543211",
-              emergencyContact: "+919876543212",
-              profilePhotoUrl: "",
-              createdDate: DateTime.now(),
-              lastLogin: DateTime.now(),
-            );
-        return _mockUser;
-      } else {
-        throw FirebaseAuthException(code: 'invalid-verification-code', message: 'Incorrect OTP entered.');
+      if (smsCode != "123456") {
+        throw FirebaseAuthException(code: 'invalid-verification-code', message: 'Incorrect OTP entered. (Mock OTP is 123456)');
       }
+      
+      final phone = _pendingVerifyPhone ?? "";
+      final isRegistered = await isPhoneRegistered(phone);
+      if (!isRegistered) {
+        throw FirebaseAuthException(code: 'user-not-found', message: 'This mobile number is not registered. Please register first.');
+      }
+      
+      // Load user profile
+      final prefs = await SharedPreferences.getInstance();
+      final usersJson = prefs.getString('mock_registered_users');
+      if (usersJson != null) {
+        final List<dynamic> usersList = jsonDecode(usersJson);
+        final match = usersList.firstWhere(
+          (u) => _normalizePhone(u['phone']) == _normalizePhone(phone),
+          orElse: () => null,
+        );
+        if (match != null) {
+          final matchedProfile = UserProfile(
+            uid: match['uid'],
+            role: match['role'] ?? AppStrings.roleStudent,
+            name: match['name'],
+            phone: match['phone'],
+            email: match['email'] ?? "",
+            address: match['address'] ?? "",
+            userClass: match['class'] ?? "",
+            rollNumber: match['rollNumber'] ?? "",
+            gender: match['gender'] ?? "",
+            dob: match['dob'] ?? "",
+            admissionNumber: match['admissionNumber'] ?? "",
+            school: match['school'] ?? "Agarwal Knowledge Hub",
+            parentName: match['parentName'] ?? "",
+            parentMobile: match['parentMobile'] ?? "",
+            emergencyContact: match['emergencyContact'] ?? "",
+            profilePhotoUrl: match['profilePhotoUrl'] ?? "",
+            createdDate: DateTime.parse(match['createdDate']),
+            lastLogin: DateTime.now(),
+          );
+          await saveUserProfile(matchedProfile);
+          return matchedProfile;
+        }
+      }
+      
+      // Fallback default mock user if it matches default phone
+      if (_normalizePhone(phone) == "9876543210") {
+        _mockUser = UserProfile(
+          uid: "mock_uid_123",
+          role: AppStrings.roleStudent,
+          name: "Narayan Agarwal",
+          phone: "+919876543210",
+          email: "narayan@agarwal.com",
+          address: "Patna, Bihar",
+          userClass: "Class 5",
+          rollNumber: "21",
+          gender: "Male",
+          dob: "2015-05-15",
+          admissionNumber: "ADM2026105",
+          school: "Agarwal Knowledge Hub",
+          parentName: "Sanjay Agarwal",
+          parentMobile: "+919876543211",
+          emergencyContact: "+919876543212",
+          profilePhotoUrl: "",
+          createdDate: DateTime.now(),
+          lastLogin: DateTime.now(),
+        );
+        return _mockUser;
+      }
+      
+      throw FirebaseAuthException(code: 'user-not-found', message: 'No registered user profile found for this mobile number.');
     }
 
     final PhoneAuthCredential credential = PhoneAuthProvider.credential(
@@ -347,15 +402,23 @@ class AuthRepositoryImpl implements AuthRepository {
       final usersJson = prefs.getString('mock_registered_users');
       if (usersJson != null) {
         final List<dynamic> usersList = jsonDecode(usersJson);
-        return usersList.any((u) => u['phone'] == phone || u['phone'] == "+91$phone" || phone == "+91${u['phone']}");
+        return usersList.any((u) => _normalizePhone(u['phone']) == _normalizePhone(phone));
       }
-      return phone == "+919876543210" || phone == "9876543210";
+      return _normalizePhone(phone) == "9876543210";
     }
 
     try {
-      final query = await _firestore
+      final normalized = _normalizePhone(phone);
+      var query = await _firestore
           .collection(AppStrings.colUsers)
-          .where('phone', isEqualTo: phone)
+          .where('phone', isEqualTo: normalized)
+          .limit(1)
+          .get();
+      if (query.docs.isNotEmpty) return true;
+
+      query = await _firestore
+          .collection(AppStrings.colUsers)
+          .where('phone', isEqualTo: "+91$normalized")
           .limit(1)
           .get();
       return query.docs.isNotEmpty;
@@ -374,7 +437,7 @@ class AuthRepositoryImpl implements AuthRepository {
         usersList = jsonDecode(usersJson);
       }
       
-      usersList.removeWhere((u) => u['phone'] == profile.phone);
+      usersList.removeWhere((u) => _normalizePhone(u['phone']) == _normalizePhone(profile.phone));
       
       final userData = {
         'uid': profile.uid,
@@ -425,7 +488,7 @@ class AuthRepositoryImpl implements AuthRepository {
     if (_useMock) {
       final prefs = await SharedPreferences.getInstance();
       
-      if ((phone == "+919876543210" || phone == "9876543210") && password == "123456") {
+      if (_normalizePhone(phone) == "9876543210" && password == "123456") {
         final defaultProfile = await getUserProfile("mock_uid_123");
         if (defaultProfile != null) {
           await saveUserProfile(defaultProfile);
@@ -437,7 +500,7 @@ class AuthRepositoryImpl implements AuthRepository {
       if (usersJson != null) {
         final List<dynamic> usersList = jsonDecode(usersJson);
         final match = usersList.firstWhere(
-          (u) => (u['phone'] == phone || u['phone'] == "+91$phone" || phone == "+91\${u['phone']}" || "+91$phone" == u['phone'] || phone == u['phone']) && u['password'] == password,
+          (u) => _normalizePhone(u['phone']) == _normalizePhone(phone) && u['password'] == password,
           orElse: () => null,
         );
         if (match != null) {
@@ -469,12 +532,19 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     try {
-      final query = await _firestore
+      final normalized = _normalizePhone(phone);
+      var query = await _firestore
           .collection(AppStrings.colUsers)
-          .where('phone', isEqualTo: phone)
+          .where('phone', isEqualTo: normalized)
           .limit(1)
           .get();
-          
+      if (query.docs.isEmpty) {
+        query = await _firestore
+            .collection(AppStrings.colUsers)
+            .where('phone', isEqualTo: "+91$normalized")
+            .limit(1)
+            .get();
+      }
       if (query.docs.isEmpty) {
         throw Exception("Mobile number is not registered.");
       }
@@ -505,14 +575,14 @@ class AuthRepositoryImpl implements AuthRepository {
       if (usersJson != null) {
         final List<dynamic> usersList = jsonDecode(usersJson);
         for (var u in usersList) {
-          if (u['phone'] == phone || u['phone'] == "+91$phone" || phone == "+91\${u['phone']}" || "+91$phone" == u['phone'] || phone == u['phone']) {
+          if (_normalizePhone(u['phone']) == _normalizePhone(phone)) {
             u['password'] = newPassword;
             await prefs.setString('mock_registered_users', jsonEncode(usersList));
             return true;
           }
         }
       }
-      if (phone == "+919876543210" || phone == "9876543210") {
+      if (_normalizePhone(phone) == "9876543210") {
         final defaultProfile = await getUserProfile("mock_uid_123");
         if (defaultProfile != null) {
           await registerStudent(defaultProfile, newPassword);
@@ -523,12 +593,19 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     try {
-      final query = await _firestore
+      final normalized = _normalizePhone(phone);
+      var query = await _firestore
           .collection(AppStrings.colUsers)
-          .where('phone', isEqualTo: phone)
+          .where('phone', isEqualTo: normalized)
           .limit(1)
           .get();
-          
+      if (query.docs.isEmpty) {
+        query = await _firestore
+            .collection(AppStrings.colUsers)
+            .where('phone', isEqualTo: "+91$normalized")
+            .limit(1)
+            .get();
+      }
       if (query.docs.isEmpty) {
         return false;
       }

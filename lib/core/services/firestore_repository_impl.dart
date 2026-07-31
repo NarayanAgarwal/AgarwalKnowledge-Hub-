@@ -22,6 +22,8 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   final List<Quiz> _mockQuizzes = [];
   final List<Story> _mockStories = [];
 
+  final StreamController<void> _mockUpdateController = StreamController<void>.broadcast();
+
   bool _useMock = false;
 
   void enableMockMode() {
@@ -257,11 +259,15 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
 
   // Attendance
   @override
-  Stream<List<Attendance>> getStudentAttendance(String studentId) {
+  Stream<List<Attendance>> getStudentAttendance(String studentId) async* {
     if (_useMock) {
-      return Stream.value(_mockAttendance.where((a) => a.studentId == studentId).toList());
+      yield _mockAttendance.where((a) => a.studentId == studentId).toList();
+      await for (final _ in _mockUpdateController.stream) {
+        yield _mockAttendance.where((a) => a.studentId == studentId).toList();
+      }
+      return;
     }
-    return _db
+    yield* _db
         .collection(AppStrings.colAttendance)
         .where('studentId', isEqualTo: studentId)
         .snapshots()
@@ -271,17 +277,23 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   }
 
   @override
-  Stream<List<Attendance>> getClassAttendance(String userClass, DateTime date) {
+  Stream<List<Attendance>> getClassAttendance(String userClass, DateTime date) async* {
     if (_useMock) {
       final start = DateTime(date.year, date.month, date.day);
       final end = start.add(const Duration(days: 1));
-      return Stream.value(_mockAttendance.where((a) {
+      yield _mockAttendance.where((a) {
         return a.userClass == userClass && a.date.isAfter(start) && a.date.isBefore(end);
-      }).toList());
+      }).toList();
+      await for (final _ in _mockUpdateController.stream) {
+        yield _mockAttendance.where((a) {
+          return a.userClass == userClass && a.date.isAfter(start) && a.date.isBefore(end);
+        }).toList();
+      }
+      return;
     }
     final start = DateTime(date.year, date.month, date.day);
     final end = start.add(const Duration(days: 1));
-    return _db
+    yield* _db
         .collection(AppStrings.colAttendance)
         .where('class', isEqualTo: userClass)
         .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
@@ -296,6 +308,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   Future<void> markAttendance(Attendance attendance) async {
     if (_useMock) {
       _mockAttendance.add(attendance);
+      _mockUpdateController.add(null);
       return;
     }
     await _db.collection(AppStrings.colAttendance).add(attendance.toFirestore());
@@ -303,11 +316,15 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
 
   // Homework
   @override
-  Stream<List<Homework>> getHomeworkList(String userClass) {
+  Stream<List<Homework>> getHomeworkList(String userClass) async* {
     if (_useMock) {
-      return Stream.value(_mockHomework.where((hw) => hw.userClass == userClass).toList());
+      yield _mockHomework.where((hw) => hw.userClass == userClass).toList();
+      await for (final _ in _mockUpdateController.stream) {
+        yield _mockHomework.where((hw) => hw.userClass == userClass).toList();
+      }
+      return;
     }
-    return _db
+    yield* _db
         .collection(AppStrings.colHomework)
         .where('class', isEqualTo: userClass)
         .orderBy('createdDate', descending: true)
@@ -321,6 +338,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   Future<void> uploadHomework(Homework homework) async {
     if (_useMock) {
       _mockHomework.add(homework);
+      _mockUpdateController.add(null);
       return;
     }
     await _db.collection(AppStrings.colHomework).add(homework.toFirestore());
@@ -330,6 +348,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   Future<void> deleteHomework(String homeworkId) async {
     if (_useMock) {
       _mockHomework.removeWhere((hw) => hw.id == homeworkId);
+      _mockUpdateController.add(null);
       return;
     }
     await _db.collection(AppStrings.colHomework).doc(homeworkId).delete();
@@ -337,13 +356,19 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
 
   // Notes/PDFs/Videos
   @override
-  Stream<List<Note>> getNotesList(String userClass, String mediaType) {
+  Stream<List<Note>> getNotesList(String userClass, String mediaType) async* {
     if (_useMock) {
-      return Stream.value(_mockNotes
+      yield _mockNotes
           .where((note) => note.userClass == userClass && note.mediaType == mediaType)
-          .toList());
+          .toList();
+      await for (final _ in _mockUpdateController.stream) {
+        yield _mockNotes
+            .where((note) => note.userClass == userClass && note.mediaType == mediaType)
+            .toList();
+      }
+      return;
     }
-    return _db
+    yield* _db
         .collection(AppStrings.colNotes)
         .where('class', isEqualTo: userClass)
         .where('mediaType', isEqualTo: mediaType)
@@ -358,6 +383,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   Future<void> uploadNote(Note note) async {
     if (_useMock) {
       _mockNotes.add(note);
+      _mockUpdateController.add(null);
       return;
     }
     await _db.collection(AppStrings.colNotes).add(note.toFirestore());
@@ -367,6 +393,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   Future<void> deleteNote(String noteId) async {
     if (_useMock) {
       _mockNotes.removeWhere((n) => n.id == noteId);
+      _mockUpdateController.add(null);
       return;
     }
     await _db.collection(AppStrings.colNotes).doc(noteId).delete();
@@ -374,11 +401,15 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
 
   // Notices
   @override
-  Stream<List<Notice>> getNotices() {
+  Stream<List<Notice>> getNotices() async* {
     if (_useMock) {
-      return Stream.value(_mockNotices);
+      yield _mockNotices;
+      await for (final _ in _mockUpdateController.stream) {
+        yield _mockNotices;
+      }
+      return;
     }
-    return _db
+    yield* _db
         .collection(AppStrings.colNotifications)
         .orderBy('createdDate', descending: true)
         .snapshots()
@@ -391,6 +422,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   Future<void> publishNotice(Notice notice) async {
     if (_useMock) {
       _mockNotices.add(notice);
+      _mockUpdateController.add(null);
       return;
     }
     await _db.collection(AppStrings.colNotifications).add(notice.toFirestore());
@@ -400,6 +432,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   Future<void> deleteNotice(String noticeId) async {
     if (_useMock) {
       _mockNotices.removeWhere((n) => n.id == noticeId);
+      _mockUpdateController.add(null);
       return;
     }
     await _db.collection(AppStrings.colNotifications).doc(noticeId).delete();
@@ -407,11 +440,15 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
 
   // Quizzes
   @override
-  Stream<List<Quiz>> getQuizzes(String userClass) {
+  Stream<List<Quiz>> getQuizzes(String userClass) async* {
     if (_useMock) {
-      return Stream.value(_mockQuizzes.where((q) => q.userClass == userClass).toList());
+      yield _mockQuizzes.where((q) => q.userClass == userClass).toList();
+      await for (final _ in _mockUpdateController.stream) {
+        yield _mockQuizzes.where((q) => q.userClass == userClass).toList();
+      }
+      return;
     }
-    return _db
+    yield* _db
         .collection(AppStrings.colQuiz)
         .where('class', isEqualTo: userClass)
         .orderBy('createdDate', descending: true)
@@ -425,6 +462,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   Future<void> uploadQuiz(Quiz quiz) async {
     if (_useMock) {
       _mockQuizzes.add(quiz);
+      _mockUpdateController.add(null);
       return;
     }
     await _db.collection(AppStrings.colQuiz).add(quiz.toFirestore());
@@ -434,6 +472,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   Future<void> deleteQuiz(String quizId) async {
     if (_useMock) {
       _mockQuizzes.removeWhere((q) => q.id == quizId);
+      _mockUpdateController.add(null);
       return;
     }
     await _db.collection(AppStrings.colQuiz).doc(quizId).delete();
@@ -441,11 +480,15 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
 
   // Stories
   @override
-  Stream<List<Story>> getStories() {
+  Stream<List<Story>> getStories() async* {
     if (_useMock) {
-      return Stream.value(_mockStories);
+      yield _mockStories;
+      await for (final _ in _mockUpdateController.stream) {
+        yield _mockStories;
+      }
+      return;
     }
-    return _db
+    yield* _db
         .collection(AppStrings.colStories)
         .orderBy('createdDate', descending: true)
         .snapshots()
@@ -458,6 +501,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   Future<void> publishStory(Story story) async {
     if (_useMock) {
       _mockStories.add(story);
+      _mockUpdateController.add(null);
       return;
     }
     await _db.collection(AppStrings.colStories).add(story.toFirestore());
@@ -467,6 +511,7 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   Future<void> deleteStory(String storyId) async {
     if (_useMock) {
       _mockStories.removeWhere((s) => s.id == storyId);
+      _mockUpdateController.add(null);
       return;
     }
     await _db.collection(AppStrings.colStories).doc(storyId).delete();
