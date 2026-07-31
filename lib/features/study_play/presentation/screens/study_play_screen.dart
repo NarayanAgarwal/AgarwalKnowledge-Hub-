@@ -871,34 +871,50 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
       appBar: AppBar(
         title: const Text('Study with Play 🎈', style: TextStyle(fontWeight: FontWeight.bold)),
         actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 12),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.white24,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white30),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedVoiceGender = _selectedVoiceGender == 'female' ? 'male' : 'female';
+              });
+              _speakText("Voice changed!");
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                gradient: _selectedVoiceGender == 'female'
+                    ? const LinearGradient(colors: [Color(0xFFEC407A), Color(0xFFD81B60)])
+                    : const LinearGradient(colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)]),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: (_selectedVoiceGender == 'female' ? const Color(0xFFD81B60) : const Color(0xFF1E88E5)).withOpacity(0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  )
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _selectedVoiceGender == 'female' ? Icons.woman : Icons.man,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    _selectedVoiceGender == 'female' ? 'Female 👩' : 'Male 👨',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: DropdownButton<String>(
-              value: _selectedVoiceGender,
-              dropdownColor: AppColors.primaryBlue,
-              underline: const SizedBox(),
-              icon: const Icon(Icons.volume_up, color: Colors.white, size: 18),
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-              items: const [
-                DropdownMenuItem(value: 'female', child: Text('Voice: Female 👩')),
-                DropdownMenuItem(value: 'male', child: Text('Voice: Male 👨')),
-              ],
-              onChanged: (val) {
-                if (val != null) {
-                  setState(() {
-                    _selectedVoiceGender = val;
-                  });
-                  _speakText("Voice changed!");
-                }
-              },
-            ),
-          )
+          ),
         ],
       ),
       body: Column(
@@ -906,7 +922,7 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
           // Styled 3D Blue Shelf TabBar
           Container(
             margin: const EdgeInsets.all(12),
-            padding: const EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
             decoration: BoxDecoration(
               color: isDark ? AppColors.darkSurface : const Color(0xFF80DEEA), // Highly colorful cyan blue shelf
               borderRadius: BorderRadius.circular(24),
@@ -922,10 +938,23 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
             child: TabBar(
               controller: _tabController,
               isScrollable: true,
-              indicatorColor: Colors.transparent,
+              tabAlignment: TabAlignment.start,
+              dividerColor: Colors.transparent,
+              indicator: BoxDecoration(
+                color: const Color(0xFF1E3C72), // Premium deep blue for selected tab capsule
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF1E3C72).withOpacity(0.3),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  )
+                ],
+              ),
               labelColor: Colors.white,
-              unselectedLabelColor: Colors.black54,
+              unselectedLabelColor: const Color(0xFF004D40), // High contrast deep teal for readability
               labelStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
               tabs: const [
                 Tab(text: 'Rhymes 🎵', icon: Icon(Icons.music_note)),
                 Tab(text: 'Numbers 1-100 🔟', icon: Icon(Icons.pin)),
