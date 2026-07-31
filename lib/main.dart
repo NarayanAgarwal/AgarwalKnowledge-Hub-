@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:universal_html/js.dart' as js;
 import 'core/theme/theme_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/services/auth_repository_impl.dart';
@@ -24,6 +25,20 @@ import 'features/splash/presentation/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (kIsWeb) {
+    try {
+      js.context.callMethod('eval', ["""
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for (var i = 0; i < registrations.length; i++) {
+              registrations[i].unregister();
+            }
+          });
+        }
+      """]);
+    } catch (_) {}
+  }
 
   // Scaffolding Repositories
   final authRepo = AuthRepositoryImpl();

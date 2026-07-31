@@ -322,8 +322,9 @@ class DashboardScreen extends StatelessWidget {
               context: context,
               icon: Icons.school_outlined,
               title: 'Classes',
-              baseColor: const Color(0xFFE8F0FE),
-              textColor: const Color(0xFF1A73E8),
+              baseColor: const Color(0xFFE3F2FD),
+              shadowColor: const Color(0xFF90CAF9),
+              textColor: const Color(0xFF0D47A1),
               onTap: () {
                 Navigator.push(
                   context,
@@ -335,8 +336,9 @@ class DashboardScreen extends StatelessWidget {
               context: context,
               icon: Icons.psychology_outlined,
               title: 'AI Support',
-              baseColor: const Color(0xFFFFEFEF),
-              textColor: const Color(0xFFFF5722),
+              baseColor: const Color(0xFFFFF3E0),
+              shadowColor: const Color(0xFFFFB74D),
+              textColor: const Color(0xFFE65100),
               onTap: () {
                 Navigator.push(
                   context,
@@ -348,8 +350,9 @@ class DashboardScreen extends StatelessWidget {
               context: context,
               icon: Icons.qr_code_scanner_outlined,
               title: 'QR Scan',
-              baseColor: const Color(0xFFF3E8FD),
-              textColor: const Color(0xFF9C27B0),
+              baseColor: const Color(0xFFF3E5F5),
+              shadowColor: const Color(0xFFCE93D8),
+              textColor: const Color(0xFF4A148C),
               onTap: () {
                 Navigator.push(
                   context,
@@ -361,8 +364,9 @@ class DashboardScreen extends StatelessWidget {
               context: context,
               icon: Icons.toys_outlined,
               title: 'Play Study',
-              baseColor: const Color(0xFFFFF0F5),
-              textColor: const Color(0xFFE91E63),
+              baseColor: const Color(0xFFFCE4EC),
+              shadowColor: const Color(0xFFF48FB1),
+              textColor: const Color(0xFF880E4F),
               onTap: () {
                 Navigator.push(
                   context,
@@ -374,8 +378,9 @@ class DashboardScreen extends StatelessWidget {
               context: context,
               icon: Icons.quiz_outlined,
               title: 'Quizzes',
-              baseColor: const Color(0xFFE6F4EA),
-              textColor: const Color(0xFF2E7D32),
+              baseColor: const Color(0xFFE8F5E9),
+              shadowColor: const Color(0xFFA5D6A7),
+              textColor: const Color(0xFF1B5E20),
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Quiz module is accessible via individual classes!')),
@@ -386,8 +391,9 @@ class DashboardScreen extends StatelessWidget {
               context: context,
               icon: Icons.download_for_offline_outlined,
               title: 'Downloads',
-              baseColor: const Color(0xFFFFF8E1),
-              textColor: const Color(0xFFFFB300),
+              baseColor: const Color(0xFFFFFDE7),
+              shadowColor: const Color(0xFFFFF59D),
+              textColor: const Color(0xFFF57F17),
               onTap: () {
                 Navigator.push(
                   context,
@@ -400,7 +406,8 @@ class DashboardScreen extends StatelessWidget {
               icon: Icons.notifications_active_outlined,
               title: 'Notices',
               baseColor: const Color(0xFFE8EAF6),
-              textColor: const Color(0xFF3F51B5),
+              shadowColor: const Color(0xFF9FA8DA),
+              textColor: const Color(0xFF1A237E),
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Notice board is accessible in the Notice tab below!')),
@@ -412,7 +419,8 @@ class DashboardScreen extends StatelessWidget {
               icon: Icons.settings_outlined,
               title: 'Settings',
               baseColor: const Color(0xFFE0F2F1),
-              textColor: const Color(0xFF00695C),
+              shadowColor: const Color(0xFF80CBC4),
+              textColor: const Color(0xFF004D40),
               onTap: () {
                 Navigator.push(
                   context,
@@ -431,6 +439,7 @@ class DashboardScreen extends StatelessWidget {
     required IconData icon,
     required String title,
     required Color baseColor,
+    required Color shadowColor,
     required Color textColor,
     required VoidCallback onTap,
   }) {
@@ -438,35 +447,44 @@ class DashboardScreen extends StatelessWidget {
 
     return Material(
       color: Colors.transparent,
-      child: InkWell(
+      child: GestureDetector(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
         child: Container(
+          margin: const EdgeInsets.only(bottom: 6),
           decoration: BoxDecoration(
             color: isDark ? AppColors.darkSurface : baseColor,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(22),
             border: Border.all(
-              color: isDark ? Colors.white10 : baseColor.withOpacity(0.2),
+              color: isDark ? Colors.white10 : baseColor.withOpacity(0.4),
               width: 1.5,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: isDark ? Colors.transparent : textColor.withOpacity(0.06),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              )
-            ],
+            boxShadow: isDark
+                ? []
+                : [
+                    BoxShadow(
+                      color: shadowColor,
+                      offset: const Offset(0, 6),
+                      blurRadius: 0,
+                    ),
+                  ],
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    )
+                  ],
                 ),
-                child: Icon(icon, color: textColor, size: 24),
+                child: Icon(icon, color: textColor, size: 26),
               ),
               const SizedBox(height: 8),
               Text(
@@ -474,7 +492,7 @@ class DashboardScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 12,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w900,
                   color: isDark ? Colors.white : textColor,
                 ),
               ),

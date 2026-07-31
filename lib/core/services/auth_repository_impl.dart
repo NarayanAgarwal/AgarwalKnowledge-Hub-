@@ -22,10 +22,17 @@ class AuthRepositoryImpl implements AuthRepository {
       final savedMockJson = prefs.getString('mock_user_profile');
       if (savedMockJson != null) {
         final data = jsonDecode(savedMockJson) as Map<String, dynamic>;
+        var name = data['name'] ?? mockUser.name;
+        if (name == "Aman Agarwal") {
+          name = "Narayan Agarwal";
+          final updatedData = Map<String, dynamic>.from(data);
+          updatedData['name'] = "Narayan Agarwal";
+          await prefs.setString('mock_user_profile', jsonEncode(updatedData));
+        }
         _mockUser = UserProfile(
           uid: data['uid'] ?? mockUser.uid,
           role: data['role'] ?? mockUser.role,
-          name: data['name'] ?? mockUser.name,
+          name: name,
           phone: data['phone'] ?? mockUser.phone,
           email: data['email'] ?? mockUser.email,
           address: data['address'] ?? mockUser.address,
