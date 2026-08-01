@@ -1,40 +1,8 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    
-    // Helper check user is logged in
-    function isSignedIn() {
-      return request.auth != null;
-    }
-    
-    // Check if user is teacher, admin or super admin
-    function isStaff() {
-      return isSignedIn() && 
-        (firestoredb().get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['Teacher', 'Admin', 'Super Admin']);
-    }
-
-    // Rules for profile photos
-    match /profile_photos/{userId}/{allPaths=**} {
-      allow read: if isSignedIn();
-      allow write: if isSignedIn() && (request.auth.uid == userId || isStaff());
-    }
-
-    // Rules for Homework documents
-    match /homework_files/{allPaths=**} {
-      allow read: if isSignedIn();
-      allow write: if isStaff();
-    }
-
-    // Rules for Notes/PDFs/Videos
-    match /academic_materials/{allPaths=**} {
-      allow read: if isSignedIn();
-      allow write: if isStaff();
-    }
-
-    // Rules for Stories
-    match /story_files/{allPaths=**} {
-      allow read: if isSignedIn();
-      allow write: if isStaff();
+    match /{allPaths=**} {
+      allow read, write: if true;
     }
   }
 }
