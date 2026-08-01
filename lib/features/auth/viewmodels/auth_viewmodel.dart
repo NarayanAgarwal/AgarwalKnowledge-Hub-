@@ -209,7 +209,7 @@ class AuthViewModel with ChangeNotifier {
         notifyListeners();
       },
       onVerificationFailed: (e) {
-        _errorMessage = e.message ?? "Verification failed. Try again.";
+        _errorMessage = "Firebase Error [${e.code}]: ${e.message ?? 'Verification failed'}";
         _isLoading = false;
         notifyListeners();
       },
