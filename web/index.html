@@ -24,8 +24,22 @@
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for (var i = 0; i < registrations.length; i++) {
-          registrations[i].unregister();
+        if (registrations.length > 0) {
+          for (var i = 0; i < registrations.length; i++) {
+            registrations[i].unregister();
+          }
+          // Programmatically clear all cache storage to remove stale assets
+          if ('caches' in window) {
+            caches.keys().then(function(names) {
+              for (let name of names) {
+                caches.delete(name);
+              }
+            });
+          }
+          // Reload once to fetch the fresh assets from network
+          setTimeout(function() {
+            window.location.reload();
+          }, 300);
         }
       });
     }
