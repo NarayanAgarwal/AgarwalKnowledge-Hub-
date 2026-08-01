@@ -48,20 +48,23 @@ void main() async {
 
   bool firebaseWebInitialized = false;
   if (kIsWeb) {
-    const apiKey = String.fromEnvironment('FIREBASE_API_KEY', defaultValue: '');
-    const projectId = String.fromEnvironment('FIREBASE_PROJECT_ID', defaultValue: '');
-    const appId = String.fromEnvironment('FIREBASE_APP_ID', defaultValue: '');
+    const apiKey = String.fromEnvironment('FIREBASE_API_KEY');
+    const projectId = String.fromEnvironment('FIREBASE_PROJECT_ID');
+    const appId = String.fromEnvironment('FIREBASE_APP_ID');
+    const authDomain = String.fromEnvironment('FIREBASE_AUTH_DOMAIN');
+    const storageBucket = String.fromEnvironment('FIREBASE_STORAGE_BUCKET');
+    const messagingSenderId = String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID');
     
     if (apiKey.isNotEmpty && projectId.isNotEmpty && appId.isNotEmpty) {
       try {
         await Firebase.initializeApp(
-          options: const FirebaseOptions(
+          options: FirebaseOptions(
             apiKey: apiKey,
-            authDomain: String.fromEnvironment('FIREBASE_AUTH_DOMAIN', defaultValue: ''),
             projectId: projectId,
-            storageBucket: String.fromEnvironment('FIREBASE_STORAGE_BUCKET', defaultValue: ''),
-            messagingSenderId: String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID', defaultValue: ''),
             appId: appId,
+            authDomain: authDomain.isNotEmpty ? authDomain : null,
+            storageBucket: storageBucket.isNotEmpty ? storageBucket : null,
+            messagingSenderId: messagingSenderId.isNotEmpty ? messagingSenderId : null,
           ),
         );
         firebaseWebInitialized = true;
