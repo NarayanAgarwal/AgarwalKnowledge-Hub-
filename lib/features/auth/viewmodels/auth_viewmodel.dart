@@ -185,9 +185,10 @@ class AuthViewModel with ChangeNotifier {
       _isLoading = true;
       notifyListeners();
       try {
-        _userProfile = await _authRepository.getUserProfile(savedUid);
+        _userProfile = await _authRepository.getUserProfile(savedUid).timeout(const Duration(seconds: 2));
       } catch (e) {
         _errorMessage = e.toString();
+        _userProfile = null;
       }
       _isLoading = false;
       notifyListeners();

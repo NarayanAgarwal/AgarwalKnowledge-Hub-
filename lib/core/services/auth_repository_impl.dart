@@ -332,7 +332,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
     try {
       final DocumentSnapshot doc =
-          await _firestore.collection(AppStrings.colUsers).doc(uid).get();
+          await _firestore.collection(AppStrings.colUsers).doc(uid).get().timeout(const Duration(seconds: 2));
       if (doc.exists) {
         return UserProfile.fromFirestore(doc.data() as Map<String, dynamic>, doc.id);
       }
