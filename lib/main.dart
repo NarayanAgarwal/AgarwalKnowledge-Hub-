@@ -54,17 +54,35 @@ void main() async {
     const authDomain = String.fromEnvironment('FIREBASE_AUTH_DOMAIN');
     const storageBucket = String.fromEnvironment('FIREBASE_STORAGE_BUCKET');
     const messagingSenderId = String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID');
+
+    String clean(String val) {
+      var s = val.trim();
+      if (s.startsWith('"') && s.endsWith('"')) {
+        s = s.substring(1, s.length - 1);
+      }
+      if (s.startsWith("'") && s.endsWith("'")) {
+        s = s.substring(1, s.length - 1);
+      }
+      return s.trim();
+    }
+
+    final cleanApiKey = clean(apiKey);
+    final cleanProjectId = clean(projectId);
+    final cleanAppId = clean(appId);
+    final cleanAuthDomain = clean(authDomain);
+    final cleanStorageBucket = clean(storageBucket);
+    final cleanMessagingSenderId = clean(messagingSenderId);
     
-    if (apiKey.isNotEmpty && projectId.isNotEmpty && appId.isNotEmpty) {
+    if (cleanApiKey.isNotEmpty && cleanProjectId.isNotEmpty && cleanAppId.isNotEmpty) {
       try {
         await Firebase.initializeApp(
           options: FirebaseOptions(
-            apiKey: apiKey,
-            projectId: projectId,
-            appId: appId,
-            authDomain: authDomain.isNotEmpty ? authDomain : null,
-            storageBucket: storageBucket.isNotEmpty ? storageBucket : null,
-            messagingSenderId: messagingSenderId.isNotEmpty ? messagingSenderId : "580236355762",
+            apiKey: cleanApiKey,
+            projectId: cleanProjectId,
+            appId: cleanAppId,
+            authDomain: cleanAuthDomain.isNotEmpty ? cleanAuthDomain : null,
+            storageBucket: cleanStorageBucket.isNotEmpty ? cleanStorageBucket : null,
+            messagingSenderId: cleanMessagingSenderId.isNotEmpty ? cleanMessagingSenderId : "580236355762",
           ),
         );
         firebaseWebInitialized = true;
