@@ -13,10 +13,6 @@ echo "Configuring Web support..."
 flutter config --enable-web
 flutter create . --platforms web
 
-# Modify base href to relative path for safer asset path resolution
-echo "Modifying base href path..."
-sed -i 's/<base href="\/">/<base href=".\/">/g' web/index.html
-
 # 4. Fetch dependencies
 echo "Getting pub packages..."
 flutter pub get

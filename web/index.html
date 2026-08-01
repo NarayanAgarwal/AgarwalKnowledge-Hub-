@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- Relative base href for correct asset resolving -->
-  <base href="./">
+  <base href="/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -26,11 +25,7 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(registrations) {
         for (var i = 0; i < registrations.length; i++) {
-          registrations[i].unregister().then(function(success) {
-            if (success) {
-              window.location.reload();
-            }
-          });
+          registrations[i].unregister();
         }
       });
     }
