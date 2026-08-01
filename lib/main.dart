@@ -64,7 +64,7 @@ void main() async {
             appId: appId,
             authDomain: authDomain.isNotEmpty ? authDomain : null,
             storageBucket: storageBucket.isNotEmpty ? storageBucket : null,
-            messagingSenderId: messagingSenderId.isNotEmpty ? messagingSenderId : null,
+            messagingSenderId: messagingSenderId.isNotEmpty ? messagingSenderId : "580236355762",
           ),
         );
         firebaseWebInitialized = true;
