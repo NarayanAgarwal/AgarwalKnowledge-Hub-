@@ -23,6 +23,7 @@ class AuthViewModel with ChangeNotifier {
   bool get codeSent => _codeSent;
   bool get rememberMe => _rememberMe;
   bool get isOtpLoginMode => _isOtpLoginMode;
+  bool get isMockMode => _authRepository.isMockMode;
 
   late final Future<void> initializationFuture;
 

@@ -183,6 +183,51 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       
+                      if (authVm.isMockMode) ...[
+                        const SizedBox(height: 16),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.secondaryOrange.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: AppColors.secondaryOrange.withOpacity(0.3), width: 1.5),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.info_outline, color: AppColors.secondaryOrange, size: 20),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Demo/Mock Mode is Active',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: isDark ? Colors.white : AppColors.primaryBlue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '• Real SMS OTP will not be sent to your phone.\n'
+                                '• To log in / verify OTP, use Mock OTP: 123456\n'
+                                '• Default account: 9876543210 (Password: 123456)\n'
+                                '• For new numbers: register first, then use OTP 123456.',
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  height: 1.4,
+                                  fontWeight: FontWeight.w500,
+                                  color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      
                       const SizedBox(height: 24),
                       
                       // Toggle Login Mode Tab
