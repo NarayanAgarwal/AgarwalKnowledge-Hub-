@@ -57,12 +57,29 @@ void main() async {
 
     String clean(String val) {
       var s = val.trim();
-      if (s.startsWith('"') && s.endsWith('"')) {
+      
+      // If the user pasted the entire line (e.g. apiKey: "value", or "apiKey": "value")
+      if (s.contains(':')) {
+        final parts = s.split(':');
+        if (parts.length > 1) {
+          s = parts.sublist(1).join(':').trim();
+        }
+      }
+      
+      // Strip trailing commas (frequently copied from JS config objects)
+      if (s.endsWith(',')) {
+        s = s.substring(0, s.length - 1).trim();
+      }
+      
+      // Strip double quotes
+      if (s.startsWith('"') && s.endsWith('"') && s.length >= 2) {
         s = s.substring(1, s.length - 1);
       }
-      if (s.startsWith("'") && s.endsWith("'")) {
+      // Strip single quotes
+      if (s.startsWith("'") && s.endsWith("'") && s.length >= 2) {
         s = s.substring(1, s.length - 1);
       }
+      
       return s.trim();
     }
 
