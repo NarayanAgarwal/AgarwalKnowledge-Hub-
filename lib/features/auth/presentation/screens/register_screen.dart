@@ -8,7 +8,8 @@ import '../../viewmodels/auth_viewmodel.dart';
 import '../../../dashboard/presentation/screens/main_navigation_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  final String? initialEmail;
+  const RegisterScreen({super.key, this.initialEmail});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -18,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
   final _parentController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -26,9 +28,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final List<String> _classes = ['Nursery', 'LKG', 'UKG', ...List.generate(12, (index) => 'Class ${index + 1}')];
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.initialEmail != null) {
+      _emailController.text = widget.initialEmail!;
+    }
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
+    _emailController.dispose();
     _parentController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -47,6 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       userClass: _selectedClass,
       rollNumber: "",
       parentName: _parentController.text.trim(),
+      email: _emailController.text.trim(),
     );
 
     if (success && mounted) {
@@ -198,6 +210,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) return 'Please enter mobile number';
                             if (val.trim().length < 10) return 'Enter a valid 10-digit number';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 14),
+
+                        // Email Address
+                        const Text('Email Address ✉️', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        const SizedBox(height: 6),
+                        CustomTextField(
+                          controller: _emailController,
+                          labelText: 'Email Address',
+                          hintText: 'Enter email address (Optional)',
+                          prefixIcon: Icons.email_outlined,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (val) {
+                            if (val != null && val.trim().isNotEmpty) {
+                              final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                              if (!emailRegex.hasMatch(val.trim())) {
+                                return 'Please enter a valid email address';
+                              }
+                            }
                             return null;
                           },
                         ),

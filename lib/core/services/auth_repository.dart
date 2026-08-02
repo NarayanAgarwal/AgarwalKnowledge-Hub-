@@ -14,6 +14,16 @@ abstract class AuthRepository {
     required String verificationId,
     required String smsCode,
   });
+  Future<void> sendEmailOtp({
+    required String email,
+    required Function(String verificationId) onCodeSent,
+    required Function(String error) onFailed,
+  });
+  Future<UserProfile?> verifyEmailOtp({
+    required String email,
+    required String verificationId,
+    required String otpCode,
+  });
   Future<void> logout();
   Future<UserProfile?> getUserProfile(String uid);
   Future<void> saveUserProfile(UserProfile profile);

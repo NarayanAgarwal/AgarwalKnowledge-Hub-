@@ -42,9 +42,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onSendOtp() {
     if (_formKey.currentState!.validate()) {
-      final phone = _phoneController.text.trim();
-      final formattedPhone = phone.startsWith('+91') ? phone : '+91$phone';
-      Provider.of<AuthViewModel>(context, listen: false).sendOtp(formattedPhone);
+      final input = _phoneController.text.trim();
+      final authVm = Provider.of<AuthViewModel>(context, listen: false);
+      if (input.contains('@')) {
+        authVm.setEmailOtpMode(true);
+        authVm.sendEmailOtp(input);
+      } else {
+        authVm.setEmailOtpMode(false);
+        final formattedPhone = input.startsWith('+91') ? input : '+91$input';
+        authVm.sendOtp(formattedPhone);
+      }
     }
   }
 
@@ -58,12 +65,31 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     
-    final success = await authVm.verifyOtp(smsCode);
+    final success = authVm.isEmailOtpMode
+        ? await authVm.verifyEmailOtp(smsCode)
+        : await authVm.verifyOtp(smsCode);
+
     if (success && mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
-      );
+      if (authVm.userProfile != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+        );
+      } else {
+        // Email verified, but no profile exists
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Email verified! Please register to create your student account. 🎒'),
+            backgroundColor: Colors.blue,
+          ),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RegisterScreen(initialEmail: authVm.pendingEmail),
+          ),
+        );
+      }
     } else if (mounted && authVm.errorMessage != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(authVm.errorMessage!)),
@@ -311,23 +337,40 @@ class _LoginScreenState extends State<LoginScreen> {
                             if (!authVm.codeSent) ...[
                               // Phone number input
                               CustomTextField(
-                                controller: _phoneController,
-                                focusNode: _phoneFocusNode,
-                                textInputAction: TextInputAction.next,
-                                labelText: 'Mobile Number',
-                                hintText: 'Enter 10-digit number',
-                                prefixIcon: Icons.phone_android_outlined,
-                                keyboardType: TextInputType.phone,
-                                validator: (val) {
-                                  if (val == null || val.trim().isEmpty) {
-                                    return AppStrings.valEnterPhone;
-                                  }
-                                  if (val.trim().length < 10) {
-                                    return AppStrings.valEnterValidPhone;
-                                  }
-                                  return null;
-                                },
-                              ),
+                                 controller: _phoneController,
+                                 focusNode: _phoneFocusNode,
+                                 textInputAction: authVm.isOtpLoginMode ? TextInputAction.done : TextInputAction.next,
+                                 onFieldSubmitted: authVm.isOtpLoginMode ? (_) => _onSendOtp() : null,
+                                 labelText: authVm.isOtpLoginMode ? 'Mobile Number / Email Address' : 'Mobile Number',
+                                 hintText: authVm.isOtpLoginMode ? 'Enter 10-digit number or email' : 'Enter 10-digit number',
+                                 prefixIcon: authVm.isOtpLoginMode ? Icons.contact_mail_outlined : Icons.phone_android_outlined,
+                                 keyboardType: authVm.isOtpLoginMode ? TextInputType.emailAddress : TextInputType.phone,
+                                 validator: (val) {
+                                   if (val == null || val.trim().isEmpty) {
+                                     return authVm.isOtpLoginMode
+                                         ? 'Please enter mobile number or email'
+                                         : AppStrings.valEnterPhone;
+                                   }
+                                   final input = val.trim();
+                                   if (authVm.isOtpLoginMode) {
+                                     if (input.contains('@')) {
+                                       final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                                       if (!emailRegex.hasMatch(input)) {
+                                         return 'Please enter a valid email address';
+                                       }
+                                     } else {
+                                       if (input.length < 10) {
+                                         return AppStrings.valEnterValidPhone;
+                                       }
+                                     }
+                                   } else {
+                                     if (input.length < 10) {
+                                       return AppStrings.valEnterValidPhone;
+                                     }
+                                   }
+                                   return null;
+                                 },
+                               ),
                               
                               const SizedBox(height: 16),
                               

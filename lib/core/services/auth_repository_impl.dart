@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
+import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +17,7 @@ class AuthRepositoryImpl implements AuthRepository {
   UserProfile? _mockUser;
   bool _useMock = false;
   String? _pendingVerifyPhone;
+  final Map<String, String> _emailOtpStore = {};
 
   String _normalizePhone(String? phone) {
     if (phone == null || phone.isEmpty) return '';
@@ -249,6 +252,93 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       return profile;
     }
+    return null;
+  }
+
+  @override
+  Future<void> sendEmailOtp({
+    required String email,
+    required Function(String verificationId) onCodeSent,
+    required Function(String error) onFailed,
+  }) async {
+    try {
+      final random = Random();
+      final otp = (100000 + random.nextInt(900000)).toString();
+      final verificationId = "email_ver_${DateTime.now().millisecondsSinceEpoch}";
+      
+      // Store in memory
+      _emailOtpStore[email] = otp;
+      _emailOtpStore[verificationId] = email;
+
+      if (_useMock) {
+        // Mock email OTP send
+        print("Mock Mode Active: Sent Email OTP $otp to $email");
+        await Future.delayed(const Duration(seconds: 1));
+        onCodeSent(verificationId);
+        return;
+      }
+
+      // Call Vercel serverless function endpoint
+      final origin = Uri.base.origin;
+      final url = Uri.parse("$origin/api/send-email");
+
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'otp': otp}),
+      );
+
+      if (response.statusCode == 200) {
+        onCodeSent(verificationId);
+      } else {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        final errorMsg = responseData['error'] ?? "Failed to send email OTP";
+        onFailed(errorMsg);
+      }
+    } catch (e) {
+      onFailed("Failed to connect to email service: ${e.toString()}");
+    }
+  }
+
+  @override
+  Future<UserProfile?> verifyEmailOtp({
+    required String email,
+    required String verificationId,
+    required String otpCode,
+  }) async {
+    final expectedOtp = _emailOtpStore[email];
+    if (expectedOtp == null || expectedOtp != otpCode) {
+      throw Exception("Incorrect verification code entered.");
+    }
+
+    // OTP matches! Clear it from store
+    _emailOtpStore.remove(email);
+    _emailOtpStore.remove(verificationId);
+
+    // Look up user profile in Firestore
+    if (_useMock) {
+      // Return default mock student or existing mock profile
+      return await getUserProfile("student_user_123");
+    }
+
+    // Production mode: Query Firestore users collection by email
+    final query = await _firestore
+        .collection(AppStrings.colUsers)
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (query.docs.isNotEmpty) {
+      final doc = query.docs.first;
+      UserProfile profile = UserProfile.fromFirestore(doc.data(), doc.id);
+      
+      // Update last login
+      profile = profile.copyWith(lastLogin: DateTime.now());
+      await saveUserProfile(profile);
+      return profile;
+    }
+
+    // User profile not found (need to register first!)
     return null;
   }
 

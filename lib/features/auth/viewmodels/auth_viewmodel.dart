@@ -16,6 +16,8 @@ class AuthViewModel with ChangeNotifier {
   bool _codeSent = false;
   bool _rememberMe = true;
   bool _isOtpLoginMode = false;
+  bool _isEmailOtpMode = false;
+  String? _pendingEmail;
 
   UserProfile? get userProfile => _userProfile;
   bool get isLoading => _isLoading;
@@ -23,6 +25,8 @@ class AuthViewModel with ChangeNotifier {
   bool get codeSent => _codeSent;
   bool get rememberMe => _rememberMe;
   bool get isOtpLoginMode => _isOtpLoginMode;
+  bool get isEmailOtpMode => _isEmailOtpMode;
+  String? get pendingEmail => _pendingEmail;
   bool get isMockMode => _authRepository.isMockMode;
 
   late final Future<void> initializationFuture;
@@ -38,6 +42,16 @@ class AuthViewModel with ChangeNotifier {
 
   void toggleLoginMode(bool value) {
     _isOtpLoginMode = value;
+    _isEmailOtpMode = false;
+    _pendingEmail = null;
+    _codeSent = false;
+    _verificationId = null;
+    _errorMessage = null;
+    notifyListeners();
+  }
+
+  void setEmailOtpMode(bool val) {
+    _isEmailOtpMode = val;
     _codeSent = false;
     _verificationId = null;
     _errorMessage = null;
@@ -55,6 +69,7 @@ class AuthViewModel with ChangeNotifier {
     required String userClass,
     required String rollNumber,
     required String parentName,
+    String email = "",
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -72,7 +87,7 @@ class AuthViewModel with ChangeNotifier {
         role: AppStrings.roleStudent,
         name: name,
         phone: phone,
-        email: "",
+        email: email,
         address: "",
         userClass: userClass,
         rollNumber: rollNumber,
@@ -254,6 +269,70 @@ class AuthViewModel with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
     return false;
+  }
+
+  Future<void> sendEmailOtp(String email) async {
+    _isLoading = true;
+    _errorMessage = null;
+    _pendingEmail = email;
+    notifyListeners();
+
+    await _authRepository.sendEmailOtp(
+      email: email,
+      onCodeSent: (verId) {
+        _verificationId = verId;
+        _codeSent = true;
+        _isLoading = false;
+        notifyListeners();
+      },
+      onFailed: (error) {
+        _errorMessage = error;
+        _isLoading = false;
+        notifyListeners();
+      },
+    );
+  }
+
+  Future<bool> verifyEmailOtp(String smsCode) async {
+    if (_verificationId == null || _pendingEmail == null) {
+      _errorMessage = "Verification session expired. Please send code again.";
+      notifyListeners();
+      return false;
+    }
+
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final profile = await _authRepository.verifyEmailOtp(
+        email: _pendingEmail!,
+        verificationId: _verificationId!,
+        otpCode: smsCode,
+      );
+
+      _userProfile = profile;
+      _isLoading = false;
+      
+      if (profile != null) {
+        final prefs = await SharedPreferences.getInstance();
+        if (_rememberMe) {
+          await prefs.setBool('auto_login', true);
+          await prefs.setString('saved_uid', profile.uid);
+        } else {
+          await prefs.remove('auto_login');
+          await prefs.remove('saved_uid');
+        }
+      }
+      
+      notifyListeners();
+      return true; // Return true as verification was successful (UI handles if profile is null)
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll("Exception: ", "");
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
   }
 
   Future<void> completeProfile(UserProfile updatedProfile) async {
