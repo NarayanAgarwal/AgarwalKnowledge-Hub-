@@ -699,8 +699,14 @@ class _StudyPlayScreenState extends State<StudyPlayScreen> with SingleTickerProv
         errorBuilder: (c, o, s) => Text(emoji, style: TextStyle(fontSize: size)),
       );
     }
+    
+    // Bypass CORS on Flutter Web by proxying external HTTP/HTTPS images
+    final String finalUrl = kIsWeb && url.startsWith("http")
+        ? "https://images.weserv.nl/?url=${Uri.encodeComponent(url)}"
+        : url;
+
     return Image.network(
-      url,
+      finalUrl,
       width: size,
       height: size,
       fit: BoxFit.contain,
