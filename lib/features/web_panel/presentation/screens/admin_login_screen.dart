@@ -175,10 +175,17 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                           value: _selectedRole,
                           isExpanded: true,
                           underline: const SizedBox.shrink(),
-                          items: [AppStrings.roleSuperAdmin, AppStrings.roleAdmin, AppStrings.roleTeacher].map((role) {
+                          items: [
+                            AppStrings.roleSuperAdmin,
+                            AppStrings.roleAdmin,
+                            AppStrings.roleTeacher,
+                            'Accountant',
+                            AppStrings.roleStudent,
+                            AppStrings.roleParent,
+                          ].map((role) {
                             return DropdownMenuItem<String>(
                               value: role,
-                              child: Text(role),
+                              child: Text(role == AppStrings.roleAdmin ? 'School Admin / Principal' : role),
                             );
                           }).toList(),
                           onChanged: (val) {

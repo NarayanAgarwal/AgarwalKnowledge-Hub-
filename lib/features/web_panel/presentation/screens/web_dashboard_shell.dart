@@ -29,22 +29,128 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
   int _selectedMenuIndex = 0;
   bool _isSidebarCollapsed = false;
 
-  final List<Map<String, dynamic>> _menuItems = [
-    {'title': 'Dashboard', 'icon': Icons.dashboard_outlined},
-    {'title': 'Students', 'icon': Icons.people_outline},
-    {'title': 'Teachers', 'icon': Icons.assignment_ind_outlined},
-    {'title': 'Classes & Subjects', 'icon': Icons.class_outlined},
-    {'title': 'Resource Library', 'icon': Icons.menu_book_outlined},
-    {'title': 'Homework', 'icon': Icons.assignment_outlined},
-    {'title': 'Quiz Builder', 'icon': Icons.quiz_outlined},
-    {'title': 'Attendance', 'icon': Icons.calendar_today_outlined},
-    {'title': 'Notice Board', 'icon': Icons.announcement_outlined},
-    {'title': 'Story Expire', 'icon': Icons.history_toggle_off_outlined},
-    {'title': 'AI Doubts', 'icon': Icons.chat_bubble_outline},
-    {'title': 'Push Alerts', 'icon': Icons.notifications_active_outlined},
-    {'title': 'Reports', 'icon': Icons.analytics_outlined},
-    {'title': 'System Settings', 'icon': Icons.settings_outlined},
-  ];
+  List<Map<String, dynamic>> _getMenuItemsForRole(String role) {
+    switch (role) {
+      case 'Super Admin':
+        return [
+          {'title': 'Dashboard', 'icon': Icons.dashboard_outlined},
+          {'title': 'Student Management', 'icon': Icons.people_outline},
+          {'title': 'Teacher Management', 'icon': Icons.assignment_ind_outlined},
+          {'title': 'Parent Management', 'icon': Icons.family_restroom_outlined},
+          {'title': 'School & Branches', 'icon': Icons.business_outlined},
+          {'title': 'Class & Subjects', 'icon': Icons.class_outlined},
+          {'title': 'Section Management', 'icon': Icons.layers_outlined},
+          {'title': 'Attendance', 'icon': Icons.calendar_today_outlined},
+          {'title': 'Homework', 'icon': Icons.assignment_outlined},
+          {'title': 'Quiz Builder', 'icon': Icons.quiz_outlined},
+          {'title': 'Resource Library', 'icon': Icons.menu_book_outlined},
+          {'title': 'Study With Play', 'icon': Icons.sports_esports_outlined},
+          {'title': 'AI Learning', 'icon': Icons.psychology_outlined},
+          {'title': 'Story Expire', 'icon': Icons.history_toggle_off_outlined},
+          {'title': 'Library Settings', 'icon': Icons.local_library_outlined},
+          {'title': 'Events & Gallery', 'icon': Icons.event_note_outlined},
+          {'title': 'Certificates', 'icon': Icons.card_membership_outlined},
+          {'title': 'Fee Management', 'icon': Icons.account_balance_wallet_outlined},
+          {'title': 'Push Alerts', 'icon': Icons.notifications_active_outlined},
+          {'title': 'Reports & Analytics', 'icon': Icons.analytics_outlined},
+          {'title': 'User & Role Mgmt', 'icon': Icons.admin_panel_settings_outlined},
+          {'title': 'System Settings', 'icon': Icons.settings_outlined},
+          {'title': 'Database & Backup', 'icon': Icons.storage_outlined},
+          {'title': 'Firebase Settings', 'icon': Icons.cloud_queue_outlined},
+          {'title': 'Subscription Admin', 'icon': Icons.card_giftcard_outlined},
+          {'title': 'Payment Settings', 'icon': Icons.payment_outlined},
+          {'title': 'Ads Settings', 'icon': Icons.ad_units_outlined},
+          {'title': 'Contact & Support', 'icon': Icons.support_agent_outlined},
+          {'title': 'Activity Logs', 'icon': Icons.list_alt_outlined},
+        ];
+      case 'Admin': // School Admin / Principal
+        return [
+          {'title': 'Dashboard', 'icon': Icons.dashboard_outlined},
+          {'title': 'Student Management', 'icon': Icons.people_outline},
+          {'title': 'Teacher Management', 'icon': Icons.assignment_ind_outlined},
+          {'title': 'Parent Management', 'icon': Icons.family_restroom_outlined},
+          {'title': 'Class & Subjects', 'icon': Icons.class_outlined},
+          {'title': 'Section Management', 'icon': Icons.layers_outlined},
+          {'title': 'Attendance', 'icon': Icons.calendar_today_outlined},
+          {'title': 'Homework', 'icon': Icons.assignment_outlined},
+          {'title': 'Quiz Builder', 'icon': Icons.quiz_outlined},
+          {'title': 'Resource Library', 'icon': Icons.menu_book_outlined},
+          {'title': 'Events & Gallery', 'icon': Icons.event_note_outlined},
+          {'title': 'Certificates', 'icon': Icons.card_membership_outlined},
+          {'title': 'Fee Collection', 'icon': Icons.account_balance_wallet_outlined},
+          {'title': 'Push Alerts', 'icon': Icons.notifications_active_outlined},
+          {'title': 'Reports & Analytics', 'icon': Icons.analytics_outlined},
+        ];
+      case 'Teacher':
+        return [
+          {'title': 'Dashboard', 'icon': Icons.dashboard_outlined},
+          {'title': 'Attendance', 'icon': Icons.calendar_today_outlined},
+          {'title': 'Homework', 'icon': Icons.assignment_outlined},
+          {'title': 'Assignments', 'icon': Icons.assignment_turned_in_outlined},
+          {'title': 'Quiz Builder', 'icon': Icons.quiz_outlined},
+          {'title': 'Resource Library', 'icon': Icons.menu_book_outlined},
+          {'title': 'Study With Play', 'icon': Icons.sports_esports_outlined},
+          {'title': 'Marks & Results', 'icon': Icons.grade_outlined},
+          {'title': 'Certificates', 'icon': Icons.card_membership_outlined},
+          {'title': 'Student Progress', 'icon': Icons.show_chart_outlined},
+          {'title': 'Notice Board', 'icon': Icons.announcement_outlined},
+          {'title': 'Chat Support', 'icon': Icons.chat_bubble_outline},
+        ];
+      case 'Accountant':
+        return [
+          {'title': 'Dashboard', 'icon': Icons.dashboard_outlined},
+          {'title': 'Fee Collection', 'icon': Icons.add_home_work_outlined},
+          {'title': 'Student Fees', 'icon': Icons.account_balance_wallet_outlined},
+          {'title': 'Staff Salary', 'icon': Icons.payments_outlined},
+          {'title': 'Income', 'icon': Icons.trending_up_outlined},
+          {'title': 'Expenses', 'icon': Icons.trending_down_outlined},
+          {'title': 'Invoices & Receipts', 'icon': Icons.receipt_long_outlined},
+          {'title': 'Payment History', 'icon': Icons.history_outlined},
+          {'title': 'Reports', 'icon': Icons.analytics_outlined},
+        ];
+      case 'Student':
+        return [
+          {'title': 'Dashboard', 'icon': Icons.dashboard_outlined},
+          {'title': 'Study Material', 'icon': Icons.menu_book_outlined},
+          {'title': 'Homework', 'icon': Icons.assignment_outlined},
+          {'title': 'Quiz Arena', 'icon': Icons.quiz_outlined},
+          {'title': 'Study With Play', 'icon': Icons.sports_esports_outlined},
+          {'title': 'AI Learning', 'icon': Icons.psychology_outlined},
+          {'title': 'Library', 'icon': Icons.local_library_outlined},
+          {'title': 'Audio Story', 'icon': Icons.audiotrack_outlined},
+          {'title': 'My Attendance', 'icon': Icons.calendar_today_outlined},
+          {'title': 'My Results', 'icon': Icons.grade_outlined},
+          {'title': 'My Certificates', 'icon': Icons.card_membership_outlined},
+          {'title': 'My Profile', 'icon': Icons.person_outline},
+          {'title': 'Rewards & Badges', 'icon': Icons.workspace_premium_outlined},
+          {'title': 'Leaderboard', 'icon': Icons.leaderboard_outlined},
+        ];
+      case 'Parent':
+        return [
+          {'title': 'Dashboard', 'icon': Icons.dashboard_outlined},
+          {'title': 'Child Attendance', 'icon': Icons.calendar_today_outlined},
+          {'title': 'Homework', 'icon': Icons.assignment_outlined},
+          {'title': 'Quiz Scores', 'icon': Icons.quiz_outlined},
+          {'title': 'Academic Progress', 'icon': Icons.show_chart_outlined},
+          {'title': 'Fee Status', 'icon': Icons.account_balance_wallet_outlined},
+          {'title': 'Term Results', 'icon': Icons.grade_outlined},
+          {'title': 'Certificates', 'icon': Icons.card_membership_outlined},
+          {'title': 'Teacher Chat', 'icon': Icons.chat_bubble_outline},
+          {'title': 'Notifications', 'icon': Icons.notifications_active_outlined},
+        ];
+      default:
+        return [
+          {'title': 'Dashboard', 'icon': Icons.dashboard_outlined},
+        ];
+    }
+  }
+
+  List<Map<String, dynamic>> get _menuItems {
+    final authVm = Provider.of<AuthViewModel>(context, listen: false);
+    final user = authVm.userProfile;
+    if (user == null) return [];
+    return _getMenuItemsForRole(user.role);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +162,9 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
     if (user == null) {
       return const LoginScreen();
     }
+
+    final menuList = _menuItems;
+    final int checkedIndex = _selectedMenuIndex >= menuList.length ? 0 : _selectedMenuIndex;
 
     return Scaffold(
       body: Row(
@@ -79,10 +188,10 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: _menuItems.length,
+                    itemCount: menuList.length,
                     itemBuilder: (context, index) {
-                      final item = _menuItems[index];
-                      final isSelected = _selectedMenuIndex == index;
+                      final item = menuList[index];
+                      final isSelected = checkedIndex == index;
                       return _buildSidebarItem(item, isSelected, index, isDark);
                     },
                   ),
@@ -104,7 +213,9 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
                 Expanded(
                   child: Container(
                     color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
-                    child: _buildActivePanel(context, _selectedMenuIndex, user, isDark),
+                    child: menuList.isNotEmpty 
+                        ? _buildActivePanel(context, menuList[checkedIndex], user, isDark)
+                        : const SizedBox.shrink(),
                   ),
                 ),
               ],
@@ -257,7 +368,9 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
               ),
               const SizedBox(width: 12),
               Text(
-                _menuItems[_selectedMenuIndex]['title'],
+                _menuItems.isNotEmpty && _selectedMenuIndex < _menuItems.length
+                    ? _menuItems[_selectedMenuIndex]['title']
+                    : 'Dashboard',
                 style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
               ),
             ],
@@ -294,38 +407,56 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
     );
   }
 
-  Widget _buildActivePanel(BuildContext context, int index, UserProfile user, bool isDark) {
-    switch (index) {
-      case 0:
+  Widget _buildActivePanel(BuildContext context, Map<String, dynamic> item, UserProfile user, bool isDark) {
+    final title = item['title'];
+    switch (title) {
+      case 'Dashboard':
         return SuperAdminDashboardPanel(isDark: isDark);
-      case 1:
+      case 'Student Management':
+      case 'Students':
         return StudentManagementPanel(isDark: isDark);
-      case 2:
+      case 'Teacher Management':
+      case 'Teachers':
         return TeacherManagementPanel(isDark: isDark);
-      case 3:
+      case 'Class & Subjects':
+      case 'Classes & Subjects':
         return ClassSubjectPanel(isDark: isDark);
-      case 4:
+      case 'Resource Library':
+      case 'Study Material':
         return ResourceUploadPanel(isDark: isDark);
-      case 5:
+      case 'Homework':
         return HomeworkManagementPanel(isDark: isDark);
-      case 6:
+      case 'Quiz Builder':
+      case 'Quiz Arena':
+      case 'Quiz Scores':
         return QuizBuilderPanel(isDark: isDark);
-      case 7:
+      case 'Attendance':
+      case 'Child Attendance':
+      case 'My Attendance':
         return AttendanceManagementPanel(isDark: isDark);
-      case 8:
+      case 'Notice Board':
+      case 'Notifications':
         return NoticeBoardPanel(isDark: isDark);
-      case 9:
+      case 'Story Expire':
+      case 'Audio Story':
         return StoryUploadPanel(isDark: isDark);
-      case 10:
+      case 'AI Doubts':
+      case 'AI Learning':
         return DoubtPanel(isDark: isDark);
-      case 11:
+      case 'Push Alerts':
         return NotificationsPanel(isDark: isDark);
-      case 12:
+      case 'Reports':
+      case 'Reports & Analytics':
+      case 'Academic Progress':
         return ReportsPanel(isDark: isDark);
-      case 13:
+      case 'System Settings':
         return WebSettingsPanel(isDark: isDark);
       default:
-        return Center(child: Text('${_menuItems[index]['title']} coming soon...'));
+        return GenericRolePanel(
+          title: title,
+          icon: item['icon'] ?? Icons.extension_outlined,
+          isDark: isDark,
+        );
     }
   }
 }
@@ -439,29 +570,63 @@ class SuperAdminDashboardPanel extends StatelessWidget {
   }
 
   Widget _buildStatCard(String title, String count, IconData icon, Color color) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: color.withOpacity(0.12),
-              child: Icon(icon, color: color, size: 24),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold)),
-                  Text(count, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? null : Colors.white,
+        gradient: isDark
+            ? LinearGradient(
+                colors: [
+                  color.withOpacity(0.18),
+                  color.withOpacity(0.03),
                 ],
-              ),
-            )
-          ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark ? color.withOpacity(0.25) : Colors.grey.shade100,
+          width: 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? color.withOpacity(0.15) : color.withOpacity(0.12),
+            offset: const Offset(0, 4),
+            blurRadius: 10,
+          )
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: color.withOpacity(0.15),
+            child: Icon(icon, color: isDark ? Colors.white : color, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: isDark ? AppColors.darkTextSecondary : Colors.grey.shade600,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  count,
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
@@ -1611,6 +1776,359 @@ class MaxWidthContainer extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 600),
         child: child,
+      ),
+    );
+  }
+}
+
+// ==========================================
+// NEW FEATURE SUB PANEL: GENERIC ROLE PANEL
+// ==========================================
+class GenericRolePanel extends StatefulWidget {
+  final String title;
+  final IconData icon;
+  final bool isDark;
+
+  const GenericRolePanel({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.isDark,
+  });
+
+  @override
+  State<GenericRolePanel> createState() => _GenericRolePanelState();
+}
+
+class _GenericRolePanelState extends State<GenericRolePanel> {
+  final TextEditingController _searchController = TextEditingController();
+
+  List<Map<String, String>> _getSimulatedData() {
+    switch (widget.title) {
+      case 'Parent Management':
+        return [
+          {'name': 'Sanjay Agarwal', 'child': 'Narayan Agarwal', 'class': 'Class 5', 'phone': '+919876543211', 'email': 'sanjay@agarwal.com', 'status': 'Active'},
+          {'name': 'Ramesh Kumar', 'child': 'Amit Kumar', 'class': 'Class 8', 'phone': '+919876543233', 'email': 'ramesh@kumar.com', 'status': 'Active'},
+          {'name': 'Sunita Devi', 'child': 'Neha Kumari', 'class': 'Class 3', 'phone': '+919876543255', 'email': 'sunita@devi.com', 'status': 'Active'},
+        ];
+      case 'School & Branches':
+        return [
+          {'name': 'Patna Main Branch', 'code': 'PAT-001', 'address': 'Mithapur, Patna', 'head': 'Director Agarwal', 'phone': '+919876543299', 'status': 'Primary'},
+          {'name': 'Ranchi Extension', 'code': 'RAN-002', 'address': 'Lalpur, Ranchi', 'head': 'A. K. Roy', 'phone': '+919876543288', 'status': 'Active'},
+          {'name': 'Gaya Branch', 'code': 'GAY-003', 'address': 'Gaya Chowk, Gaya', 'head': 'S. P. Singh', 'phone': '+919876543277', 'status': 'Active'},
+        ];
+      case 'Section Management':
+        return [
+          {'name': 'Section A', 'class': 'Class 5', 'room': 'Room 12', 'strength': '40 Students', 'teacher': 'Nisha Gupta', 'status': 'Full'},
+          {'name': 'Section B', 'class': 'Class 5', 'room': 'Room 14', 'strength': '35 Students', 'teacher': 'Ravi Kant', 'status': 'Active'},
+          {'name': 'Section A', 'class': 'Class 8', 'room': 'Room 20', 'strength': '45 Students', 'teacher': 'S. Kumar', 'status': 'Full'},
+        ];
+      case 'Events & Gallery':
+        return [
+          {'name': 'Annual Sports Day 2026', 'date': '2026-11-20', 'venue': 'Main Stadium', 'cost': 'Free', 'coordinator': 'Ravi Kant', 'status': 'Upcoming'},
+          {'name': 'Science Exhibition', 'date': '2026-08-15', 'venue': 'Auditorium', 'cost': '₹50/entry', 'coordinator': 'Nisha Gupta', 'status': 'Scheduled'},
+          {'name': 'Independance Day Gala', 'date': '2026-08-15', 'venue': 'Assembly Ground', 'cost': 'Free', 'coordinator': 'Principal', 'status': 'Planned'},
+        ];
+      case 'Certificates':
+        return [
+          {'name': 'Academic Excellence Award', 'issuedTo': 'Narayan Agarwal', 'class': 'Class 5', 'date': '2026-06-12', 'designation': 'Scholarship', 'status': 'Generated'},
+          {'name': 'Sports Champion Medal', 'issuedTo': 'Amit Kumar', 'class': 'Class 8', 'date': '2026-06-10', 'designation': 'Sports', 'status': 'Printed'},
+          {'name': 'Perfect Attendance cert', 'issuedTo': 'Neha Kumari', 'class': 'Class 3', 'date': '2026-05-30', 'designation': 'Attendance', 'status': 'Generated'},
+        ];
+      case 'Fee Collection':
+      case 'Fee Management':
+      case 'Student Fees':
+      case 'Staff Salary':
+      case 'Income':
+      case 'Expenses':
+      case 'Invoices & Receipts':
+      case 'Payment History':
+        return [
+          {'transaction': 'TXN-984210', 'student': 'Narayan Agarwal', 'class': 'Class 5', 'amount': '₹4,500', 'date': '2026-08-01', 'method': 'UPI (PhonePe)', 'status': 'Paid'},
+          {'transaction': 'TXN-984211', 'student': 'Amit Kumar', 'class': 'Class 8', 'amount': '₹5,200', 'date': '2026-08-03', 'method': 'NetBanking', 'status': 'Paid'},
+          {'transaction': 'TXN-984212', 'student': 'Neha Kumari', 'class': 'Class 3', 'amount': '₹4,500', 'date': '2026-08-05', 'method': 'Cash', 'status': 'Pending'},
+        ];
+      default:
+        return [
+          {'detail_1': 'Operational Record 1', 'detail_2': 'System Administration', 'detail_3': 'Supervised', 'status': 'Completed'},
+          {'detail_1': 'Operational Record 2', 'detail_2': 'Academic Management', 'detail_3': 'Pending', 'status': 'In-Progress'},
+          {'detail_1': 'Operational Record 3', 'detail_2': 'Institution ERP Sync', 'detail_3': 'Automatic', 'status': 'Completed'},
+        ];
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isDark = widget.isDark;
+    final List<Map<String, String>> records = _getSimulatedData();
+    final Color accentColor = widget.title.contains('Fee') || widget.title.contains('Salary') || widget.title.contains('Income') || widget.title.contains('Expenses')
+        ? Colors.green
+        : widget.title.contains('Event') || widget.title.contains('Gallery') || widget.title.contains('Certificate')
+            ? AppColors.secondaryOrange
+            : AppColors.primaryBlue;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Glassmorphic Header Banner
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [accentColor.withOpacity(0.85), accentColor.withOpacity(0.55)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: accentColor.withOpacity(0.3),
+                  blurRadius: 15,
+                  offset: const Offset(0, 6),
+                )
+              ],
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.white24,
+                  child: Icon(widget.icon, color: Colors.white, size: 28),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.title.toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 22,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'School Enterprise ERP System Module - Active Sync',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.85),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: accentColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  ),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('${widget.title} details refreshed! 🔄')),
+                    );
+                  },
+                  icon: const Icon(Icons.refresh, size: 16),
+                  label: const Text('Sync Module', style: TextStyle(fontWeight: FontWeight.w800)),
+                )
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Stats Row
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 3,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 2.8,
+            children: [
+              _buildStatsCard('Total Items Sync', '${records.length}', Icons.sync, Colors.blue),
+              _buildStatsCard('Operational Status', 'Optimal', Icons.check_circle_outline, Colors.green),
+              _buildStatsCard('Encryption Keys', 'AES-256 Enabled', Icons.security, Colors.orange),
+            ],
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Data Table Panel
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? null : Colors.white,
+              gradient: isDark
+                  ? LinearGradient(
+                      colors: [
+                        AppColors.primaryBlue.withOpacity(0.12),
+                        AppColors.primaryBlue.withOpacity(0.02),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: isDark ? AppColors.primaryBlue.withOpacity(0.25) : Colors.grey.shade100,
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 15,
+                  offset: const Offset(0, 6),
+                )
+              ],
+            ),
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Search & Filter header
+                Row(
+                  children: [
+                    const Text(
+                      'Operational Logs & Records',
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                    ),
+                    const Spacer(),
+                    SizedBox(
+                      width: 300,
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search items...',
+                          prefixIcon: const Icon(Icons.search, size: 20),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 18),
+                
+                // Data List
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: records.length,
+                  separatorBuilder: (c, i) => const Divider(height: 20),
+                  itemBuilder: (context, idx) {
+                    final item = records[idx];
+                    final keys = item.keys.toList();
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: accentColor.withOpacity(0.1),
+                        child: Icon(widget.icon, color: accentColor, size: 20),
+                      ),
+                      title: Text(
+                        item[keys[0]] ?? '',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                      subtitle: Text(
+                        keys.length > 1 ? '${keys[1].toUpperCase()}: ${item[keys[1]]} | ${keys[2].toUpperCase()}: ${item[keys[2]]}' : '',
+                        style: TextStyle(color: isDark ? Colors.grey : Colors.grey.shade600, fontSize: 12),
+                      ),
+                      trailing: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: (item['status'] == 'Active' || item['status'] == 'Paid' || item['status'] == 'Generated' || item['status'] == 'Completed' || item['status'] == 'Primary')
+                              ? Colors.green.withOpacity(0.15)
+                              : Colors.orange.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          item['status'] ?? 'Active',
+                          style: TextStyle(
+                            color: (item['status'] == 'Active' || item['status'] == 'Paid' || item['status'] == 'Generated' || item['status'] == 'Completed' || item['status'] == 'Primary')
+                                ? Colors.green
+                                : Colors.orange,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsCard(String title, String count, IconData icon, Color color) {
+    final bool isDark = widget.isDark;
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? null : Colors.white,
+        gradient: isDark
+            ? LinearGradient(
+                colors: [
+                  color.withOpacity(0.18),
+                  color.withOpacity(0.03),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark ? color.withOpacity(0.25) : Colors.grey.shade100,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? color.withOpacity(0.15) : color.withOpacity(0.12),
+            offset: const Offset(0, 4),
+            blurRadius: 10,
+          )
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: color.withOpacity(0.15),
+            child: Icon(icon, color: isDark ? Colors.white : color, size: 20),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: isDark ? AppColors.darkTextSecondary : Colors.grey.shade600,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  count,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
