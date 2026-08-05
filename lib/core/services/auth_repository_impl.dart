@@ -360,8 +360,30 @@ class AuthRepositoryImpl implements AuthRepository {
       return profile;
     }
 
-    // User profile not found (need to register first!)
-    return null;
+    // User profile not found (create a new skeleton profile for new student!)
+    final String uniqueUid = "student_email_${DateTime.now().millisecondsSinceEpoch}";
+    final newProfile = UserProfile(
+      uid: uniqueUid,
+      role: AppStrings.roleStudent,
+      name: '',
+      phone: '',
+      email: email,
+      address: '',
+      userClass: '',
+      rollNumber: '',
+      gender: '',
+      dob: '',
+      admissionNumber: 'ADM${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
+      school: 'Agarwal Knowledge Hub',
+      parentName: '',
+      parentMobile: '',
+      emergencyContact: '',
+      profilePhotoUrl: '',
+      createdDate: DateTime.now(),
+      lastLogin: DateTime.now(),
+    );
+    await saveUserProfile(newProfile);
+    return newProfile;
   }
 
   @override
