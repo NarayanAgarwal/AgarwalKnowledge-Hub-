@@ -452,21 +452,36 @@ class DashboardScreen extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.only(bottom: 6),
           decoration: BoxDecoration(
-            color: isDark ? AppColors.darkSurface : baseColor,
+            color: isDark ? null : baseColor,
+            gradient: isDark
+                ? LinearGradient(
+                    colors: [
+                      textColor.withOpacity(0.24),
+                      textColor.withOpacity(0.04),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
             borderRadius: BorderRadius.circular(22),
             border: Border.all(
-              color: isDark ? Colors.white10 : baseColor.withOpacity(0.4),
+              color: isDark ? textColor.withOpacity(0.35) : baseColor.withOpacity(0.4),
               width: 1.5,
             ),
-            boxShadow: isDark
-                ? []
-                : [
-                    BoxShadow(
-                      color: shadowColor,
-                      offset: const Offset(0, 6),
-                      blurRadius: 0,
-                    ),
-                  ],
+            boxShadow: [
+              BoxShadow(
+                color: isDark ? textColor.withOpacity(0.25) : shadowColor,
+                offset: isDark ? const Offset(0, 4) : const Offset(0, 5),
+                blurRadius: isDark ? 12 : 0,
+                spreadRadius: isDark ? 1 : 0,
+              ),
+              if (isDark)
+                const BoxShadow(
+                  color: Colors.black38,
+                  offset: Offset(0, 2),
+                  blurRadius: 4,
+                ),
+            ],
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -475,16 +490,28 @@ class DashboardScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    )
-                  ],
+                  color: isDark ? textColor.withOpacity(0.25) : Colors.white,
+                  boxShadow: isDark
+                      ? [
+                          BoxShadow(
+                            color: textColor.withOpacity(0.25),
+                            blurRadius: 8,
+                            spreadRadius: 1,
+                          )
+                        ]
+                      : [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          )
+                        ],
                 ),
-                child: Icon(icon, color: textColor, size: 26),
+                child: Icon(
+                  icon,
+                  color: isDark ? Colors.white : textColor,
+                  size: 26,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -493,7 +520,7 @@ class DashboardScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w900,
-                  color: isDark ? Colors.white : textColor,
+                  color: isDark ? Colors.white.withOpacity(0.95) : textColor,
                 ),
               ),
             ],
@@ -518,15 +545,25 @@ class DashboardScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: isDark ? AppColors.darkSurface : Colors.white,
+          color: isDark ? null : Colors.white,
+          gradient: isDark
+              ? LinearGradient(
+                  colors: [
+                    AppColors.primaryBlue.withOpacity(0.15),
+                    AppColors.primaryBlue.withOpacity(0.02),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: isDark ? Colors.white12 : Colors.grey.shade100,
+            color: isDark ? AppColors.primaryBlue.withOpacity(0.25) : Colors.grey.shade100,
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: isDark ? AppColors.primaryBlue.withOpacity(0.05) : Colors.black.withOpacity(0.04),
               blurRadius: 15,
               offset: const Offset(0, 6),
             )
@@ -540,7 +577,11 @@ class DashboardScreen extends StatelessWidget {
               percent: percentage,
               center: Text(
                 "${(percentage * 100).toInt()}%",
-                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppColors.primaryBlue),
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                  color: isDark ? AppColors.accentGreen : AppColors.primaryBlue,
+                ),
               ),
               progressColor: AppColors.accentGreen,
               backgroundColor: isDark ? AppColors.darkBorder : Colors.grey.shade100,
@@ -640,15 +681,25 @@ class DashboardScreen extends StatelessWidget {
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: isDark ? AppColors.darkSurface : Colors.white,
+            color: isDark ? null : Colors.white,
+            gradient: isDark
+                ? LinearGradient(
+                    colors: [
+                      AppColors.primaryBlue.withOpacity(0.12),
+                      AppColors.primaryBlue.withOpacity(0.02),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: isDark ? Colors.white12 : Colors.grey.shade100,
+              color: isDark ? AppColors.primaryBlue.withOpacity(0.2) : Colors.grey.shade100,
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: isDark ? AppColors.primaryBlue.withOpacity(0.04) : Colors.black.withOpacity(0.03),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               )
