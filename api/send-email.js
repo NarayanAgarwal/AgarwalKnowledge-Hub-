@@ -28,6 +28,11 @@ module.exports = async (req, res) => {
   const smtpUser = process.env.EMAIL_SMTP_USER;
   const smtpPass = process.env.EMAIL_SMTP_PASS;
 
+  // Log masked credentials for secure debugging in Vercel Console
+  console.log("DEBUG: SMTP User:", smtpUser ? `${smtpUser.substring(0, 4)}...${smtpUser.substring(smtpUser.indexOf('@') - 2)}` : "missing");
+  console.log("DEBUG: SMTP Pass Length:", smtpPass ? smtpPass.length : 0);
+  console.log("DEBUG: SMTP Pass Masked:", smtpPass ? `${smtpPass.substring(0, 2)}...${smtpPass.substring(smtpPass.length - 2)}` : "missing");
+
   if (!smtpUser || !smtpPass) {
     return res.status(500).json({
       error: 'SMTP credentials not configured. Please set EMAIL_SMTP_USER and EMAIL_SMTP_PASS environment variables.'
