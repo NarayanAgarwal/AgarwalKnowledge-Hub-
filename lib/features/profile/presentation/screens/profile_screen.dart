@@ -126,10 +126,18 @@ class ProfileScreen extends StatelessWidget {
     final parentNameController = TextEditingController(text: user.parentName);
     final parentPhoneController = TextEditingController(text: user.parentMobile);
     final photoUrlController = TextEditingController(text: user.profilePhotoUrl);
-    final classController = TextEditingController(text: user.userClass);
-    final rollController = TextEditingController(text: user.rollNumber);
     final dobController = TextEditingController(text: user.dob);
     final emergencyController = TextEditingController(text: user.emergencyContact);
+    
+    final List<String> classesList = [
+      'Nursery',
+      'LKG',
+      'UKG',
+      ...List.generate(12, (index) => 'Class ${index + 1}')
+    ];
+    String selectedClass = classesList.contains(user.userClass) 
+        ? user.userClass 
+        : 'Nursery';
     String selectedGender = user.gender.isNotEmpty ? user.gender : 'Male';
 
     showDialog(
@@ -156,14 +164,17 @@ class ProfileScreen extends StatelessWidget {
                         },
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(
-                        controller: classController,
-                        decoration: const InputDecoration(labelText: 'Class (e.g. Class 3, LKG)'),
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: rollController,
-                        decoration: const InputDecoration(labelText: 'Roll Number'),
+                      DropdownButtonFormField<String>(
+                        value: selectedClass,
+                        decoration: const InputDecoration(labelText: 'Class'),
+                        items: classesList.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                        onChanged: (val) {
+                          if (val != null) {
+                            setDialogState(() {
+                              selectedClass = val;
+                            });
+                          }
+                        },
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
@@ -273,8 +284,8 @@ class ProfileScreen extends StatelessWidget {
                         parentName: parentNameController.text.trim(),
                         parentMobile: parentPhoneController.text.trim(),
                         profilePhotoUrl: photoUrlController.text.trim(),
-                        userClass: classController.text.trim(),
-                        rollNumber: rollController.text.trim(),
+                        userClass: selectedClass,
+                        rollNumber: "",
                         dob: dobController.text.trim(),
                         gender: selectedGender,
                         emergencyContact: emergencyController.text.trim(),
@@ -380,7 +391,6 @@ class ProfileScreen extends StatelessWidget {
             _buildSectionTitle('Academic Details'),
             _buildDetailCard(isDark, [
               _buildDetailItem('Admission No.', user.admissionNumber.isNotEmpty ? user.admissionNumber : 'ADM-2026-003'),
-              _buildDetailItem('Roll Number', user.rollNumber.isNotEmpty ? user.rollNumber : '23'),
               _buildDetailItem('School Name', user.school.isNotEmpty ? user.school : 'Agarwal Knowledge Hub'),
             ]),
             
