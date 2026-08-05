@@ -9,7 +9,8 @@ import '../../../dashboard/presentation/screens/main_navigation_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   final String? initialEmail;
-  const RegisterScreen({super.key, this.initialEmail});
+  final String? initialPhone;
+  const RegisterScreen({super.key, this.initialEmail, this.initialPhone});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -32,6 +33,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.initState();
     if (widget.initialEmail != null) {
       _emailController.text = widget.initialEmail!;
+    }
+    if (widget.initialPhone != null) {
+      String phone = widget.initialPhone!;
+      if (phone.startsWith('+91')) {
+        phone = phone.substring(3);
+      }
+      _phoneController.text = phone;
     }
   }
 
@@ -207,6 +215,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           hintText: 'Enter mobile number',
                           prefixIcon: Icons.phone,
                           keyboardType: TextInputType.phone,
+                          enabled: widget.initialPhone == null,
                           validator: (val) {
                             if (val == null || val.trim().isEmpty) return 'Please enter mobile number';
                             if (val.trim().length < 10) return 'Enter a valid 10-digit number';
@@ -224,6 +233,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           hintText: 'Enter email address (Optional)',
                           prefixIcon: Icons.email_outlined,
                           keyboardType: TextInputType.emailAddress,
+                          enabled: widget.initialEmail == null,
                           validator: (val) {
                             if (val != null && val.trim().isNotEmpty) {
                               final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');

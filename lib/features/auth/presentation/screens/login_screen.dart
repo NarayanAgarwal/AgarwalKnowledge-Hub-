@@ -70,23 +70,29 @@ class _LoginScreenState extends State<LoginScreen> {
         : await authVm.verifyOtp(smsCode);
 
     if (success && mounted) {
-      if (authVm.userProfile != null) {
+      final bool hasCompletedProfile = authVm.userProfile != null && 
+          authVm.userProfile!.name.trim().isNotEmpty;
+
+      if (hasCompletedProfile) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
         );
       } else {
-        // Email verified, but no profile exists
+        // Verification succeeded, but no completed student profile exists!
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Email verified! Please register to create your student account. 🎒'),
+            content: Text('Verification successful! Please register to create your student account. 🎒'),
             backgroundColor: Colors.blue,
           ),
         );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => RegisterScreen(initialEmail: authVm.pendingEmail),
+            builder: (context) => RegisterScreen(
+              initialEmail: authVm.isEmailOtpMode ? authVm.pendingEmail : authVm.userProfile?.email,
+              initialPhone: !authVm.isEmailOtpMode ? authVm.userProfile?.phone : null,
+            ),
           ),
         );
       }

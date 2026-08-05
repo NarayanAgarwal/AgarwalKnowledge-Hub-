@@ -145,11 +145,8 @@ class AuthRepositoryImpl implements AuthRepository {
       
       final phone = _pendingVerifyPhone ?? "";
       final isRegistered = await isPhoneRegistered(phone);
-      if (!isRegistered) {
-        throw FirebaseAuthException(code: 'user-not-found', message: 'This mobile number is not registered. Please register first.');
-      }
       
-      // Load user profile
+      // Load user profile from preferences if exists
       final prefs = await SharedPreferences.getInstance();
       final usersJson = prefs.getString('mock_registered_users');
       if (usersJson != null) {
@@ -207,6 +204,31 @@ class AuthRepositoryImpl implements AuthRepository {
           lastLogin: DateTime.now(),
         );
         return _mockUser;
+      }
+
+      if (!isRegistered) {
+        // Return a skeleton profile for new mock user to trigger registration flow
+        final newMockProfile = UserProfile(
+          uid: "mock_new_user_${phone.replaceAll('+', '')}",
+          role: AppStrings.roleStudent,
+          name: "",
+          phone: phone,
+          email: "",
+          address: "",
+          userClass: "",
+          rollNumber: "",
+          gender: "",
+          dob: "",
+          admissionNumber: "",
+          school: "Agarwal Knowledge Hub",
+          parentName: "",
+          parentMobile: "",
+          emergencyContact: "",
+          profilePhotoUrl: "",
+          createdDate: DateTime.now(),
+          lastLogin: DateTime.now(),
+        );
+        return newMockProfile;
       }
       
       throw FirebaseAuthException(code: 'user-not-found', message: 'No registered user profile found for this mobile number.');
