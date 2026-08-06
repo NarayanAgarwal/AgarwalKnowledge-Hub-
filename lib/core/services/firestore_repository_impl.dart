@@ -26,6 +26,9 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
 
   bool _useMock = false;
 
+  @override
+  bool get isMockEnabled => _useMock;
+
   void enableMockMode() {
     _useMock = true;
     _seedMockData();
@@ -327,11 +330,14 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
     yield* _db
         .collection(AppStrings.colHomework)
         .where('class', isEqualTo: userClass)
-        .orderBy('createdDate', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((doc) => Homework.fromFirestore(doc.data(), doc.id))
-            .toList());
+        .map((snap) {
+          final list = snap.docs
+              .map((doc) => Homework.fromFirestore(doc.data(), doc.id))
+              .toList();
+          list.sort((a, b) => b.createdDate.compareTo(a.createdDate));
+          return list;
+        });
   }
 
   @override
@@ -372,11 +378,14 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
         .collection(AppStrings.colNotes)
         .where('class', isEqualTo: userClass)
         .where('mediaType', isEqualTo: mediaType)
-        .orderBy('createdDate', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((doc) => Note.fromFirestore(doc.data(), doc.id))
-            .toList());
+        .map((snap) {
+          final list = snap.docs
+              .map((doc) => Note.fromFirestore(doc.data(), doc.id))
+              .toList();
+          list.sort((a, b) => b.createdDate.compareTo(a.createdDate));
+          return list;
+        });
   }
 
   @override
@@ -411,11 +420,14 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
     }
     yield* _db
         .collection(AppStrings.colNotifications)
-        .orderBy('createdDate', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((doc) => Notice.fromFirestore(doc.data(), doc.id))
-            .toList());
+        .map((snap) {
+          final list = snap.docs
+              .map((doc) => Notice.fromFirestore(doc.data(), doc.id))
+              .toList();
+          list.sort((a, b) => b.createdDate.compareTo(a.createdDate));
+          return list;
+        });
   }
 
   @override
@@ -451,11 +463,14 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
     yield* _db
         .collection(AppStrings.colQuiz)
         .where('class', isEqualTo: userClass)
-        .orderBy('createdDate', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((doc) => Quiz.fromFirestore(doc.data(), doc.id))
-            .toList());
+        .map((snap) {
+          final list = snap.docs
+              .map((doc) => Quiz.fromFirestore(doc.data(), doc.id))
+              .toList();
+          list.sort((a, b) => b.createdDate.compareTo(a.createdDate));
+          return list;
+        });
   }
 
   @override

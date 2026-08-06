@@ -60,6 +60,8 @@ class WebPanelViewModel with ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  bool get isMockEnabled => _repository.isMockEnabled;
+
   WebPanelViewModel(this._repository) {
     _loadAllLists();
   }

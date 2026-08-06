@@ -420,12 +420,48 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
           
           Row(
             children: [
+              // Database Connection Status Badge
+              (() {
+                final webVm = Provider.of<WebPanelViewModel>(context);
+                final bool isLive = !webVm.isMockEnabled;
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: isLive ? Colors.green.withOpacity(0.12) : Colors.amber.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isLive ? Colors.green.withOpacity(0.3) : Colors.amber.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircleAvatar(
+                        radius: 3.5,
+                        backgroundColor: isLive ? Colors.green : Colors.amber,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        isLive ? 'Firebase Live' : 'Offline Mock Mode',
+                        style: TextStyle(
+                          color: isLive ? Colors.green : Colors.amber.shade700,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              })(),
+              const SizedBox(width: 14),
+
               // Theme switcher
               IconButton(
                 icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode_outlined),
                 onPressed: () => themeProvider.toggleTheme(),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
               
               // Profile Quick view
               CircleAvatar(

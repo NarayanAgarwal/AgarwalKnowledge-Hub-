@@ -7,6 +7,8 @@ import '../models/quiz.dart';
 import '../models/story.dart';
 
 abstract class FirestoreRepository {
+  bool get isMockEnabled;
+
   // User Management
   Future<List<UserProfile>> getUsers(String role);
   Future<void> createUserProfile(UserProfile profile);
