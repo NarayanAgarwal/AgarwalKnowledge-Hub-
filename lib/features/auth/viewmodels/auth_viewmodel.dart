@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/services/auth_repository.dart';
@@ -192,21 +193,33 @@ class AuthViewModel with ChangeNotifier {
   Future<void> _checkSavedSession() async {
     final prefs = await SharedPreferences.getInstance();
     
-    // Require explicit login on first launch (no default true fallback)
+    // 1. Load cached user profile instantly from SharedPreferences to avoid login screen on restart!
+    final String? cachedJson = prefs.getString('cached_profile');
+    if (cachedJson != null) {
+      try {
+        _userProfile = UserProfile.fromJson(jsonDecode(cachedJson));
+        notifyListeners();
+      } catch (e) {
+        debugPrint("Error loading cached user profile: $e");
+      }
+    }
+
     final bool autoLogin = prefs.getBool('auto_login') ?? false;
     final String? savedUid = prefs.getString('saved_uid');
     
     if (autoLogin && savedUid != null) {
-      _isLoading = true;
-      notifyListeners();
+      // 2. Fetch updated profile from Firestore in the background to sync latest details
       try {
-        _userProfile = await _authRepository.getUserProfile(savedUid).timeout(const Duration(seconds: 2));
+        final freshProfile = await _authRepository.getUserProfile(savedUid).timeout(const Duration(seconds: 4));
+        if (freshProfile != null) {
+          _userProfile = freshProfile;
+          await prefs.setString('cached_profile', jsonEncode(freshProfile.toJson()));
+          notifyListeners();
+        }
       } catch (e) {
-        _errorMessage = e.toString();
-        _userProfile = null;
+        debugPrint("Background session update failed: $e");
+        // Keep cached profile if network is down/slow, do NOT reset to null!
       }
-      _isLoading = false;
-      notifyListeners();
     }
   }
 
@@ -251,6 +264,7 @@ class AuthViewModel with ChangeNotifier {
       if (profile != null) {
         _userProfile = profile;
         final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('cached_profile', jsonEncode(profile.toJson()));
         if (_rememberMe) {
           await prefs.setBool('auto_login', true);
           await prefs.setString('saved_uid', profile.uid);
@@ -316,6 +330,7 @@ class AuthViewModel with ChangeNotifier {
       
       if (profile != null) {
         final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('cached_profile', jsonEncode(profile.toJson()));
         if (_rememberMe) {
           await prefs.setBool('auto_login', true);
           await prefs.setString('saved_uid', profile.uid);
@@ -341,6 +356,8 @@ class AuthViewModel with ChangeNotifier {
     try {
       await _authRepository.saveUserProfile(updatedProfile);
       _userProfile = updatedProfile;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('cached_profile', jsonEncode(updatedProfile.toJson()));
     } catch (e) {
       _errorMessage = e.toString();
     }
@@ -359,6 +376,7 @@ class AuthViewModel with ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('auto_login', false);
       await prefs.remove('saved_uid');
+      await prefs.remove('cached_profile');
     } catch (e) {
       _errorMessage = e.toString();
     }

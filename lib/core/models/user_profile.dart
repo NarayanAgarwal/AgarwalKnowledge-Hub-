@@ -64,6 +64,52 @@ class UserProfile {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'uid': uid,
+      'role': role,
+      'name': name,
+      'phone': phone,
+      'email': email,
+      'address': address,
+      'class': userClass,
+      'rollNumber': rollNumber,
+      'gender': gender,
+      'dob': dob,
+      'admissionNumber': admissionNumber,
+      'school': school,
+      'parentName': parentName,
+      'parentMobile': parentMobile,
+      'emergencyContact': emergencyContact,
+      'profilePhotoUrl': profilePhotoUrl,
+      'createdDate': createdDate.toIso8601String(),
+      'lastLogin': lastLogin.toIso8601String(),
+    };
+  }
+
+  factory UserProfile.fromJson(Map<String, dynamic> json) {
+    return UserProfile(
+      uid: json['uid'] ?? '',
+      role: json['role'] ?? 'Student',
+      name: json['name'] ?? '',
+      phone: json['phone'] ?? '',
+      email: json['email'] ?? '',
+      address: json['address'] ?? '',
+      userClass: json['class'] ?? '',
+      rollNumber: json['rollNumber'] ?? '',
+      gender: json['gender'] ?? '',
+      dob: json['dob'] ?? '',
+      admissionNumber: json['admissionNumber'] ?? '',
+      school: json['school'] ?? 'Agarwal Knowledge Hub',
+      parentName: json['parentName'] ?? '',
+      parentMobile: json['parentMobile'] ?? '',
+      emergencyContact: json['emergencyContact'] ?? '',
+      profilePhotoUrl: json['profilePhotoUrl'] ?? '',
+      createdDate: DateTime.parse(json['createdDate'] ?? DateTime.now().toIso8601String()),
+      lastLogin: DateTime.parse(json['lastLogin'] ?? DateTime.now().toIso8601String()),
+    );
+  }
+
   Map<String, dynamic> toFirestore() {
     return {
       'role': role,

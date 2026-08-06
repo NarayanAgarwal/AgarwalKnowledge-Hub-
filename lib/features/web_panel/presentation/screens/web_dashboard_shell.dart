@@ -28,6 +28,7 @@ class WebDashboardShell extends StatefulWidget {
 class _WebDashboardShellState extends State<WebDashboardShell> {
   int _selectedMenuIndex = 0;
   bool _isSidebarCollapsed = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<Map<String, dynamic>> _getMenuItemsForRole(String role) {
     switch (role) {
@@ -165,42 +166,33 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
 
     final menuList = _menuItems;
     final int checkedIndex = _selectedMenuIndex >= menuList.length ? 0 : _selectedMenuIndex;
+    final bool isMobile = width < 800;
 
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: isMobile
+          ? Drawer(
+              child: SafeArea(
+                child: _buildSidebarContent(user, isDark, context, isDrawer: true),
+              ),
+            )
+          : null,
       body: Row(
         children: [
-          // Collapsible Sidebar
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: _isSidebarCollapsed ? 76 : 280,
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.darkSurface : Colors.white,
-              border: Border(
-                right: BorderSide(
-                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-                ),
-              ),
-            ),
-            child: Column(
-              children: [
-                _buildSidebarHeader(user, isDark),
-                const Divider(height: 1),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: menuList.length,
-                    itemBuilder: (context, index) {
-                      final item = menuList[index];
-                      final isSelected = checkedIndex == index;
-                      return _buildSidebarItem(item, isSelected, index, isDark);
-                    },
+          // Collapsible Sidebar side-by-side only on Desktop/Tablet
+          if (!isMobile)
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: _isSidebarCollapsed ? 76 : 280,
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(
+                    color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
                   ),
                 ),
-                const Divider(height: 1),
-                _buildSidebarFooter(context, isDark),
-              ],
+              ),
+              child: _buildSidebarContent(user, isDark, context, isDrawer: false),
             ),
-          ),
           
           // Main Content Container
           Expanded(
@@ -226,8 +218,44 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
     );
   }
 
-  Widget _buildSidebarHeader(UserProfile user, bool isDark) {
-    if (_isSidebarCollapsed) {
+  Widget _buildSidebarContent(UserProfile user, bool isDark, BuildContext context, {required bool isDrawer}) {
+    final menuList = _menuItems;
+    final int checkedIndex = _selectedMenuIndex >= menuList.length ? 0 : _selectedMenuIndex;
+    final bool collapsedState = isDrawer ? false : _isSidebarCollapsed;
+
+    return Container(
+      color: isDark ? AppColors.darkSurface : Colors.white,
+      child: Column(
+        children: [
+          _buildSidebarHeader(user, isDark, isCollapsed: collapsedState),
+          const Divider(height: 1),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              itemCount: menuList.length,
+              itemBuilder: (context, index) {
+                final item = menuList[index];
+                final isSelected = checkedIndex == index;
+                return _buildSidebarItem(
+                  item,
+                  isSelected,
+                  index,
+                  isDark,
+                  isCollapsed: collapsedState,
+                  isDrawer: isDrawer,
+                );
+              },
+            ),
+          ),
+          const Divider(height: 1),
+          _buildSidebarFooter(context, isDark, isCollapsed: collapsedState),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSidebarHeader(UserProfile user, bool isDark, {required bool isCollapsed}) {
+    if (isCollapsed) {
       return Container(
         height: 80,
         alignment: Alignment.center,
@@ -269,7 +297,14 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
     );
   }
 
-  Widget _buildSidebarItem(Map<String, dynamic> item, bool isSelected, int index, bool isDark) {
+  Widget _buildSidebarItem(
+    Map<String, dynamic> item,
+    bool isSelected,
+    int index,
+    bool isDark, {
+    required bool isCollapsed,
+    required bool isDrawer,
+  }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
       decoration: BoxDecoration(
@@ -286,7 +321,7 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
           color: isSelected ? AppColors.secondaryOrange : (isDark ? Colors.white60 : Colors.black54),
           size: 20,
         ),
-        title: _isSidebarCollapsed
+        title: isCollapsed
             ? null
             : Text(
                 item['title'],
@@ -303,12 +338,15 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
           setState(() {
             _selectedMenuIndex = index;
           });
+          if (isDrawer) {
+            Navigator.pop(context); // Close mobile drawer
+          }
         },
       ),
     );
   }
 
-  Widget _buildSidebarFooter(BuildContext context, bool isDark) {
+  Widget _buildSidebarFooter(BuildContext context, bool isDark, {required bool isCollapsed}) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -319,7 +357,7 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
         dense: true,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         leading: const Icon(Icons.logout, color: Colors.redAccent, size: 20),
-        title: _isSidebarCollapsed
+        title: isCollapsed
             ? null
             : const Text(
                 'Sign Out',
@@ -361,9 +399,13 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
               IconButton(
                 icon: const Icon(Icons.menu),
                 onPressed: () {
-                  setState(() {
-                    _isSidebarCollapsed = !_isSidebarCollapsed;
-                  });
+                  if (MediaQuery.sizeOf(context).width < 800) {
+                    _scaffoldKey.currentState?.openDrawer();
+                  } else {
+                    setState(() {
+                      _isSidebarCollapsed = !_isSidebarCollapsed;
+                    });
+                  }
                 },
               ),
               const SizedBox(width: 12),
