@@ -1903,6 +1903,9 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
   Widget build(BuildContext context) {
     final bool isDark = widget.isDark;
     final List<Map<String, String>> records = _getSimulatedData();
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final bool isMobile = screenWidth < 700;
+
     final Color accentColor = widget.title.contains('Fee') || widget.title.contains('Salary') || widget.title.contains('Income') || widget.title.contains('Expenses')
         ? Colors.green
         : widget.title.contains('Event') || widget.title.contains('Gallery') || widget.title.contains('Certificate')
@@ -1910,21 +1913,24 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
             : AppColors.primaryBlue;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(isMobile ? 12 : 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Glassmorphic Header Banner
+          // Responsive Glassmorphic Header Banner
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 16 : 24,
+              vertical: isMobile ? 16 : 20,
+            ),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [accentColor.withOpacity(0.85), accentColor.withOpacity(0.55)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
                   color: accentColor.withOpacity(0.3),
@@ -1933,78 +1939,87 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
                 )
               ],
             ),
-            child: Row(
+            child: Flex(
+              direction: isMobile ? Axis.vertical : Axis.horizontal,
+              crossAxisAlignment: isMobile ? CrossAxisAlignment.start : CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor: Colors.white24,
-                  child: Icon(widget.icon, color: Colors.white, size: 28),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.title.toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 22,
-                          letterSpacing: 0.5,
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: isMobile ? 22 : 28,
+                      backgroundColor: Colors.white24,
+                      child: Icon(widget.icon, color: Colors.white, size: isMobile ? 22 : 28),
+                    ),
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.title,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            fontSize: isMobile ? 18 : 22,
+                            letterSpacing: 0.5,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'School Enterprise ERP System Module - Active Sync',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.85),
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
+                        const SizedBox(height: 2),
+                        Text(
+                          'ERP System Module Active Sync',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.85),
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: accentColor,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                if (isMobile) const SizedBox(height: 16),
+                if (!isMobile) const Spacer(),
+                SizedBox(
+                  width: isMobile ? double.infinity : null,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: accentColor,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('${widget.title} details refreshed! 🔄')),
+                      );
+                    },
+                    icon: const Icon(Icons.refresh, size: 14),
+                    label: const Text('Sync Module', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
                   ),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('${widget.title} details refreshed! 🔄')),
-                    );
-                  },
-                  icon: const Icon(Icons.refresh, size: 16),
-                  label: const Text('Sync Module', style: TextStyle(fontWeight: FontWeight.w800)),
                 )
               ],
             ),
           ),
           
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           
-          // Stats Row
+          // Responsive Stats Row: Wrap in GridView with adaptive crossAxisCount
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: 3,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 2.8,
+            crossAxisCount: isMobile ? 1 : 3,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: isMobile ? 3.5 : 2.8,
             children: [
-              _buildStatsCard('Total Items Sync', '${records.length}', Icons.sync, Colors.blue),
-              _buildStatsCard('Operational Status', 'Optimal', Icons.check_circle_outline, Colors.green),
-              _buildStatsCard('Encryption Keys', 'AES-256 Enabled', Icons.security, Colors.orange),
+              _buildStatsCard('Total Items Sync', '${records.length}', Icons.sync, Colors.blue, isMobile),
+              _buildStatsCard('Operational Status', 'Optimal', Icons.check_circle_outline, Colors.green, isMobile),
+              _buildStatsCard('Encryption Keys', 'AES-256 Enabled', Icons.security, Colors.orange, isMobile),
             ],
           ),
           
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           
-          // Data Table Panel
+          // Responsive Data Table Panel
           Container(
             decoration: BoxDecoration(
               color: isDark ? null : Colors.white,
@@ -2018,7 +2033,7 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
                       end: Alignment.bottomRight,
                     )
                   : null,
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: isDark ? AppColors.primaryBlue.withOpacity(0.25) : Colors.grey.shade100,
                 width: 1.5,
@@ -2031,64 +2046,72 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
                 )
               ],
             ),
-            padding: const EdgeInsets.all(22),
+            padding: EdgeInsets.all(isMobile ? 14 : 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Search & Filter header
-                Row(
+                // Responsive Search & Filter header
+                Flex(
+                  direction: isMobile ? Axis.vertical : Axis.horizontal,
+                  crossAxisAlignment: isMobile ? CrossAxisAlignment.start : CrossAxisAlignment.center,
                   children: [
                     const Text(
                       'Operational Logs & Records',
-                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15),
                     ),
-                    const Spacer(),
+                    if (isMobile) const SizedBox(height: 12),
+                    if (!isMobile) const Spacer(),
                     SizedBox(
-                      width: 300,
+                      width: isMobile ? double.infinity : 260,
                       child: TextField(
                         controller: _searchController,
                         decoration: InputDecoration(
                           hintText: 'Search items...',
-                          prefixIcon: const Icon(Icons.search, size: 20),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                          prefixIcon: const Icon(Icons.search, size: 18),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                       ),
                     ),
                   ],
                 ),
                 
-                const SizedBox(height: 18),
+                const SizedBox(height: 16),
                 
                 // Data List
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: records.length,
-                  separatorBuilder: (c, i) => const Divider(height: 20),
+                  separatorBuilder: (c, i) => const Divider(height: 16),
                   itemBuilder: (context, idx) {
                     final item = records[idx];
                     final keys = item.keys.toList();
                     return ListTile(
+                      contentPadding: EdgeInsets.zero,
                       leading: CircleAvatar(
+                        radius: 18,
                         backgroundColor: accentColor.withOpacity(0.1),
-                        child: Icon(widget.icon, color: accentColor, size: 20),
+                        child: Icon(widget.icon, color: accentColor, size: 18),
                       ),
                       title: Text(
                         item[keys[0]] ?? '',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                       ),
-                      subtitle: Text(
-                        keys.length > 1 ? '${keys[1].toUpperCase()}: ${item[keys[1]]} | ${keys[2].toUpperCase()}: ${item[keys[2]]}' : '',
-                        style: TextStyle(color: isDark ? Colors.grey : Colors.grey.shade600, fontSize: 12),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 2.0),
+                        child: Text(
+                          keys.length > 1 ? '${keys[1].toUpperCase()}: ${item[keys[1]]}\n${keys[2].toUpperCase()}: ${item[keys[2]]}' : '',
+                          style: TextStyle(color: isDark ? Colors.grey : Colors.grey.shade600, fontSize: 11),
+                        ),
                       ),
                       trailing: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: (item['status'] == 'Active' || item['status'] == 'Paid' || item['status'] == 'Generated' || item['status'] == 'Completed' || item['status'] == 'Primary')
                               ? Colors.green.withOpacity(0.15)
                               : Colors.orange.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           item['status'] ?? 'Active',
@@ -2097,7 +2120,7 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
                                 ? Colors.green
                                 : Colors.orange,
                             fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                            fontSize: 10,
                           ),
                         ),
                       ),
@@ -2112,7 +2135,7 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
     );
   }
 
-  Widget _buildStatsCard(String title, String count, IconData icon, Color color) {
+  Widget _buildStatsCard(String title, String count, IconData icon, Color color, bool isMobile) {
     final bool isDark = widget.isDark;
     return Container(
       decoration: BoxDecoration(
@@ -2127,7 +2150,7 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
                 end: Alignment.bottomRight,
               )
             : null,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isDark ? color.withOpacity(0.25) : Colors.grey.shade100,
           width: 1.5,
@@ -2140,15 +2163,18 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
           )
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 12 : 16,
+        vertical: isMobile ? 10 : 16,
+      ),
       child: Row(
         children: [
           CircleAvatar(
-            radius: 20,
+            radius: 18,
             backgroundColor: color.withOpacity(0.15),
-            child: Icon(icon, color: isDark ? Colors.white : color, size: 20),
+            child: Icon(icon, color: isDark ? Colors.white : color, size: 18),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -2156,16 +2182,18 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
               children: [
                 Text(
                   title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: isDark ? AppColors.darkTextSecondary : Colors.grey.shade600,
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   count,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900),
                 ),
               ],
             ),
