@@ -39,9 +39,11 @@ module.exports = async (req, res) => {
     });
   }
 
-  // Create transporter
+  // Create transporter using direct secure Gmail SMTP
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
       user: smtpUser,
       pass: smtpPass,
@@ -51,7 +53,8 @@ module.exports = async (req, res) => {
   const mailOptions = {
     from: `"Agarwal Knowledge Hub" <${smtpUser}>`,
     to: email,
-    subject: `Email Verification OTP: ${otp}`,
+    subject: `Verification Code: ${otp}`,
+    text: `Hello Student,\n\nYour 6-digit verification code (OTP) for Agarwal Knowledge Hub is: ${otp}\n\nThis OTP is valid for 10 minutes. If you did not request this code, please ignore this email.`,
     html: `
       <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f6f9; border-radius: 12px; max-width: 600px; margin: 0 auto; border: 1px solid #e1e8ed;">
         <h2 style="color: #1E3C72; margin-bottom: 10px; text-align: center;">Agarwal Knowledge Hub 🎒</h2>

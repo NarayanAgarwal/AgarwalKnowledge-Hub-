@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/services/download_provider.dart';
 
+import '../../../dashboard/presentation/screens/main_navigation_screen.dart';
+
 class DownloadsScreen extends StatelessWidget {
   const DownloadsScreen({super.key});
 
@@ -14,6 +16,19 @@ class DownloadsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Download Manager'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+              );
+            }
+          },
+        ),
       ),
       body: downloadProvider.items.isEmpty
           ? _buildEmptyState(isDark)

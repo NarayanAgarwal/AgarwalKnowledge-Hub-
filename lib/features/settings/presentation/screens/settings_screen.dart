@@ -6,6 +6,8 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/theme/theme_provider.dart';
 import '../../viewmodels/settings_viewmodel.dart';
 
+import '../../../dashboard/presentation/screens/main_navigation_screen.dart';
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -155,6 +157,19 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+              );
+            }
+          },
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
