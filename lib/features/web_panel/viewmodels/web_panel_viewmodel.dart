@@ -241,6 +241,12 @@ class WebPanelViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> deleteNotice(String noticeId) async {
+    await _repository.deleteNotice(noticeId);
+    noticesList.removeWhere((n) => n.id == noticeId);
+    notifyListeners();
+  }
+
   Future<void> uploadStory(Story story) async {
     await _repository.publishStory(story);
     notifyListeners();
