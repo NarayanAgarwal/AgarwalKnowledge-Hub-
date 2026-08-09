@@ -155,6 +155,8 @@ class AuthViewModel with ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         return true;
+      } else {
+        _errorMessage = "Access Denied: Invalid Credentials or Password. Account not found.";
       }
     } catch (e) {
       _errorMessage = e.toString().replaceAll("Exception: ", "");
@@ -328,23 +330,35 @@ class AuthViewModel with ChangeNotifier {
         otpCode: smsCode,
       );
 
+      if (profile == null) {
+        _errorMessage = "Access Denied: No account registered with email $_pendingEmail.";
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+
+      if (profile.isBlocked) {
+        _errorMessage = "Your account has been suspended/blocked by Super Admin.";
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+
       _userProfile = profile;
       _isLoading = false;
       
-      if (profile != null) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('cached_profile', jsonEncode(profile.toJson()));
-        if (_rememberMe) {
-          await prefs.setBool('auto_login', true);
-          await prefs.setString('saved_uid', profile.uid);
-        } else {
-          await prefs.remove('auto_login');
-          await prefs.remove('saved_uid');
-        }
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('cached_profile', jsonEncode(profile.toJson()));
+      if (_rememberMe) {
+        await prefs.setBool('auto_login', true);
+        await prefs.setString('saved_uid', profile.uid);
+      } else {
+        await prefs.remove('auto_login');
+        await prefs.remove('saved_uid');
       }
       
       notifyListeners();
-      return true; // Return true as verification was successful (UI handles if profile is null)
+      return true;
     } catch (e) {
       _errorMessage = e.toString().replaceAll("Exception: ", "");
       _isLoading = false;
