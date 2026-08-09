@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:universal_html/js.dart' as js;
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/glass_container.dart';
 
@@ -33,6 +35,98 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
   final _scrollController = ScrollController();
   bool _isTyping = false;
   String _selectedLanguage = 'English'; // 'English' or 'Hindi'
+  String? _currentlySpeakingText;
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsWeb) {
+      js.context['onSpeechEnd'] = () {
+        if (mounted) {
+          setState(() {
+            _currentlySpeakingText = null;
+          });
+        }
+      };
+    }
+  }
+
+  @override
+  void dispose() {
+    _stopTextSpeech();
+    _controller.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _speakText(String text) {
+    if (kIsWeb) {
+      try {
+        final cleanText = text.replaceAll("'", "\\'").replaceAll("\n", " ");
+        final jsCode = """
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            
+            var msg = new SpeechSynthesisUtterance();
+            msg.text = '$cleanText';
+            
+            // Detect if text contains Hindi characters
+            var isHindi = /[\\u0900-\\u097F]/.test('$cleanText');
+            msg.lang = isHindi ? 'hi-IN' : 'en-US';
+            
+            // Setup voice parameters
+            msg.rate = isHindi ? 0.78 : 0.85;
+            msg.pitch = isHindi ? 1.05 : 1.15;
+            msg.volume = 1.0;
+            
+            msg.onend = function() {
+              if (window.onSpeechEnd) {
+                window.onSpeechEnd();
+              }
+            };
+            msg.onerror = function() {
+              if (window.onSpeechEnd) {
+                window.onSpeechEnd();
+              }
+            };
+            
+            window.speechSynthesis.speak(msg);
+          }
+        """;
+        js.context.callMethod('eval', [jsCode]);
+      } catch (e) {
+        debugPrint("Speech synthesis error: $e");
+      }
+    }
+  }
+
+  void _stopTextSpeech() {
+    if (kIsWeb) {
+      try {
+        js.context.callMethod('eval', ["""
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+          }
+        """]);
+      } catch (e) {
+        debugPrint("Speech stop error: $e");
+      }
+    }
+  }
+
+  void _speak(String text) {
+    setState(() {
+      _currentlySpeakingText = text;
+    });
+    _speakText(text);
+  }
+
+  void _stopSpeech() {
+    setState(() {
+      _currentlySpeakingText = null;
+    });
+    _stopTextSpeech();
+  }
 
   void _sendMessage() {
     final text = _controller.text.trim();
@@ -76,7 +170,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
         if (isHindi) {
           aiResponse = "आइए हिंदी वर्णमाला सीखें ✍️:\n\nस्वर: अ (अनार 🍒), आ (आम 🥭), इ (इमली 🫒)...\nव्यंजन: क (कबूतर 🕊️), ख (खरगोश 🐇), ग (गमला 🪴)...\n\nबच्चों के सीखने के लिए 'Play Study' section में Varnmala tab open करें!";
         } else {
-          aiResponse = "Let's learn Hindi Varnmala ✍️:\n\nVowels: अ (Anar 🍒), आ (Aam 🥭), इ (Imli 🫒)...\nConsonants: क (Kabootar 🕊️), ख (Khargosh 🐇), ग (Gamla 🪴)...\n\nOpen the 'Play Study' tab on your Home screen to hear correct pronunciations!";
+          aiResponse = "Let's learn Hindi Varnmala ✍️:\n\nVowels: अ (Anar 🍒), आ (Aam 🥭), इ (Imli 🫒)...\nConsonants: क (Kabootar 🕊️), kh (Khargosh 🐇), ग (Gamla 🪴)...\n\nOpen the 'Play Study' tab on your Home screen to hear correct pronunciations!";
         }
       } else if (query.contains("fraction")) {
         if (isHindi) {
@@ -86,7 +180,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
         }
       } else if (query.contains("math") || query.contains("sum") || query.contains("add") || query.contains("multiply") || query.contains("divide") || query.contains("algebra") || query.contains("geometry")) {
         if (isHindi) {
-          aiResponse = "गणित शिक्षक गाइड (कक्षा 1-10) 📐:\n1. अंकगणित: BODMAS नियम गणना का क्रम तय करता है (कोष्ठक, क्रम, भाग, गुणा, जोड़, घटाव)।\n2. ज्यामिति: आयत की परिधि = 2*(लंबाई + चौड़ाई)। वृत्त का क्षेत्रफल = π * r^2।\n3. बीजगणित: x का मान निकालने के लिए चर पदों को एक तरफ और अचर को दूसरी तरफ रखें (उदा: 2x = 10 => x = 5)।";
+          aiResponse = "गणित शिक्षक गाइड (कक्षा 1-10) 📐:\n1. अंकगणित: BODMAS नियम गणना का क्रम तय करता है (कोष्ठक, क्रम, भाग, गुणा, जोड़, घटाव)।\n2. ज्यामिति: आयत की परिधि = 2*(लंबाई + चौड़ाई)। वृत्त का क्षेत्रफल = π * r^2。\n3. बीजगणित: x का मान निकालने के लिए चर पदों को एक तरफ और अचर को दूसरी तरफ रखें (उदा: 2x = 10 => x = 5)।";
         } else {
           aiResponse = "Mathematics Tutor Guide (Standard 1-10) 📐:\n1. Arithmetic: BODMAS rule determines order of operations (Brackets, Order, Division, Multiplication, Addition, Subtraction).\n2. Geometry: Perimeter of rectangle = 2*(length + width). Area of circle = π * r^2.\n3. Algebra: Solve for x by keeping variable terms on one side and constants on other (e.g. 2x = 10 => x = 5).";
         }
@@ -166,7 +260,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
         }
       } else if (query.contains("admission") || query.contains("join") || query.contains("fee") || query.contains("class") || query.contains("register")) {
         if (isHindi) {
-          aiResponse = "स्वागत है! अग्रवाल नॉलेज हब (पटना शाखाओं) में नर्सरी से कक्षा 7 और विशिष्ट कंप्यूटर कोर्स के लिए प्रवेश खुले हैं। हम संकल्पनात्मक शिक्षा पर ध्यान केंद्रित करते हैं। पंजीकरण फॉर्म और मासिक शुल्क संबंधी प्रश्नों के लिए कार्यालय में डायरेक्टर अग्रवाल या सुश्री अंजलि वर्मा से संपर्क करें!";
+          aiResponse = "स्वागत है! अग्रवाल नॉलेज हब (पटना शाखाओं) में प्रवेश खुले हैं। हम संकल्पनात्मक शिक्षा पर ध्यान केंद्रित करते हैं। पंजीकरण फॉर्म और मासिक शुल्क संबंधी प्रश्नों के लिए कार्यालय में डायरेक्टर अग्रवाल या सुश्री अंजलि वर्मा से संपर्क करें!";
         } else {
           aiResponse = "Welcome! Admissions are open at Agarwal Knowledge Hub (Patna branches) for Nursery to Class 7 and specialized Computer courses. We focus on conceptual learning and digital tools. For registration forms and monthly fee queries, please consult Director Agarwal or Ms. Anjali Verma at the admin cabin!";
         }
@@ -267,19 +361,21 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
       ),
       body: Column(
         children: [
-          // Banner
+          // Banner with Bilingual Explanation
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: GlassContainer(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.auto_awesome, color: AppColors.secondaryOrange),
-                  SizedBox(width: 12),
+                  const Icon(Icons.auto_awesome, color: AppColors.secondaryOrange),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'AI tutor solves questions instantly from your textbooks and PDFs.',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                      _selectedLanguage == 'Hindi'
+                        ? 'अपनी पसंदीदा भाषा चुनें। अगर आप English में भी पूछेंगे, तो भी AI हिंदी में जवाब देगा! 🇮🇳'
+                        : 'Choose your preferred language. AI will reply in your chosen language even if you type in English! 🇬🇧',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -295,33 +391,63 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 final message = _messages[index];
+                final isSpeakingThis = _currentlySpeakingText == message.text;
+
                 return Align(
                   alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-                    decoration: BoxDecoration(
-                      color: message.isUser
-                          ? AppColors.primaryBlue
-                          : (isDark ? AppColors.darkSurface : Colors.grey[150]),
-                      borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(16),
-                        topRight: const Radius.circular(16),
-                        bottomLeft: Radius.circular(message.isUser ? 16 : 0),
-                        bottomRight: Radius.circular(message.isUser ? 0 : 16),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+                    children: [
+                      if (!message.isUser) ...[
+                        // Speaker Icon Button
+                        IconButton(
+                          icon: Icon(
+                            isSpeakingThis ? Icons.volume_up : Icons.volume_up_outlined,
+                            color: isSpeakingThis 
+                              ? AppColors.secondaryOrange 
+                              : (isDark ? Colors.white70 : Colors.black54),
+                            size: 20,
+                          ),
+                          tooltip: isSpeakingThis ? 'Stop speaking' : 'Read answer aloud',
+                          onPressed: () {
+                            if (isSpeakingThis) {
+                              _stopSpeech();
+                            } else {
+                              _speak(message.text);
+                            }
+                          },
+                        ),
+                        const SizedBox(width: 4),
+                      ],
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.70),
+                        decoration: BoxDecoration(
+                          color: message.isUser
+                              ? AppColors.primaryBlue
+                              : (isDark ? AppColors.darkSurface : Colors.grey[200]),
+                          borderRadius: BorderRadius.only(
+                            topLeft: const Radius.circular(16),
+                            topRight: const Radius.circular(16),
+                            bottomLeft: Radius.circular(message.isUser ? 16 : 0),
+                            bottomRight: Radius.circular(message.isUser ? 0 : 16),
+                          ),
+                        ),
+                        child: Text(
+                          message.text,
+                          style: TextStyle(
+                            color: message.isUser
+                                ? Colors.white
+                                : (isDark ? Colors.white : Colors.black87),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      message.text,
-                      style: TextStyle(
-                        color: message.isUser
-                            ? Colors.white
-                            : (isDark ? Colors.white : Colors.black87),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    ],
                   ),
                 );
               },
