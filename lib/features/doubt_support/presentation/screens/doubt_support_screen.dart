@@ -146,406 +146,28 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
       
       String aiResponse = "";
       final query = text.toLowerCase();
-      final isHindi = _selectedLanguage == 'Hindi';
       
-      if (query.contains("twinkle") || query.contains("rhyme") || query.contains("johny") || query.contains("humpty")) {
-        if (isHindi) {
-          aiResponse = "बच्चों के लिए प्रसिद्ध बाल कविताएं (Nursery Rhymes) 🎵:\n\n"
-              "1️⃣ **ट्विंकल ट्विंकल लिटिल स्टार (Twinkle Twinkle)**:\n"
-              "   'ट्विंकल ट्विंकल लिटिल स्टार, हाउ आई वंडर व्हाट यू आर!\n"
-              "   अप अबव द वर्ल्ड सो हाई, लाइक ए डायमंड इन द स्काई।'\n\n"
-              "2️⃣ **जॉनी जॉनी यस पापा (Johny Johny)**:\n"
-              "   'जॉनी जॉनी, यस पापा? ईटिंग शुगर, नो पापा!\n"
-              "   टेलिंग लाइज़, नो पापा! ओपन योर माउथ, हा हा हा!'\n\n"
-              "💡 **आसान स्पष्टीकरण**: ये कविताएँ छोटे बच्चों को अक्षरों की आवाज़, मज़ा और याद रखने की कला सिखाती हैं। इन्हें संगीत के साथ सुनने के लिए होम स्क्रीन पर 'Play Study' सेक्शन देखें!";
-        } else {
-          aiResponse = "Here are classic Nursery Rhymes for early learning 🎵:\n\n"
-              "1️⃣ **Twinkle Twinkle Little Star**:\n"
-              "   'Twinkle, twinkle, little star, How I wonder what you are!\n"
-              "   Up above the world so high, Like a diamond in the sky.'\n\n"
-              "2️⃣ **Johny Johny Yes Papa**:\n"
-              "   'Johny, Johny, Yes, Papa? Eating sugar, No, Papa?\n"
-              "   Telling lies, No, Papa? Open your mouth, Ha! Ha! Ha!'\n\n"
-              "💡 **Simple Explanation**: Nursery rhymes help children learn word sounds, rhythm, and new words in a fun way. Tap the 'Play Study' tab on your Home screen to play them with voice synthesis!";
-        }
-      } else if (query.contains("counting") || query.contains("number") || query.contains("counting number")) {
-        if (isHindi) {
-          aiResponse = "आइए संख्या गिनती (Counting Numbers) को आसान शब्दों में समझें 🔟:\n\n"
-              "1️⃣ **संख्या 1**: 🌟 (एक तारा) - जैसे 'एक सूरज'\n"
-              "2️⃣ **संख्या 2**: 🌟🌟 (दो तारे) - 1 और 1 मिलकर 2 बनते हैं।\n"
-              "3️⃣ **संख्या 3**: 🌟🌟🌟 (तीन तारे) - 2 और 1 मिलकर 3 बनते हैं।\n"
-              "4️⃣ **संख्या 4**: 🌟🌟🌟🌟 (चार तारे) - 3 और 1 मिलकर 4 बनते हैं।\n"
-              "5️⃣ **संख्या 5**: 🌟🌟🌟🌟🌟 (पाँच तारे) - 4 और 1 मिलकर 5 बनते हैं।\n\n"
-              "💡 **आसान उदाहरण**:\n"
-              "यदि आपके पास 3 सेब हैं और अंजली मैम आपको 2 सेब और देती हैं, तो कुल 3 + 2 = 5 सेब हो जाएंगे! इसे गिनने के लिए आप 'Play Study' स्क्रीन पर रंगीन सितारों को दबा सकते हैं।";
-        } else {
-          aiResponse = "Let's learn numerical counting in a simple way 🔟:\n\n"
-              "1️⃣ **Number 1 (One)**: 🌟 (One star) - e.g., 'One bright sun.'\n"
-              "2️⃣ **Number 2 (Two)**: 🌟🌟 (Two stars) - Formed by adding 1 + 1 = 2.\n"
-              "3️⃣ **Number 3 (Three)**: 🌟🌟🌟 (Three stars) - Formed by adding 2 + 1 = 3.\n"
-              "4️⃣ **Number 4 (Four)**: 🌟🌟🌟🌟 (Four stars) - Formed by adding 3 + 1 = 4.\n"
-              "5️⃣ **Number 5 (Five)**: 🌟🌟🌟🌟🌟 (Five stars) - Formed by adding 4 + 1 = 5.\n\n"
-              "💡 **Easy Example**:\n"
-              "If you have 3 apples, and your teacher gives you 2 more, you count them: 4, 5. Total = 3 + 2 = 5 apples!\n"
-              "Go to the 'Play Study' tab on the dashboard to click and count animated stars!";
-        }
-      } else if (query.contains("alphabet") || query.contains("abcd")) {
-        if (isHindi) {
-          aiResponse = "आइए अंग्रेजी वर्णमाला (English Alphabets) को आसान शब्दों में सीखें 🔠:\n\n"
-              "🍎 **A for Apple**: सेब एक मीठा फल है जिसे खाने से हम स्वस्थ रहते हैं।\n"
-              "⚽ **B for Ball**: गेंद एक गोल खिलौना है जिससे बच्चे खेलते हैं।\n"
-              "🐱 **C for Cat**: बिल्ली एक छोटा पालतू जानवर है जो म्याऊँ-म्याऊँ करता है।\n"
-              "🐶 **D for Dog**: कुत्ता एक वफादार जानवर है जो घर की रखवाली करता है।\n\n"
-              "💡 **आसान नियम**: अंग्रेजी में 26 अक्षर होते हैं। इनमें 5 स्वर (Vowels: A, E, I, O, U) और 21 व्यंजन (Consonants) होते हैं। जब भी कोई शब्द स्वर (vowel) से शुरू होता है तो हम उसके आगे 'an' लगाते हैं (जैसे: an apple)।\n"
-              "आप 'Play Study' में जाकर A से Z तक के कार्ड चित्रों के साथ देख सकते हैं!";
-        } else {
-          aiResponse = "Let's learn the English Alphabet with simple words 🔠:\n\n"
-              "🍎 **A for Apple**: A sweet fruit. (e.g. 'I eat an Apple.')\n"
-              "⚽ **B for Ball**: A round toy we play with. (e.g. 'Kick the Ball.')\n"
-              "🐱 **C for Cat**: A small pet animal that meows. (e.g. 'The Cat is sleeping.')\n"
-              "🐶 **D for Dog**: A loyal pet that barks. (e.g. 'My Dog is friendly.')\n\n"
-              "💡 **Easy Rule**: There are 26 letters in the alphabet. 5 are Vowels (A, E, I, O, U) and 21 are Consonants. We write 'an' before words starting with vowel sounds (like: an apple) and 'a' before consonant sounds (like: a ball).\n"
-              "Open the 'Play Study' page on the dashboard to swipe through A to Z cards!";
-        }
-      } else if (query.contains("swar") || query.contains("vyanjan") || query.contains("varnmala")) {
-        if (isHindi) {
-          aiResponse = "आइए हिंदी वर्णमाला (Varnmala) को बहुत आसान तरीके से समझें ✍️:\n\n"
-              "1️⃣ **स्वर (Vowels)**: ये बिना किसी मदद के बोले जाने वाले अक्षर हैं (कुल 11):\n"
-              "   - अ (अनार 🍒) -> अनार लाल दानों वाला फल है।\n"
-              "   - आ (आम 🥭) -> आम फलों का राजा है।\n"
-              "   - इ (इमली 🫒) -> इमली खट्टी होती है।\n\n"
-              "2️⃣ **व्यंजन (Consonants)**: इन्हें बोलने के लिए स्वरों की मदद चाहिए होती है (कुल 33):\n"
-              "   - क (कबूतर 🕊️) -> कबूतर आसमान में उड़ता है।\n"
-              "   - ख (खरगोश 🐇) -> खरगोश बहुत तेज़ी से दौड़ता है।\n"
-              "   - ग (गमला 🪴) -> गमले में सुंदर पौधे हैं।\n\n"
-              "💡 **आसान बात**: हिंदी भाषा को शुद्ध बोलने और लिखने के लिए स्वर और व्यंजनों को सीखना सबसे पहला कदम है। 'Play Study' में जाकर वर्णमाला के चित्र देखें!";
-        } else {
-          aiResponse = "Let's understand the Hindi Varnmala (Alphabet) in simple terms ✍️:\n\n"
-              "1️⃣ **Swar (Vowels)**: Sounds that can be spoken on their own (11 Swar):\n"
-              "   - अ (Anar 🍒) -> Pomegranate.\n"
-              "   - आ (Aam 🥭) -> Mango.\n"
-              "   - इ (Imli 🫒) -> Tamarind.\n\n"
-              "2️⃣ **Vyanjan (Consonants)**: Sounds that need vowel sounds to be spoken (33 Vyanjan):\n"
-              "   - क (Kabootar 🕊️) -> Pigeon (pronounced by combining K + a).\n"
-              "   - ख (Khargosh 🐇) -> Rabbit.\n"
-              "   - ग (Gamla 🪴) -> Flowerpot.\n\n"
-              "💡 **Simple Rule**: Every Hindi consonant has a hidden 'a' (अ) sound when we speak it. Open the 'Play Study' section on the Home screen to practice speaking them!";
-        }
-      } else if (query.contains("fraction")) {
-        if (isHindi) {
-          aiResponse = "गणित शंका हल! भिन्न (Fraction) क्या है? 🔢:\n\n"
-              "**आसान परिभाषा**:\n"
-              "\"भिन्न किसी पूरी चीज़ के एक छोटे हिस्से को दिखाता है। इसे ऊपर की संख्या (अंश) और नीचे की संख्या (हर) के रूप में लिखते हैं।\"\n\n"
-              "💡 **आसान पिज्जा उदाहरण**:\n"
-              "मान लीजिए आपने एक गोल पिज्जा को 4 बराबर टुकड़ों में काटा।\n"
-              "• यदि आपने 1 टुकड़ा खा लिया, तो आपने पिज्जा का **1/4** हिस्सा खाया।\n"
-              "• बचे हुए 3 टुकड़े पिज्जा का **3/4** हिस्सा हैं।\n\n"
-              "**भिन्न को जोड़ना (समान हर)**:\n"
-              "अगर नीचे की संख्या एक जैसी है, तो बस ऊपर की संख्या को सीधे जोड़ दें:\n"
-              "• **उदाहरण**: 2/5 + 1/5 = (2 + 1)/5 = 3/5.";
-        } else {
-          aiResponse = "Mathematics Doubt Solved! What is a Fraction? 🔢:\n\n"
-              "**Simple Definition**:\n"
-              "\"A fraction represents a part of a whole thing. It is written as a top number (Numerator) and a bottom number (Denominator) divided by a line.\"\n\n"
-              "💡 **Easy Pizza Example**:\n"
-              "Imagine you cut a round pizza into 4 equal slices.\n"
-              "• If you eat 1 slice, you ate **1/4** of the pizza.\n"
-              "• The remaining 3 slices are **3/4** of the pizza.\n\n"
-              "**Adding Fractions (Same Denominator)**:\n"
-              "If the bottom numbers are the same, just add the top numbers directly:\n"
-              "• **Example**: 2/5 + 1/5 = (2 + 1)/5 = 3/5.";
-        }
-      } else if (query.contains("math") || query.contains("sum") || query.contains("add") || query.contains("multiply") || query.contains("divide") || query.contains("algebra") || query.contains("geometry")) {
-        if (isHindi) {
-          aiResponse = "गणित गाइड (Mathematics Simple Guide) 📐:\n\n"
-              "1️⃣ **अंकगणित (BODMAS नियम)**:\n"
-              "   - गणित का सवाल हल करने का सही क्रम: पहले कोष्ठक (Bracket) हल करें ➔ फिर भाग करें ➔ फिर गुणा करें ➔ फिर जोड़ें ➔ अंत में घटाएं।\n"
-              "   - **आसान उदाहरण**: 20 - 2 * 5 + 3 को हल करें:\n"
-              "     1. पहले गुणा करें: 2 * 5 = 10\n"
-              "     2. अब सवाल बचा: 20 - 10 + 3\n"
-              "     3. अब जोड़ें और घटाएं: 10 + 3 = 13।\n\n"
-              "2️⃣ **ज्यामिति (आकृतियाँ)**:\n"
-              "   - आयत (Rectangle) का क्षेत्रफल = लंबाई * चौड़ाई।\n"
-              "   - **आसान उदाहरण**: यदि किसी कमरे की लंबाई 5 मीटर और चौड़ाई 4 मीटर है, तो उसका क्षेत्रफल 5 * 4 = 20 वर्ग मीटर होगा।\n\n"
-              "3️⃣ **बीजगणित (समीकरण)**:\n"
-              "   - **आसान उदाहरण**: x + 5 = 12 में x का मान निकालें। x को अकेला छोड़ें, 5 को दाईं ओर भेजें (तो वह माइनस हो जाएगा): x = 12 - 5 ➔ x = 7।";
-        } else {
-          aiResponse = "Mathematics Simple Academic Guide 📐:\n\n"
-              "1️⃣ **BODMAS Rule (Order of Calculation)**:\n"
-              "   - Solve in this order: Bracket ➔ Division ➔ Multiplication ➔ Addition ➔ Subtraction.\n"
-              "   - **Easy Example**: Solve 20 - 2 * 5 + 3:\n"
-              "     1. First perform multiplication: 2 * 5 = 10\n"
-              "     2. The equation becomes: 20 - 10 + 3\n"
-              "     3. Now add and subtract: 10 + 3 = 13.\n\n"
-              "2️⃣ **Geometry (Area Formulas)**:\n"
-              "   - Rectangle Area = Length * Width.\n"
-              "   - **Easy Example**: If a room is 5 meters long and 4 meters wide, the area is 5 * 4 = 20 square meters.\n\n"
-              "3️⃣ **Algebra (Solving for X)**:\n"
-              "   - **Easy Example**: Find x in: x + 5 = 12. Move 5 to the right side (it changes to minus): x = 12 - 5 ➔ x = 7.";
-        }
-      } else if (query.contains("physics") || query.contains("gravity") || query.contains("force") || query.contains("motion") || query.contains("light") || query.contains("electricity")) {
-        if (isHindi) {
-          aiResponse = "भौतिक विज्ञान गाइड (Physics Made Easy) ⚡:\n\n"
-              "1️⃣ **बल और गति (Force and Motion)**:\n"
-              "   - बल (Force) का मतलब है किसी चीज़ को ढकेलना (push) या खींचना (pull)।\n"
-              "   - सूत्र: F = m * a (बल = वजन * तेज़ी)।\n"
-              "   - **आसान उदाहरण**: एक हल्की साइकिल को ढकेलना आसान है, लेकिन एक भारी कार को ढकेलने के लिए बहुत ज़्यादा बल की ज़रूरत होती है।\n\n"
-              "2️⃣ **गुरुत्वाकर्षण (Gravity)**:\n"
-              "   - पृथ्वी का वह अदृश्य खिंचाव जो हर चीज़ को नीचे अपनी तरफ खींचता है।\n"
-              "   - **आसान उदाहरण**: यदि आप अपने हाथ से एक पेंसिल छोड़ते हैं, तो वह हवा में ऊपर उड़ने के बजाय सीधे नीचे गिर जाती है क्योंकि गुरुत्वाकर्षण उसे खींच रहा है।\n\n"
-              "3️⃣ **प्रकाश का परावर्तन (Reflection of Light)**:\n"
-              "   - जब रोशनी किसी आईने (mirror) से टकराकर वापस लौटती है, तो उसे परावर्तन कहते हैं। इसी वजह से हम आईने में अपना चेहरा देख पाते हैं।";
-        } else {
-          aiResponse = "Physics Concepts Made Super Easy ⚡:\n\n"
-              "1️⃣ **Force and Weight**:\n"
-              "   - A Force is simply a push or a pull on an object.\n"
-              "   - **Easy Example**: Pushing a light plastic toy is very easy, but pushing a heavy wooden table requires a lot of force.\n\n"
-              "2️⃣ **Gravity (The Invisible Pull)**:\n"
-              "   - Gravity is the Earth's invisible pull that pulls everything down to the ground.\n"
-              "   - **Easy Example**: If you throw a ball high up in the air, it does not keep flying forever. It always falls back down to the grass because gravity pulls it.\n\n"
-              "3️⃣ **Light Reflection**:\n"
-              "   - When light bounces off a shiny surface like a mirror, it is called reflection. This is why you can see your face in the mirror!";
-        }
-      } else if (query.contains("chemistry") || query.contains("acid") || query.contains("base") || query.contains("element") || query.contains("atom") || query.contains("molecule")) {
-        if (isHindi) {
-          aiResponse = "रसायन विज्ञान (Chemistry Made Easy) 🧪:\n\n"
-              "1️⃣ **परमाणु और अणु (Atom & Molecule)**:\n"
-              "   - परमाणु (Atom) दुनिया की सबसे छोटी चीज़ है जिससे सभी वस्तुएं बनी हैं (जैसे ईंटों से घर बनता है)।\n"
-              "   - जब दो या दो से अधिक परमाणु आपस में मिलते हैं, तो उसे अणु (Molecule) कहते हैं।\n"
-              "   - **आसान उदाहरण**: पानी का एक छोटा कण (अणु) हाइड्रोजन के दो और ऑक्सीजन के एक परमाणु से मिलकर बनता है (H2O)।\n\n"
-              "2️⃣ **अम्ल और क्षार (Acid & Base)**:\n"
-              "   - **अम्ल (Acid)**: खाने में खट्टा होता है। (जैसे नींबू का रस, इमली)।\n"
-              "   - **क्षार (Base)**: स्वाद में कड़वा और छूने में साबुन जैसा चिकना होता है। (जैसे कपड़े धोने का साबुन, बेकिंग सोडा)।\n"
-              "   - **उदासीन (Neutral)**: शुद्ध पानी न तो खट्टा होता है और न ही कड़वा।";
-        } else {
-          aiResponse = "Chemistry Concepts Made Super Easy 🧪:\n\n"
-              "1️⃣ **Atoms and Molecules (Building Blocks)**:\n"
-              "   - An **Atom** is the tiniest building block of everything in the universe, just like bricks are building blocks for a wall.\n"
-              "   - A **Molecule** is formed when two or more atoms join together.\n"
-              "   - **Easy Example**: One drop of water is made of molecules, where each molecule has 2 Hydrogen atoms and 1 Oxygen atom joined together (H2O).\n\n"
-              "2️⃣ **Acids and Bases (Sour vs. Bitter)**:\n"
-              "   - **Acid**: Things that taste sour. (Examples: Lemon juice, Vinegar).\n"
-              "   - **Base**: Things that taste bitter and feel slippery like soap. (Examples: Baking soda, Bath soap).\n"
-              "   - **Neutral**: Distilled water is neutral (neither sour nor bitter).";
-        }
-      } else if (query.contains("biology") || query.contains("cell") || query.contains("plant") || query.contains("photosynthesis") || query.contains("human body")) {
-        if (isHindi) {
-          aiResponse = "जीव विज्ञान गाइड (Biology Made Easy) 🧬:\n\n"
-              "1️⃣ **कोशिका (Cell)**:\n"
-              "   - हमारा शरीर लाखों छोटी-छोटी जीवित इकाइयों से मिलकर बना है, जिन्हें कोशिका कहते हैं। जैसे एक मकान ईंटों को जोड़कर बनता है, वैसे ही हमारा शरीर कोशिकाओं से बना है।\n\n"
-              "2️⃣ **प्रकाश संश्लेषण (Photosynthesis)**:\n"
-              "   - यह वह तरीका है जिससे पेड़-पौधे धूप का उपयोग करके अपना खाना खुद बनाते हैं। यह पौधों द्वारा दोपहर का भोजन पकाने जैसा है!\n"
-              "   - **आसान शब्दों में**: कार्बन डाइऑक्साइड + पानी + धूप ➔ भोजन (ग्लूकोज) + ऑक्सीजन।\n"
-              "   - पौधे हमारे लिए **ऑक्सीजन** छोड़ते हैं जिससे हम जीवित रहते हैं।\n\n"
-              "3️⃣ **मानव शरीर (हृदय)**:\n"
-              "   - हमारा हृदय एक पंप की तरह है जो हमारे पूरे शरीर में खून और ऑक्सीजन पहुंचाने का काम करता है।";
-        } else {
-          aiResponse = "Biology Concepts Made Super Easy 🧬:\n\n"
-              "1️⃣ **The Cell (Building Block of Life)**:\n"
-              "   - A cell is the smallest unit of life. Just like a house is made by putting bricks together, all plants, animals, and humans are made of millions of tiny cells.\n\n"
-              "2️⃣ **Photosynthesis (Plants Cooking Food)**:\n"
-              "   - Photosynthesis is the way green plants cook their own food using sunlight. \n"
-              "   - **Simple Recipe**: Carbon Dioxide + Water + Sunlight ➔ Food (sugar) + Oxygen.\n"
-              "   - Plants release **Oxygen** into the air during this process, which we breathe to stay alive!\n\n"
-              "3️⃣ **The Heart (Pumping Machine)**:\n"
-              "   - Your heart is like a strong pump that beats all day to send blood and oxygen to all parts of your body.";
-        }
-      } else if (query.contains("science")) {
-        if (isHindi) {
-          aiResponse = "विज्ञान क्या है? (What is Science?) 🔬:\n\n"
-              "विज्ञान हमारे आस-पास की दुनिया को ध्यान से देखने और प्रयोगों (experiments) के माध्यम से समझने का आसान तरीका है। इसके तीन मुख्य भाग हैं:\n\n"
-              "1️⃣ **भौतिक विज्ञान (Physics)**: चीजें कैसे चलती हैं, रोशनी, गुरुत्वाकर्षण और बिजली का अध्ययन। (जैसे: गेंद ऊपर फेंकने पर नीचे क्यों आती है)।\n"
-              "2️⃣ **रसायन विज्ञान (Chemistry)**: चीजें किससे बनी हैं। (जैसे: पानी दो गैसों - हाइड्रोजन और ऑक्सीजन से मिलकर बनता है)।\n"
-              "3️⃣ **जीव विज्ञान (Biology)**: जीवित चीजों जैसे पौधों, जानवरों और हमारे शरीर का अध्ययन। (जैसे: पौधे धूप से अपना खाना कैसे बनाते हैं)।\n\n"
-              "💡 **आसान टिप**: कोई भी टॉपिक जैसे 'gravity' या 'cell' टाइप करें और उसका आसान उत्तर पाएं!";
-        } else {
-          aiResponse = "What is Science? 🔬:\n\n"
-              "Science is studying the world around us by observing things and doing experiments. It is divided into three main subjects:\n\n"
-              "1️⃣ **Physics**: Studies how things move, light, gravity, and electricity. (E.g., why a ball falls down when thrown).\n"
-              "2️⃣ **Chemistry**: Studies what things are made of. (E.g., how water is made of hydrogen and oxygen gases).\n"
-              "3️⃣ **Biology**: Studies living things like plants, animals, and the human body. (E.g., how plants make food using sunlight).\n\n"
-              "💡 **Easy Tip**: Type a topic like 'gravity' or 'cell' to get simple definitions and examples!";
-        }
-      } else if (query.contains("economics") || query.contains("money") || query.contains("demand") || query.contains("supply") || query.contains("market")) {
-        if (isHindi) {
-          aiResponse = "अर्थशास्त्र क्या है? (Economics Made Easy) 📊:\n\n"
-              "1️⃣ **मांग और आपूर्ति का नियम (Demand & Supply)**:\n"
-              "   - **मांग (Demand)**: किसी चीज़ को खरीदने की इच्छा।\n"
-              "   - **आपूर्ति (Supply)**: बाजार में उस चीज़ का स्टॉक उपलब्ध होना।\n"
-              "   - **नियम**: जब किसी चीज़ की मांग बढ़ जाती है लेकिन स्टॉक कम होता है, तो उसकी कीमत बढ़ जाती है।\n"
-              "   - **आसान उदाहरण**: यदि गर्मी के मौसम में अचानक आइसक्रीम की मांग बढ़ जाए और दुकान में केवल 5 आइसक्रीम बची हों, तो उसकी कीमत बढ़ सकती है।\n\n"
-              "2️⃣ **पैसे का काम**:\n"
-              "   - पैसा एक साधन है जिससे हम अपनी मनपसंद चीजें (जैसे खिलौने, खाना) खरीद या बेच सकते हैं। पहले के जमाने में लोग वस्तु के बदले वस्तु बदलते थे (बाटर सिस्टम)।";
-        } else {
-          aiResponse = "Economics Concepts Made Super Easy 📊:\n\n"
-              "1️⃣ **The Law of Demand and Supply**:\n"
-              "   - **Demand**: How much people want to buy something.\n"
-              "   - **Supply**: How much of that item is available in the shop.\n"
-              "   - **Rule**: If demand is high but supply is low, the price goes up. If supply is high but demand is low, the price goes down!\n"
-              "   - **Easy Example**: If there is only 1 cake left in a shop, and 10 kids want to buy it (high demand, low supply), the shopkeeper might increase its price.\n\n"
-              "2️⃣ **What is Money?**:\n"
-              "   - Money is a tool that makes it easy to buy toys, books, or food. Long ago, people traded items like cows for wheat (Barter System) before money was invented.";
-        }
-      } else if (query.contains("history") || query.contains("gandhi") || query.contains("independence") || query.contains("harappa") || query.contains("revolution")) {
-        if (isHindi) {
-          aiResponse = "इतिहास और स्वतंत्रता आंदोलन (History Made Easy) 📜:\n\n"
-              "1️⃣ **हड़प्पा सभ्यता (Indus Valley)**:\n"
-              "   - यह हजारों साल पहले भारत में बसी एक बहुत पुरानी सभ्यता थी। यह लोग ईंटों के सुंदर पक्के घरों में रहते थे और इनके पास नालियों की बेहतरीन व्यवस्था थी।\n\n"
-              "2️⃣ **भारत की आज़ादी (1947)**:\n"
-              "   - हमारा देश भारत पहले अंग्रेजों का गुलाम था। 15 अगस्त 1947 को भारत आज़ाद हुआ।\n"
-              "   - **महात्मा गांधी**:\n"
-              "     - इन्होंने बिना लड़ाई-झगड़े (अहिंसा) के सत्य की ताकत से अंग्रेज़ों को भारत छोड़ने पर मजबूर किया।\n"
-              "     - इन्होंने असहयोग आंदोलन और नमक सत्याग्रह जैसे बड़े शांतिपूर्ण आंदोलनों का नेतृत्व किया।\n"
-              "   - **सुभाष चंद्र बोस**: इन्होंने 'आजाद हिंद फौज' बनाई और प्रसिद्ध नारा दिया 'तुम मुझे खून दो, मैं तुम्हें आजादी दूंगा।';";
-        } else {
-          aiResponse = "History & Freedom Movements Made Simple 📜:\n\n"
-              "1️⃣ **Harappan Civilization**:\n"
-              "   - It was a very old city-based civilization that lived thousands of years ago near the Indus river. They built beautiful brick houses, straight roads, and clean drainage pipes.\n\n"
-              "2️⃣ **India's Independence (15th August 1947)**:\n"
-              "   - India was ruled by the British for a long time. Many leaders fought together to make India free:\n"
-              "     - **Mahatma Gandhi**: He used peace, truth, and non-violence to fight the British. He led the Salt March to protest unfair salt taxes.\n"
-              "     - **Subhash Chandra Bose**: He created the Indian National Army (INA) and gave the famous slogan 'Give me blood, and I will give you freedom.'";
-        }
-      } else if (query.contains("geography") || query.contains("earth") || query.contains("map") || query.contains("continent") || query.contains("river") || query.contains("soil")) {
-        if (isHindi) {
-          aiResponse = "भूगोल क्या है? (Geography Made Easy) 🌍:\n\n"
-              "1️⃣ **पृथ्वी की तीन परतें (Layers of Earth)**:\n"
-              "   - **भूपर्पटी (Crust)**: पृथ्वी की सबसे ऊपरी परत जहाँ हम पैर रखते हैं और पेड़-पौधे उगते हैं।\n"
-              "   - **मेंटल (Mantle)**: बीच की परत जो पिघले हुए पत्थरों (लावा) से बनी है।\n"
-              "   - **क्रोड (Core)**: सबसे अंदरूनी हिस्सा जो बहुत गर्म है और लोहे से बना है।\n\n"
-              "2️⃣ **हवा की परतें (Atmosphere)**:\n"
-              "   - **क्षोभमंडल (Troposphere)**: सबसे निचली परत जहाँ बादल बनते हैं और बारिश होती है।\n"
-              "   - **समतापमंडल (Stratosphere)**: जहाँ हवाई जहाज़ उड़ते हैं। इसी में **ओजोन परत** होती है जो हमें सूरज की खतरनाक किरणों से बचाती है।\n\n"
-              "3️⃣ **जल चक्र (Water Cycle)**: धूप से नदी का पानी भाप बनकर उड़ता है ➔ ऊपर जाकर बादल बनता है ➔ फिर बारिश बनकर वापस नदी में आ जाता है।";
-        } else {
-          aiResponse = "Geography Concepts Made Super Easy 🌍:\n\n"
-              "1️⃣ **Layers of the Earth (Like a Boiled Egg)**:\n"
-              "   - **Crust**: The outer hard shell where we build houses and grow trees.\n"
-              "   - **Mantle**: The middle thick layer made of very hot, melted red rocks (magma).\n"
-              "   - **Core**: The center of the Earth, which is extremely hot and made of solid iron.\n\n"
-              "2️⃣ **Atmosphere (Air Layers)**:\n"
-              "   - **Troposphere**: The lowest air layer where clouds form, rain falls, and birds fly.\n"
-              "   - **Stratosphere**: The higher layer where airplanes fly. It has the **Ozone layer** which acts like sunglasses for the Earth, blocking harmful rays.\n\n"
-              "3️⃣ **Water Cycle**:\n"
-              "   - Sun heats river water ➔ Water turns to vapor and goes up (Evaporation) ➔ Forms clouds (Condensation) ➔ Falls back as rain (Precipitation).";
-        }
-      } else if (query.contains("english") || query.contains("grammar") || query.contains("noun") || query.contains("verb") || query.contains("tense")) {
-        if (isHindi) {
-          aiResponse = "अंग्रेजी व्याकरण (English Grammar Made Easy) 📝:\n\n"
-              "1️⃣ **संज्ञा (Noun)**: किसी भी नाम वाले शब्द को संज्ञा कहते हैं (व्यक्ति, वस्तु, स्थान)।\n"
-              "   - **आसान उदाहरण**: *Aman* (व्यक्ति), *Patna* (स्थान), *Ball* (वस्तु)।\n"
-              "   - **वाक्य**: *Aman* is playing with a *ball* in *Patna*.\n\n"
-              "2️⃣ **क्रिया (Verb)**: काम दर्शाने वाले शब्द को क्रिया कहते हैं।\n"
-              "   - **आसान उदाहरण**: write (लिखना), run (दौड़ना), play (खेलना)।\n"
-              "   - **वाक्य**: Aman is *running*.\n\n"
-              "3️⃣ **काल (Tenses - समय)**:\n"
-              "   - **Present Tense (वर्तमान)**: जो काम अभी होता है। (जैसे: 'I eat food.')\n"
-              "   - **Past Tense (भूतकाल)**: जो काम हो चुका है। (जैसे: 'I ate food yesterday.')\n"
-              "   - **Future Tense (भविष्यकाल)**: जो काम आगे होगा। (जैसे: 'I will eat food tomorrow.')";
-        } else {
-          aiResponse = "English Grammar Made Super Easy 📝:\n\n"
-              "1️⃣ **Noun (Naming Words)**:\n"
-              "   - A noun is the name of any person, place, or thing.\n"
-              "   - **Easy Examples**: *Aman* (person), *Patna* (place), *Apple* (thing).\n"
-              "   - **Sentence**: *Aman* is eating an *apple* in *Patna*.\n\n"
-              "2️⃣ **Verb (Doing Words)**:\n"
-              "   - A verb shows an action or what someone is doing.\n"
-              "   - **Easy Examples**: run, jump, play, write, read.\n"
-              "   - **Sentence**: The cat is *jumping*.\n\n"
-              "3️⃣ **Tenses (Time of Action)**:\n"
-              "   - **Present**: Action happening now. (e.g. 'I study.')\n"
-              "   - **Past**: Action that already happened. (e.g. 'I studied yesterday.')\n"
-              "   - **Future**: Action that will happen later. (e.g. 'I will study tomorrow.')";
-        }
-      } else if (query.contains("hindi") || query.contains("vyakaran") || query.contains("sangya") || query.contains("kriya")) {
-        aiResponse = "हिंदी व्याकरण (Vyakaran Made Easy) ✍️:\n\n"
-            "1️⃣ **संज्ञा (Noun) - नाम वाले शब्द**:\n"
-            "   - किसी भी व्यक्ति, वस्तु, स्थान या भाव के नाम को संज्ञा कहते हैं।\n"
-            "   - **आसान उदाहरण**: राम (व्यक्ति), पटना (स्थान), किताब (वस्तु), मिठास (भाव)।\n"
-            "   - **वाक्य**: *राम* *पटना* में *किताब* पढ़ता है।\n\n"
-            "2️⃣ **क्रिया (Verb) - काम वाले शब्द**:\n"
-            "   - जिस शब्द से किसी काम के करने या होने का पता चले, उसे क्रिया कहते हैं।\n"
-            "   - **आसान उदाहरण**: दौड़ना, रोना, पढ़ना, सोना।\n"
-            "   - **वाक्य**: सीता *गाना गा रही है*।\n\n"
-            "3️⃣ **सर्वनाम (Pronoun) - संज्ञा की जगह आने वाले शब्द**:\n"
-            "   - जो शब्द संज्ञा (नाम) की जगह उपयोग किए जाते हैं ताकि नाम बार-बार न बोलना पड़े।\n"
-            "   - **उदाहरण**: मैं, तुम, वह, हम। (जैसे: 'राम अच्छा लड़का है। *वह* रोज़ स्कूल जाता है।')";
-      } else if (query.contains("vlookup") || query.contains("xlookup") || query.contains("pivot") || query.contains("excel") || query.contains("spreadsheet") || query.contains("formula")) {
-        if (isHindi) {
-          aiResponse = "एमएस एक्सेल फ़ॉर्मूला (Excel Formulas Made Easy) 📊:\n\n"
-              "1️⃣ **मूल फ़ॉर्मूले**:\n"
-              "   - **SUM (जोड़)**: `=SUM(A1:A5)` - खाने A1 से A5 तक के सभी नंबरों को जोड़ता है।\n"
-              "   - **AVERAGE (औसत)**: `=AVERAGE(B1:B5)` - औसत निकालता है।\n"
-              "   - **IF (हाँ या ना)**: `=IF(C2>=33, \"Pass\", \"Fail\")` - अगर नंबर 33 से ज़्यादा हैं तो 'Pass' लिखेगा, नहीं तो 'Fail' लिखेगा।\n\n"
-              "2️⃣ **VLOOKUP (वी-लुकअप - ढूंढने का साधन)**:\n"
-              "   - **आसान शब्दों में**: यह टेलीफोन डायरेक्टरी में नाम ढूंढकर उसके सामने नंबर देखने जैसा है।\n"
-              "   - **फ़ॉर्मूला**: `=VLOOKUP(क्या ढूंढना है, कहाँ ढूंढना है, कॉलम नंबर, FALSE)`\n"
-              "   - **आसान उदाहरण**: `=VLOOKUP(5, A1:B10, 2, FALSE)` - यह रोल नंबर 5 को ढूंढेगा और उसके सामने वाले दूसरे कॉलम से उसका नाम बता देगा।\n\n"
-              "3️⃣ **XLOOKUP (नया और सबसे आसान)**:\n"
-              "   - **फ़ॉर्मूला**: `=XLOOKUP(क्या ढूंढना है, ढूंढने वाला कॉलम, परिणाम वाला कॉलम)`\n"
-              "   - **आसान उदाहरण**: `=XLOOKUP(5, A1:A10, B1:B10)` - कॉलम A में 5 ढूंढकर कॉलम B से उसका नाम सीधे बता देगा।";
-        } else {
-          aiResponse = "Microsoft Excel Formulas Made Super Easy 📊:\n\n"
-              "1️⃣ **Basic Calculations**:\n"
-              "   - **SUM**: `=SUM(A1:A5)` - Adds all numbers from cell A1 to A5.\n"
-              "   - **IF Logic**: `=IF(C2>=33, \"Pass\", \"Fail\")` - Checks if score is 33 or more, showing 'Pass', else 'Fail'.\n\n"
-              "2️⃣ **VLOOKUP (Vertical Search tool)**:\n"
-              "   - **Simple Explanation**: It searches down a list for a name, then looks to the right to find their phone number.\n"
-              "   - **Formula**: `=VLOOKUP(search_value, table_range, column_number, FALSE)`\n"
-              "   - **Easy Example**: `=VLOOKUP(5, A1:B10, 2, FALSE)`\n"
-              "     (Finds Roll Number '5' in column A, then gives the student Name from the 2nd column B).\n\n"
-              "3️⃣ **XLOOKUP (Modern Search)**:\n"
-              "   - **Formula**: `=XLOOKUP(search_value, search_column, return_column)`\n"
-              "   - **Easy Example**: `=XLOOKUP(5, A1:A10, B1:B10)`\n"
-              "     (Searches for 5 in column A and directly fetches the name from column B. No column numbers needed!)";
-        }
-      } else if (query.contains("mail merge") || query.contains("macro") || query.contains("word") || query.contains("typing") || query.contains("document") || query.contains("format")) {
-        if (isHindi) {
-          aiResponse = "एमएस वर्ड और शॉर्टकट टूल्स (MS Word Made Easy) 📄:\n\n"
-              "1️⃣ **मेल मर्ज (Mail Merge - एक साथ कई पत्र बनाना)**:\n"
-              "   - **आसान शब्दों में**: यदि आपको 50 दोस्तों को जन्मदिन का कार्ड भेजना है, तो सबके नाम अलग-अलग टाइप करने के बजाय मेल मर्ज का उपयोग करें। यह एक्सेल की लिस्ट से नाम लेकर एक क्लिक में 50 अलग-अलग पत्र तैयार कर देता है।\n"
-              "   - **करने के तरीके**:\n"
-              "     1. **Mailings** टैब पर जाएं ➔ **Start Mail Merge** ➔ **Letters** चुनें।\n"
-              "     2. **Select Recipients** पर क्लिक करें ➔ दोस्तों के नाम वाली एक्सेल फ़ाइल चुनें।\n"
-              "     3. पत्र में नाम की जगह पर **Insert Merge Field** क्लिक करें।\n"
-              "     4. **Finish & Merge** पर क्लिक करें।\n\n"
-              "2️⃣ **मैक्रोज़ (Macros - काम रिकॉर्डर)**:\n"
-              "   - **आसान शब्दों में**: यह कंप्यूटर में काम रिकॉर्ड करने वाले टेप रिकॉर्डर जैसा है। जब कोई काम (जैसे बार-बार कोई बड़ा पता लिखना) रोज़ करना पड़े, तो मैक्रो रिकॉर्ड करके एक शॉर्टकट की (जैसे `Alt + W`) बना लें। दबाते ही पूरा काम 1 सेकंड में हो जाएगा।";
-        } else {
-          aiResponse = "Microsoft Word Made Simple & Easy 📄:\n\n"
-              "1️⃣ **Mail Merge (Creating Multiple Letters Instantly)**:\n"
-              "   - **Simple Explanation**: If you want to invite 50 friends to a party, you don't need to write 50 letters manually. Mail Merge takes a names list from Excel and automatically prints 50 customized letters with a single click!\n"
-              "   - **Steps**:\n"
-              "     1. Go to **Mailings** tab ➔ Click **Start Mail Merge** ➔ Choose **Letters**.\n"
-              "     2. Click **Select Recipients** ➔ Choose your Excel names sheet.\n"
-              "     3. Place your cursor and click **Insert Merge Field** to place the Name.\n"
-              "     4. Click **Finish & Merge** ➔ All letters are ready!\n\n"
-              "2️⃣ **Macros (Action Recorder)**:\n"
-              "   - **Simple Explanation**: A Macro is like a video recorder for your typing. If you type your school address 10 times a day, you can record a Macro once, bind it to a key (like `Alt + A`), and press it to paste the address instantly.";
-        }
-      } else if (query.contains("slide master") || query.contains("transition") || query.contains("animation") || query.contains("powerpoint") || query.contains("slide") || query.contains("presentation")) {
-        if (isHindi) {
-          aiResponse = "एमएस पावरपॉइंट प्रेजेंटेशन (PowerPoint Made Easy) 📉:\n\n"
-              "1️⃣ **स्लाइड मास्टर (Slide Master - मुख्य डिज़ाइन पेज)**:\n"
-              "   - **आसान शब्दों में**: यदि आपके पास 50 स्लाइड्स हैं और आप चाहते हैं कि हर स्लाइड के कोने में स्कूल का लोगो दिखाई दे, तो 50 बार लोगो लगाने के बजाय स्लाइड मास्टर में लगाएं। यह अपने आप सब पर लग जाएगा।\n"
-              "   - **करने के तरीके**:\n"
-              "     1. **View** टैब पर जाएं ➔ **Slide Master** पर क्लिक करें।\n"
-              "     2. सबसे ऊपर वाली पहली स्लाइड को चुनें और वहाँ लोगो लगाएं।\n"
-              "     3. **Close Master View** पर क्लिक करें। सभी स्लाइड्स का डिज़ाइन एक साथ बदल जाएगा!\n\n"
-              "2️⃣ **मॉर्फ ट्रांजिशन (Morph)**:\n"
-              "   - यह एक जादुई एनीमेशन है जो आकृतियों (shapes) को स्लाइड 1 से स्लाइड 2 पर जाते समय तैरते हुए सुचारू रूप से बड़ा या छोटा कर देता है।";
-        } else {
-          aiResponse = "Microsoft PowerPoint Made Simple & Easy 📉:\n\n"
-              "1️⃣ **Slide Master (Universal Design Template)**:\n"
-              "   - **Simple Explanation**: If you have 50 slides and want the school logo to appear at the top corner of every single slide, you don't need to insert it 50 times. You just place it on the 'Slide Master' once, and it automatically updates all slides!\n"
-              "   - **Steps**:\n"
-              "     1. Go to **View** tab ➔ Click **Slide Master**.\n"
-              "     2. Edit the very first slide template at the top (insert logo or set text font).\n"
-              "     3. Click **Close Master View**. Your slides are updated!\n\n"
-              "2️⃣ **Morph Transition**:\n"
-              "   - A smooth motion animation. Copy a circle shape from Slide 1 to Slide 2, move it to a new corner, make it larger, and select 'Morph' transition. The circle will smoothly glide and grow on the screen!";
-        }
-      } else if (query.contains("computer") || query.contains("what is computer") || query.contains("generation")) {
+      // Smart Language Request Detection
+      final userWantsHindi = _selectedLanguage == 'Hindi' ||
+                             query.contains("hindi me") || 
+                             query.contains("hindi mein") || 
+                             query.contains("in hindi") ||
+                             query.contains("kya h") ||
+                             query.contains("kya hai") ||
+                             query.contains("btao") ||
+                             query.contains("batao") ||
+                             query.contains("samjhao") ||
+                             query.contains("kise kehte") ||
+                             query.contains("kya hota");
+                             
+      final userWantsEnglish = query.contains("in english") || 
+                               query.contains("english me") || 
+                               query.contains("english mein");
+                               
+      final isHindi = userWantsHindi && !userWantsEnglish;
+      
+      // 1. PRIMARY CONCEPT: Computer
+      if (query.contains("computer") || query.contains("generation")) {
         if (isHindi) {
           aiResponse = "कंप्यूटर क्या है? (What is a Computer?) 💻:\n\n"
               "कंप्यूटर एक इलेक्ट्रॉनिक मशीन है जो हमसे जानकारी (Input) लेती है, उस पर काम (Processing) करती है, उसे सुरक्षित रखती है (Storage), और हमें परिणाम (Output) दिखाती है।\n\n"
@@ -583,7 +205,9 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "3. **Storage**: It can remember lots of photos, videos, and books.\n"
               "4. **Versatility**: It can play games, play music, write letters, and help you study.";
         }
-      } else if (query.contains("hardware") || query.contains("ram") || query.contains("rom") || query.contains("cpu") || query.contains("processor") || query.contains("storage") || query.contains("motherboard")) {
+      }
+      // 2. PRIMARY CONCEPT: Hardware
+      else if (query.contains("hardware") || query.contains("ram") || query.contains("rom") || query.contains("cpu") || query.contains("processor") || query.contains("storage") || query.contains("motherboard")) {
         if (isHindi) {
           aiResponse = "कंप्यूटर हार्डवेयर क्या है? (What is Hardware?) 🔌:\n\n"
               "हार्डवेयर कंप्यूटर के वे हिस्से होते हैं जिन्हें आप छू सकते हैं और देख सकते हैं। इसे आप अपने शरीर के अंगों (जैसे हाथ, आंख, पैर) की तरह समझ सकते हैं।\n\n"
@@ -629,7 +253,9 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "• The **SSD** saves your drawing forever when you click 'Save'.\n"
               "• The **Monitor** shows you the colors.";
         }
-      } else if (query.contains("software") || query.contains("operating system") || query.contains("windows") || query.contains("linux") || query.contains("os")) {
+      }
+      // 3. PRIMARY CONCEPT: Software
+      else if (query.contains("software") || query.contains("operating system") || query.contains("windows") || query.contains("linux") || query.contains("os")) {
         if (isHindi) {
           aiResponse = "सॉफ्टवेयर और ऑपरेटिंग सिस्टम (Software & OS Made Easy) 💿:\n\n"
               "**कंप्यूटर सॉफ्टवेयर क्या है?**\n"
@@ -660,31 +286,90 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "• The **Speaker** is hardware (you can touch it).\n"
               "• The **Song Player App** (like Spotify) is software (tells the speaker what sound to play).";
         }
-      } else if (query.contains("network") || query.contains("internet") || query.contains("ip address") || query.contains("dns") || query.contains("protocol") || query.contains("wifi") || query.contains("router")) {
+      }
+      // 4. PRIMARY CONCEPT: Excel
+      else if (query.contains("vlookup") || query.contains("xlookup") || query.contains("pivot") || query.contains("excel") || query.contains("spreadsheet") || query.contains("formula")) {
         if (isHindi) {
-          aiResponse = "इंटरनेट और कंप्यूटर नेटवर्क (Internet & Networks Made Easy) 🌐:\n\n"
-              "1️⃣ **आईपी एड्रेस (IP Address - पहचान पता)**:\n"
-              "   - जैसे डाक भेजने के लिए हमारे घर का पता होता है, वैसे ही इंटरनेट पर हर कंप्यूटर का अपना एक खास नंबर (पता) होता है जिसे IP एड्रेस कहते हैं।\n"
-              "   - **उदाहरण**: 192.168.1.1\n\n"
-              "2️⃣ **डीएनएस (DNS - इंटरनेट की गाइड बुक)**:\n"
-              "   - जब हम इंटरनेट पर 'google.com' टाइप करते हैं, तो कंप्यूटर इसे नहीं समझता। DNS का काम 'google.com' नाम को उसके वास्तविक आईपी पते में बदलना है, ताकि वेबसाइट खुल सके।\n\n"
-              "3️⃣ **प्रोटोकॉल (Rules)**:\n"
-              "   - प्रोटोकॉल का मतलब है इंटरनेट पर डेटा भेजने के नियम।\n"
-              "   - **HTTP / HTTPS**: वेबसाइट खोलने के नियम। (HTTPS सुरक्षित होता है)।\n"
-              "   - **SMTP**: ईमेल भेजने के नियम।";
+          aiResponse = "एक्सेल और स्प्रेडशीट फ़ॉर्मूला (Excel Formulas Made Easy) 📊:\n\n"
+              "1️⃣ **मूल फ़ॉर्मूले**:\n"
+              "   - **SUM (जोड़)**: `=SUM(A1:A5)` - खाने A1 से A5 तक के सभी नंबरों को जोड़ता है।\n"
+              "   - **AVERAGE (औसत)**: `=AVERAGE(B1:B5)` - औसत निकालता है।\n"
+              "   - **IF (हाँ या ना)**: `=IF(C2>=33, \"Pass\", \"Fail\")` - अगर नंबर 33 से ज़्यादा हैं तो 'Pass' लिखेगा, नहीं तो 'Fail' लिखेगा।\n\n"
+              "2️⃣ **VLOOKUP (वी-लुकअप - ढूंढने का साधन)**:\n"
+              "   - **आसान शब्दों में**: यह टेलीफोन डायरेक्टरी में नाम ढूंढकर उसके सामने नंबर देखने जैसा है।\n"
+              "   - **फ़ॉर्मूला**: `=VLOOKUP(क्या ढूंढना है, कहाँ ढूंढना है, कॉलम नंबर, FALSE)`\n"
+              "   - **आसान उदाहरण**: `=VLOOKUP(5, A1:B10, 2, FALSE)` - यह रोल नंबर 5 को ढूंढेगा और उसके सामने वाले दूसरे कॉलम से उसका नाम बता देगा।\n\n"
+              "3️⃣ **XLOOKUP (नया और सबसे आसान)**:\n"
+              "   - **फ़ॉर्मूला**: `=XLOOKUP(क्या ढूंढना है, ढूंढने वाला कॉलम, परिणाम वाला कॉलम)`\n"
+              "   - **आसान उदाहरण**: `=XLOOKUP(5, A1:A10, B1:B10)` - कॉलम A में 5 ढूंढकर कॉलम B से उसका नाम सीधे बता देगा।";
         } else {
-          aiResponse = "Internet and Networks Made Super Simple 🌐:\n\n"
-              "1️⃣ **IP Address (Computer's Home Address)**:\n"
-              "   - Just like your house has a street address to receive mail, every computer on the internet has a unique number code called an IP Address.\n"
-              "   - **Example**: `192.168.1.50`\n\n"
-              "2️⃣ **DNS (The Internet Phonebook)**:\n"
-              "   - Computers don't understand words like `google.com`. The Domain Name System (DNS) translates `google.com` into its IP number so your computer can connect to it.\n\n"
-              "3️⃣ **Protocols (Internet Rules)**:\n"
-              "   - Rules that decide how data travels safely.\n"
-              "   - **HTTP / HTTPS**: Rules to download website pages. (S = Secure).\n"
-              "   - **SMTP**: Rules used to send email messages.";
+          aiResponse = "Microsoft Excel Formulas Made Super Easy 📊:\n\n"
+              "1️⃣ **Basic Calculations**:\n"
+              "   - **SUM**: `=SUM(A1:A5)` - Adds all numbers from cell A1 to A5.\n"
+              "   - **IF Logic**: `=IF(C2>=33, \"Pass\", \"Fail\")` - Checks if score is 33 or more, showing 'Pass', else 'Fail'.\n\n"
+              "2️⃣ **VLOOKUP (Vertical Search tool)**:\n"
+              "   - **Simple Explanation**: It searches down a list for a name, then looks to the right to find their phone number.\n"
+              "   - **Formula**: `=VLOOKUP(search_value, table_range, column_number, FALSE)`\n"
+              "   - **Easy Example**: `=VLOOKUP(5, A1:B10, 2, FALSE)`\n"
+              "     (Finds Roll Number '5' in column A, then gives the student Name from the 2nd column B).\n\n"
+              "3️⃣ **XLOOKUP (Modern Search)**:\n"
+              "   - **Formula**: `=XLOOKUP(search_value, search_column, return_column)`\n"
+              "   - **Easy Example**: `=XLOOKUP(5, A1:A10, B1:B10)`\n"
+              "     (Searches for 5 in column A and directly fetches the name from column B. No column numbers needed!)";
         }
-      } else if (query.contains("database") || query.contains("sql") || query.contains("dbms") || query.contains("nosql")) {
+      }
+      // 5. PRIMARY CONCEPT: Word
+      else if (query.contains("mail merge") || query.contains("macro") || query.contains("word") || query.contains("typing") || query.contains("document") || query.contains("format")) {
+        if (isHindi) {
+          aiResponse = "एमएस वर्ड और शॉर्टकट टूल्स (MS Word Made Easy) 📄:\n\n"
+              "1️⃣ **मेल मर्ज (Mail Merge - एक साथ कई पत्र बनाना)**:\n"
+              "   - **आसान शब्दों में**: यदि आपको 50 दोस्तों को जन्मदिन का कार्ड भेजना है, तो सबके नाम अलग-अलग टाइप करने के बजाय मेल मर्ज का उपयोग करें। यह एक्सेल की लिस्ट से नाम लेकर एक क्लिक में 50 अलग-अलग पत्र तैयार कर देता है।\n"
+              "   - **करने के तरीके**:\n"
+              "     1. **Mailings** टैब पर जाएं ➔ **Start Mail Merge** ➔ **Letters** चुनें।\n"
+              "     2. **Select Recipients** पर क्लिक करें ➔ दोस्तों के नाम वाली एक्सेल फ़ाइल चुनें।\n"
+              "     3. पत्र में नाम की जगह पर **Insert Merge Field** क्लिक करें।\n"
+              "     4. **Finish & Merge** पर क्लिक करें।\n\n"
+              "2️⃣ **मैक्रोज़ (Macros - काम रिकॉर्डर)**:\n"
+              "   - **आसान शब्दों में**: यह कंप्यूटर में काम रिकॉर्ड करने वाले टेप रिकॉर्डर जैसा है। जब कोई काम (जैसे बार-बार कोई बड़ा पता लिखना) रोज़ करना पड़े, तो मैक्रो रिकॉर्ड करके एक शॉर्टकट की (जैसे `Alt + W`) बना लें। दबाते ही पूरा काम 1 सेकंड में हो जाएगा।";
+        } else {
+          aiResponse = "Microsoft Word Made Simple & Easy 📄:\n\n"
+              "1️⃣ **Mail Merge (Creating Multiple Letters Instantly)**:\n"
+              "   - **Simple Explanation**: If you want to invite 50 friends to a party, you don't need to write 50 letters manually. Mail Merge takes a names list from Excel and automatically prints 50 customized letters with a single click!\n"
+              "   - **Steps**:\n"
+              "     1. Go to **Mailings** tab ➔ Click **Start Mail Merge** ➔ Choose **Letters**.\n"
+              "     2. Click **Select Recipients** ➔ Choose your Excel names sheet.\n"
+              "     3. Place your cursor and click **Insert Merge Field** to place the Name.\n"
+              "     4. Click **Finish & Merge** ➔ All letters are ready!\n\n"
+              "2️⃣ **Macros (Action Recorder)**:\n"
+              "   - **Simple Explanation**: A Macro is like a video recorder for your typing. If you type your school address 10 times a day, you can record a Macro once, bind it to a key (like `Alt + A`), and press it to paste the address instantly.";
+        }
+      }
+      // 6. PRIMARY CONCEPT: PowerPoint
+      else if (query.contains("slide master") || query.contains("transition") || query.contains("animation") || query.contains("powerpoint") || query.contains("slide") || query.contains("presentation")) {
+        if (isHindi) {
+          aiResponse = "एमएस पावरपॉइंट प्रेजेंटेशन (PowerPoint Made Easy) 📉:\n\n"
+              "1️⃣ **स्लाइड मास्टर (Slide Master - मुख्य डिज़ाइन पेज)**:\n"
+              "   - **आसान शब्दों में**: यदि आपके पास 50 स्लाइड्स हैं और आप चाहते हैं कि हर स्लाइड के कोने में स्कूल का लोगो दिखाई दे, तो 50 बार लोगो लगाने के बजाय स्लाइड मास्टर में लगाएं। यह अपने आप सब पर लग जाएगा।\n"
+              "   - **करने के तरीके**:\n"
+              "     1. **View** टैब पर जाएं ➔ **Slide Master** पर क्लिक करें।\n"
+              "     2. सबसे ऊपर वाली पहली स्लाइड को चुनें और वहाँ लोगो लगाएं।\n"
+              "     3. **Close Master View** पर क्लिक करें। सभी स्लाइड्स का डिज़ाइन एक साथ बदल जाएगा!\n\n"
+              "2️⃣ **मॉर्फ ट्रांजिशन (Morph)**:\n"
+              "   - यह एक जादुई एनीमेशन है जो आकृतियों (shapes) को स्लाइड 1 से स्लाइड 2 पर जाते समय तैरते हुए सुचारू रूप से बड़ा या छोटा कर देता है।";
+        } else {
+          aiResponse = "Microsoft PowerPoint Made Simple & Easy 📉:\n\n"
+              "1️⃣ **Slide Master (Universal Design Template)**:\n"
+              "   - **Simple Explanation**: If you have 50 slides and want the school logo to appear at the top corner of every single slide, you don't need to insert it 50 times. You just place it on the 'Slide Master' once, and it automatically updates all slides!\n"
+              "   - **Steps**:\n"
+              "     1. Go to **View** tab ➔ Click **Slide Master**.\n"
+              "     2. Edit the very first slide template at the top (insert logo or set text font).\n"
+              "     3. Click **Close Master View**. Your slides are updated!\n\n"
+              "2️⃣ **Morph Transition**:\n"
+              "   - A smooth motion animation. Copy a circle shape from Slide 1 to Slide 2, move it to a new corner, make it larger, and select 'Morph' transition. The circle will smoothly glide and grow on the screen!";
+        }
+      }
+      // 7. PRIMARY CONCEPT: Database
+      else if (query.contains("database") || query.contains("sql") || query.contains("dbms") || query.contains("nosql")) {
         if (isHindi) {
           aiResponse = "डेटाबेस और SQL (Databases Made Easy) 🗄️:\n\n"
               "**डेटाबेस क्या है?**\n"
@@ -717,7 +402,9 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "• `FROM students`: Looks in the 'students' table.\n"
               "• `WHERE marks > 90`: Only shows kids with scores higher than 90.";
         }
-      } else if (query.contains("coding") || query.contains("programming") || query.contains("python") || query.contains("java") || query.contains("c++") || query.contains("javascript") || query.contains("compiler") || query.contains("loop") || query.contains("algorithm")) {
+      }
+      // 8. PRIMARY CONCEPT: Coding
+      else if (query.contains("coding") || query.contains("programming") || query.contains("python") || query.contains("java") || query.contains("c++") || query.contains("javascript") || query.contains("compiler") || query.contains("loop") || query.contains("algorithm")) {
         if (isHindi) {
           aiResponse = "कोडिंग और प्रोग्रामिंग (Coding Made Easy) 💻:\n\n"
               "**कोडिंग क्या है?**\n"
@@ -735,7 +422,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "2. मैं पढ़ाई करूँगा\n"
               "... (5 बार)\n\n"
               "**मुख्य भाषाएँ**:\n"
-              "• **Python**: सबसे आसान भाषा है, जिसका उपयोग एआई (AI) बनाने में होता है।\n"
+              "• **Python**: सबसे आसान भाषा है, जिसका उपयोग एआई (AI) बनाने में होता. है।\n"
               "• **JavaScript**: इससे वेबसाइटों के बटन और एनीमेशन काम करते हैं।";
         } else {
           aiResponse = "Computer Coding and Loops Made Easy 💻:\n\n"
@@ -757,7 +444,9 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "• **Python**: Simplest to learn, used for AI & robots.\n"
               "• **JavaScript**: Powers website buttons and games.";
         }
-      } else if (query.contains("office") || query.contains("ms office") || query.contains("computer science")) {
+      }
+      // 9. PRIMARY CONCEPT: Office
+      else if (query.contains("office") || query.contains("ms office") || query.contains("computer science")) {
         if (isHindi) {
           aiResponse = "एमएस ऑफिस सुइट (MS Office Made Simple) 💻:\n\n"
               "एमएस ऑफिस कंप्यूटर पर ऑफिस और स्कूल के काम करने के लिए ऐप्स का एक समूह है:\n"
@@ -775,31 +464,393 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "4️⃣ **MS Outlook**: Used to send emails and check calendars.\n\n"
               "💡 **Tip**: Enter a specific term (e.g. type 'vlookup', 'mail merge', or 'slide master') to get step-by-step guides!";
         }
-      } else if (query.contains("admission") || query.contains("join") || query.contains("fee") || query.contains("class") || query.contains("register")) {
+      }
+      // 10. SUBJECT: Rhyme
+      else if (query.contains("twinkle") || query.contains("rhyme") || query.contains("johny") || query.contains("humpty")) {
+        if (isHindi) {
+          aiResponse = "बच्चों के लिए प्रसिद्ध बाल कविताएं (Nursery Rhymes) 🎵:\n\n"
+              "1️⃣ **ट्विंकल ट्विंकल लिटिल स्टार (Twinkle Twinkle)**:\n"
+              "   'ट्विंकल ट्विंकल लिटिल स्टार, हाउ आई वंडर व्हाट यू आर!\n"
+              "   अप अबव द वर्ल्ड सो हाई, लाइक ए डायमंड इन द स्काई।'\n\n"
+              "2️⃣ **जॉनी जॉनी यस पापा (Johny Johny)**:\n"
+              "   'जॉनी जॉनी, यस पापा? ईटिंग शुगर, नो पापा!\n"
+              "   टेलिंग लाइज़, नो पापा! ओपन योर माउथ, हा हा हा!'\n\n"
+              "💡 **आसान स्पष्टीकरण**: ये कविताएँ छोटे बच्चों को अक्षरों की आवाज़, मज़ा और याद रखने की कला सिखाती हैं। इन्हें संगीत के साथ सुनने के लिए होम स्क्रीन पर 'Play Study' सेक्शन देखें!";
+        } else {
+          aiResponse = "Here are classic Nursery Rhymes for early learning 🎵:\n\n"
+              "1️⃣ **Twinkle Twinkle Little Star**:\n"
+              "   'Twinkle, twinkle, little star, How I wonder what you are!\n"
+              "   Up above the world so high, Like a diamond in the sky.'\n\n"
+              "2️⃣ **Johny Johny Yes Papa**:\n"
+              "   'Johny, Johny, Yes, Papa? Eating sugar, No, Papa?\n"
+              "   Telling lies, No, Papa? Open your mouth, Ha! Ha! Ha!'\n\n"
+              "💡 **Simple Explanation**: Nursery rhymes help children learn word sounds, rhythm, and new words in a fun way. Tap the 'Play Study' tab on your Home screen to play them with voice synthesis!";
+        }
+      } 
+      // 11. SUBJECT: Counting
+      else if (query.contains("counting") || query.contains("number") || query.contains("counting number")) {
+        if (isHindi) {
+          aiResponse = "आइए संख्या गिनती (Counting Numbers) को आसान शब्दों में समझें 🔟:\n\n"
+              "1️⃣ **संख्या 1**: 🌟 (एक तारा) - जैसे 'एक सूरज'\n"
+              "2️⃣ **संख्या 2**: 🌟🌟 (दो तारे) - 1 और 1 मिलकर 2 बनते हैं।\n"
+              "3️⃣ **संख्या 3**: 🌟🌟🌟 (तीन तारे) - 2 और 1 मिलकर 3 बनते हैं।\n"
+              "4️⃣ **संख्या 4**: 🌟🌟🌟🌟 (चार तारे) - 3 और 1 मिलकर 4 बनते हैं।\n"
+              "5️⃣ **संख्या 5**: 🌟🌟🌟🌟🌟 (पाँच तारे) - 4 और 1 मिलकर 5 बनते हैं।\n\n"
+              "💡 **आसान उदाहरण**:\n"
+              "यदि आपके पास 3 सेब हैं और अंजली मैम आपको 2 सेब और देती हैं, तो कुल 3 + 2 = 5 सेब हो जाएंगे! इसे गिनने के लिए आप 'Play Study' स्क्रीन पर रंगीन सितारों को दबा सकते हैं।";
+        } else {
+          aiResponse = "Let's learn numerical counting in a simple way 🔟:\n\n"
+              "1️⃣ **Number 1 (One)**: 🌟 (One star) - e.g., 'One bright sun.'\n"
+              "2️⃣ **Number 2 (Two)**: 🌟🌟 (Two stars) - Formed by adding 1 + 1 = 2.\n"
+              "3️⃣ **Number 3 (Three)**: 🌟🌟🌟 (Three stars) - Formed by adding 2 + 1 = 3.\n"
+              "4️⃣ **Number 4 (Four)**: 🌟🌟🌟🌟 (Four stars) - Formed by adding 3 + 1 = 4.\n"
+              "5️⃣ **Number 5 (Five)**: 🌟🌟🌟🌟🌟 (Five stars) - Formed by adding 4 + 1 = 5.\n\n"
+              "💡 **Practical Example**:\n"
+              "If you have 3 apples, and your teacher gives you 2 more, you count them: 4, 5. Total = 3 + 2 = 5 apples!\n"
+              "Go to the 'Play Study' tab on the dashboard to click and count animated stars!";
+        }
+      } 
+      // 12. SUBJECT: Alphabets (English)
+      else if (query.contains("alphabet") || query.contains("abcd")) {
+        if (isHindi) {
+          aiResponse = "आइए अंग्रेजी वर्णमाला (English Alphabets) को आसान शब्दों में सीखें 🔠:\n\n"
+              "🍎 **A for Apple**: सेब एक मीठा फल है जिसे खाने से हम स्वस्थ रहते हैं।\n"
+              "⚽ **B for Ball**: गेंद एक गोल खिलौना है जिससे बच्चे खेलते हैं।\n"
+              "🐱 **C for Cat**: बिल्ली एक छोटा पालतू जानवर है जो म्याऊँ-म्याऊँ करता है।\n"
+              "🐶 **D for Dog**: कुत्ता एक वफादार जानवर है जो घर की रखवाली करता है।\n\n"
+              "💡 **आसान नियम**: अंग्रेजी में 26 अक्षर होते हैं। इनमें 5 स्वर (Vowels: A, E, I, O, U) और 21 व्यंजन (Consonants) होते हैं। जब भी कोई शब्द स्वर (vowel) से शुरू होता है तो हम उसके आगे 'an' लगाते हैं (जैसे: an apple)।\n"
+              "आप 'Play Study' में जाकर A से Z तक के कार्ड चित्रों के साथ देख सकते हैं!";
+        } else {
+          aiResponse = "Let's learn the English Alphabet with simple words 🔠:\n\n"
+              "🍎 **A for Apple**: A sweet fruit. (e.g. 'I eat an Apple.')\n"
+              "⚽ **B for Ball**: A round toy we play with. (e.g. 'Kick the Ball.')\n"
+              "🐱 **C for Cat**: A small pet animal that meows. (e.g. 'The Cat is sleeping.')\n"
+              "🐶 **D for Dog**: A loyal pet that barks. (e.g. 'My Dog is friendly.')\n\n"
+              "💡 **Easy Rule**: There are 26 letters in the alphabet. 5 are Vowels (A, E, I, O, U) and 21 are Consonants. We write 'an' before words starting with vowel sounds (like: an apple) and 'a' before consonant sounds (like: a ball).\n"
+              "Open the 'Play Study' page on the dashboard to swipe through A to Z cards!";
+        }
+      } 
+      // 13. SUBJECT: Varnmala (Hindi Swar/Vyanjan)
+      else if (query.contains("swar") || query.contains("vyanjan") || query.contains("varnmala")) {
+        if (isHindi) {
+          aiResponse = "आइए हिंदी वर्णमाला (Varnmala) को बहुत आसान तरीके से समझें ✍️:\n\n"
+              "1️⃣ **स्वर (Vowels)**: ये बिना किसी मदद के बोले जाने वाले अक्षर हैं (कुल 11):\n"
+              "   - अ (अनार 🍒) -> अनार लाल दानों वाला फल है।\n"
+              "   - आ (आम 🥭) -> आम फलों का राजा है।\n"
+              "   - इ (इमली 🫒) -> इमली खट्टी होती है।\n\n"
+              "2️⃣ **व्यंजन (Consonants)**: इन्हें बोलने के लिए स्वरों की मदद चाहिए होती है (कुल 33):\n"
+              "   - क (कबूतर 🕊️) -> कबूतर आसमान में उड़ता है।\n"
+              "   - ख (खरगोश 🐇) -> खरगोश बहुत तेज़ी से दौड़ता है।\n"
+              "   - ग (गमला 🪴) -> गमले में सुंदर पौधे हैं।\n\n"
+              "💡 **आसान बात**: हिंदी भाषा को शुद्ध बोलने और लिखने के लिए स्वर और व्यंजनों को सीखना सबसे पहला कदम है। 'Play Study' में जाकर वर्णमाला के चित्र देखें!";
+        } else {
+          aiResponse = "Let's understand the Hindi Varnmala (Alphabet) in simple terms ✍️:\n\n"
+              "1️⃣ **Swar (Vowels)**: Sounds that can be spoken on their own (11 Swar):\n"
+              "   - अ (Anar 🍒) -> Pomegranate.\n"
+              "   - आ (Aam 🥭) -> Mango.\n"
+              "   - इ (Imli 🫒) -> Tamarind.\n\n"
+              "2️⃣ **Vyanjan (Consonants)**: Sounds that need vowel sounds to be spoken (33 Vyanjan):\n"
+              "   - क (Kabootar 🕊️) -> Pigeon (pronounced by combining K + a).\n"
+              "   - ख (Khargosh 🐇) -> Rabbit.\n"
+              "   - ग (Gamla 🪴) -> Flowerpot.\n\n"
+              "💡 **Simple Rule**: Every Hindi consonant has a hidden 'a' (अ) sound when we speak it. Open the 'Play Study' section on the Home screen to practice speaking them!";
+        }
+      }
+      // 14. SUBJECT: Fraction
+      else if (query.contains("fraction")) {
+        if (isHindi) {
+          aiResponse = "गणित शंका हल! भिन्न (Fraction) क्या है? 🔢:\n\n"
+              "**आसान परिभाषा**:\n"
+              "\"भिन्न किसी पूरी चीज़ के एक छोटे हिस्से को दिखाता है। इसे ऊपर की संख्या (अंश) और नीचे की संख्या (हर) के रूप में लिखते हैं।\"\n\n"
+              "💡 **आसान पिज्जा उदाहरण**:\n"
+              "मान लीजिए आपने एक गोल पिज्जा को 4 बराबर टुकड़ों में काटा।\n"
+              "• यदि आपने 1 टुकड़ा खा लिया, तो आपने पिज्जा का **1/4** हिस्सा खाया।\n"
+              "• बचे हुए 3 टुकड़े पिज्जा का **3/4** हिस्सा हैं।\n\n"
+              "**भिन्न को जोड़ना (समान हर)**:\n"
+              "अगर नीचे की संख्या एक जैसी है, तो बस ऊपर की संख्या को सीधे जोड़ दें:\n"
+              "• **उदाहरण**: 2/5 + 1/5 = (2 + 1)/5 = 3/5.";
+        } else {
+          aiResponse = "Mathematics Doubt Solved! What is a Fraction? 🔢:\n\n"
+              "**Simple Definition**:\n"
+              "\"A fraction represents a part of a whole thing. It is written as a top number (Numerator) and a bottom number (Denominator) divided by a line.\"\n\n"
+              "💡 **Easy Pizza Example**:\n"
+              "Imagine you cut a round pizza into 4 equal slices.\n"
+              "• If you eat 1 slice, you ate **1/4** of the pizza.\n"
+              "• The remaining 3 slices are **3/4** of the pizza.\n\n"
+              "**Adding Fractions (Same Denominator)**:\n"
+              "If the bottom numbers are the same, just add the top numbers directly:\n"
+              "• **Example**: 2/5 + 1/5 = (2 + 1)/5 = 3/5.";
+        }
+      }
+      // 15. SUBJECT: Math
+      else if (query.contains("math") || query.contains("sum") || query.contains("add") || query.contains("multiply") || query.contains("divide") || query.contains("algebra") || query.contains("geometry")) {
+        if (isHindi) {
+          aiResponse = "गणित गाइड (Mathematics Simple Guide) 📐:\n\n"
+              "1️⃣ **अंकगणित (BODMAS नियम)**:\n"
+              "   - गणित का सवाल हल करने का सही क्रम: पहले कोष्ठक (Bracket) हल करें ➔ फिर भाग करें ➔ फिर गुणा करें ➔ फिर जोड़ें ➔ अंत में घटाएं।\n"
+              "   - **आसान उदाहरण**: 20 - 2 * 5 + 3 को हल करें:\n"
+              "     1. पहले गुणा करें: 2 * 5 = 10\n"
+              "     2. अब सवाल बचा: 20 - 10 + 3\n"
+              "     3. अब जोड़ें और घटाएं: 10 + 3 = 13।\n\n"
+              "2️⃣ **ज्यामिति (आकृतियाँ)**:\n"
+              "   - आयत (Rectangle) का क्षेत्रफल = लंबाई * चौड़ाई।\n"
+              "   - **आसान उदाहरण**: यदि किसी कमरे की लंबाई 5 मीटर और चौड़ाई 4 मीटर है, तो उसका क्षेत्रफल 5 * 4 = 20 वर्ग मीटर होगा।\n\n"
+              "3️⃣ **बीजगणित (समीकरण)**:\n"
+              "   - **आसान उदाहरण**: x + 5 = 12 में x का मान निकालें। x को अकेला छोड़ें, 5 को दाईं ओर भेजें (तो वह माइनस हो जाएगा): x = 12 - 5 ➔ x = 7।";
+        } else {
+          aiResponse = "Mathematics Simple Academic Guide 📐:\n\n"
+              "1️⃣ **BODMAS Rule (Order of Calculation)**:\n"
+              "   - Solve in this order: Bracket ➔ Division ➔ Multiplication ➔ Addition ➔ Subtraction.\n"
+              "   - **Easy Example**: Solve 20 - 2 * 5 + 3:\n"
+              "     1. First perform multiplication: 2 * 5 = 10\n"
+              "     2. The equation becomes: 20 - 10 + 3\n"
+              "     3. Now add and subtract: 10 + 3 = 13.\n\n"
+              "2️⃣ **Geometry (Area Formulas)**:\n"
+              "   - Rectangle Area = Length * Width.\n"
+              "   - **Easy Example**: If a room is 5 meters long and 4 meters wide, the area is 5 * 4 = 20 square meters.\n\n"
+              "3️⃣ **Algebra (Solving for X)**:\n"
+              "   - **Easy Example**: Find x in: x + 5 = 12. Move 5 to the right side (it changes to minus): x = 12 - 5 ➔ x = 7.";
+        }
+      }
+      // 16. SUBJECT: Physics / Gravity
+      else if (query.contains("physics") || query.contains("gravity") || query.contains("force") || query.contains("motion") || query.contains("light") || query.contains("electricity")) {
+        if (isHindi) {
+          aiResponse = "भौतिक विज्ञान गाइड (Physics Made Easy) ⚡:\n\n"
+              "1️⃣ **बल और गति (Force and Motion)**:\n"
+              "   - बल (Force) का मतलब है किसी चीज़ को ढकेलना (push) या खींचना (pull)।\n"
+              "   - सूत्र: F = m * a (बल = वजन * तेज़ी)।\n"
+              "   - **आसान उदाहरण**: एक हल्की साइकिल को ढकेलना आसान है, लेकिन एक भारी कार को ढकेलने के लिए बहुत ज़्यादा बल की ज़रूरत होती है।\n\n"
+              "2️⃣ **गुरुत्वाकर्षण (Gravity)**:\n"
+              "   - पृथ्वी का वह अदृश्य खिंचाव जो हर चीज़ को नीचे अपनी तरफ खींचता है।\n"
+              "   - **आसान उदाहरण**: यदि आप अपने हाथ से एक पेंसिल छोड़ते हैं, तो वह हवा में ऊपर उड़ने के बजाय सीधे नीचे गिर जाती है क्योंकि गुरुत्वाकर्षण उसे खींच रहा है।\n\n"
+              "3️⃣ **प्रकाश का परावर्तन (Reflection of Light)**:\n"
+              "   - जब रोशनी किसी आईने (mirror) से टकराकर वापस लौटती है, तो उसे परावर्तन कहते हैं। इसी वजह से हम आईने में अपना चेहरा देख पाते हैं।";
+        } else {
+          aiResponse = "Physics Concepts Made Super Easy ⚡:\n\n"
+              "1️⃣ **Force and Weight**:\n"
+              "   - A Force is simply a push or a pull on an object.\n"
+              "   - **Easy Example**: Pushing a light plastic toy is very easy, but pushing a heavy wooden table requires a lot of force.\n\n"
+              "2️⃣ **Gravity (The Invisible Pull)**:\n"
+              "   - Gravity is the Earth's invisible pull that pulls everything down to the ground.\n"
+              "   - **Easy Example**: If you throw a ball high up in the air, it does not keep flying forever. It always falls back down to the grass because gravity pulls it.\n\n"
+              "3️⃣ **Light Reflection**:\n"
+              "   - When light bounces off a shiny surface like a mirror, it is called reflection. This is why you can see your face in the mirror!";
+        }
+      }
+      // 17. SUBJECT: Chemistry
+      else if (query.contains("chemistry") || query.contains("acid") || query.contains("base") || query.contains("element") || query.contains("atom") || query.contains("molecule")) {
+        if (isHindi) {
+          aiResponse = "रसायन विज्ञान (Chemistry Made Easy) 🧪:\n\n"
+              "1️⃣ **परमाणु और अणु (Atom & Molecule)**:\n"
+              "   - परमाणु (Atom) दुनिया की सबसे छोटी चीज़ है जिससे सभी वस्तुएं बनी हैं (जैसे ईंटों से घर बनता है)।\n"
+              "   - जब दो या दो से अधिक परमाणु आपस में मिलते हैं, तो उसे अणु (Molecule) कहते हैं।\n"
+              "   - **आसान उदाहरण**: पानी का एक छोटा कण (अणु) हाइड्रोजन के दो और ऑक्सीजन के एक परमाणु से मिलकर बनता है (H2O)।\n\n"
+              "2️⃣ **अम्ल और क्षार (Acid & Base)**:\n"
+              "   - **अम्ल (Acid)**: खाने में खट्टा होता है। (जैसे नींबू का रस, इमली)।\n"
+              "   - **क्षार (Base)**: स्वाद में कड़वा और छूने में साबुन जैसा चिकना होता है। (जैसे कपड़े धोने का साबुन, बेकिंग सोडा)।\n"
+              "   - **उदासीन (Neutral)**: शुद्ध पानी न तो खट्टा होता है और न ही कड़वा।";
+        } else {
+          aiResponse = "Chemistry Concepts Made Super Easy 🧪:\n\n"
+              "1️⃣ **Atoms and Molecules (Building Blocks)**:\n"
+              "   - An **Atom** is the tiniest building block of everything in the universe, just like bricks are building blocks for a wall.\n"
+              "   - A **Molecule** is formed when two or more atoms join together.\n"
+              "   - **Easy Example**: One drop of water is made of molecules, where each molecule has 2 Hydrogen atoms and 1 Oxygen atom joined together (H2O).\n\n"
+              "2️⃣ **Acids and Bases (Sour vs. Bitter)**:\n"
+              "   - **Acid**: Things that taste sour. (Examples: Lemon juice, Vinegar).\n"
+              "   - **Base**: Things that taste bitter and feel slippery like soap. (Examples: Baking soda, Bath soap).\n"
+              "   - **Neutral**: Distilled water is neutral (neither sour nor bitter).";
+        }
+      }
+      // 18. SUBJECT: Biology / Photosynthesis
+      else if (query.contains("biology") || query.contains("cell") || query.contains("plant") || query.contains("photosynthesis") || query.contains("human body")) {
+        if (isHindi) {
+          aiResponse = "जीव विज्ञान गाइड (Biology Made Easy) 🧬:\n\n"
+              "1️⃣ **कोशिका (Cell)**:\n"
+              "   - हमारा शरीर लाखों छोटी-छोटी जीवित इकाइयों से मिलकर बना है, जिन्हें कोशिका कहते हैं। जैसे एक मकान ईंटों को जोड़कर बनता है, वैसे ही हमारा शरीर कोशिकाओं से बना है।\n\n"
+              "2️⃣ **प्रकाश संश्लेषण (Photosynthesis)**:\n"
+              "   - यह वह तरीका है जिससे पेड़-पौधे धूप का उपयोग करके अपना खाना खुद बनाते हैं। यह पौधों द्वारा दोपहर का भोजन पकाने जैसा है!\n"
+              "   - **आसान शब्दों में**: कार्बन डाइऑक्साइड + पानी + धूप ➔ भोजन (ग्लूकोज) + ऑक्सीजन।\n"
+              "   - पौधे हमारे लिए **ऑक्सीजन** छोड़ते हैं जिससे हम जीवित रहते हैं।\n\n"
+              "3️⃣ **मानव शरीर (हृदय)**:\n"
+              "   - हमारा हृदय एक पंप की तरह है जो हमारे पूरे शरीर में खून और ऑक्सीजन पहुंचाने का काम करता है।";
+        } else {
+          aiResponse = "Biology Concepts Made Super Easy 🧬:\n\n"
+              "1️⃣ **The Cell (Building Block of Life)**:\n"
+              "   - A cell is the smallest unit of life. Just like a house is made by putting bricks together, all plants, animals, and humans are made of millions of tiny cells.\n\n"
+              "2️⃣ **Photosynthesis (Plants Cooking Food)**:\n"
+              "   - Photosynthesis is the way green plants cook their own food using sunlight. \n"
+              "   - **Simple Recipe**: Carbon Dioxide + Water + Sunlight ➔ Food (sugar) + Oxygen.\n"
+              "   - Plants release **Oxygen** into the air during this process, which we breathe to stay alive!\n\n"
+              "3️⃣ **The Heart (Pumping Machine)**:\n"
+              "   - Your heart is like a strong pump that beats all day to send blood and oxygen to all parts of your body.";
+        }
+      }
+      // 19. SUBJECT: Science general
+      else if (query.contains("science")) {
+        if (isHindi) {
+          aiResponse = "विज्ञान क्या है? (What is Science?) 🔬:\n\n"
+              "विज्ञान हमारे आस-पास की दुनिया को ध्यान से देखने और प्रयोगों (experiments) के माध्यम से समझने का आसान तरीका है। इसके तीन मुख्य भाग हैं:\n\n"
+              "1️⃣ **भौतिक विज्ञान (Physics)**: चीजें कैसे चलती हैं, रोशनी, गुरुत्वाकर्षण और बिजली का अध्ययन। (जैसे: गेंद ऊपर फेंकने पर नीचे क्यों आती है)।\n"
+              "2️⃣ **रसायन विज्ञान (Chemistry)**: चीजें किससे बनी हैं। (जैसे: पानी दो गैसों - हाइड्रोजन और ऑक्सीजन से मिलकर बनता है)।\n"
+              "3️⃣ **जीव विज्ञान (Biology)**: जीवित चीजों जैसे पौधों, जानवरों और हमारे शरीर का अध्ययन। (जैसे: पौधे धूप से अपना खाना कैसे बनाते हैं)।\n\n"
+              "💡 **आसान टिप**: कोई भी टॉपिक जैसे 'gravity' या 'cell' टाइप करें और उसका आसान उत्तर पाएं!";
+        } else {
+          aiResponse = "What is Science? 🔬:\n\n"
+              "Science is studying the world around us by observing things and doing experiments. It is divided into three main subjects:\n\n"
+              "1️⃣ **Physics**: Studies how things move, light, gravity, and electricity. (E.g., why a ball falls down when thrown).\n"
+              "2️⃣ **Chemistry**: Studies what things are made of. (E.g., how water is made of hydrogen and oxygen gases).\n"
+              "3️⃣ **Biology**: Studies living things like plants, animals, and the human body. (E.g., how plants make food using sunlight).\n\n"
+              "💡 **Easy Tip**: Type a topic like 'gravity' or 'cell' to get simple definitions and examples!";
+        }
+      }
+      // 20. SUBJECT: Economics
+      else if (query.contains("economics") || query.contains("money") || query.contains("demand") || query.contains("supply") || query.contains("market")) {
+        if (isHindi) {
+          aiResponse = "अर्थशास्त्र क्या है? (Economics Made Easy) 📊:\n\n"
+              "1️⃣ **मांग और आपूर्ति का नियम (Demand & Supply)**:\n"
+              "   - **मांग (Demand)**: किसी चीज़ को खरीदने की इच्छा।\n"
+              "   - **आपूर्ति (Supply)**: बाजार में उस चीज़ का स्टॉक उपलब्ध होना।\n"
+              "   - **नियम**: जब किसी चीज़ की मांग बढ़ जाती है लेकिन स्टॉक कम होता है, तो उसकी कीमत बढ़ जाती है।\n"
+              "   - **आसान उदाहरण**: यदि गर्मी के मौसम में अचानक आइसक्रीम की मांग बढ़ जाए और दुकान में केवल 5 आइसक्रीम बची हों, तो उसकी कीमत बढ़ सकती है।\n\n"
+              "2️⃣ **पैसे का काम**:\n"
+              "   - पैसा एक साधन है जिससे हम अपनी मनपसंद चीजें (जैसे खिलौने, खाना) खरीद या बेच सकते हैं। पहले के जमाने में लोग वस्तु के बदले वस्तु बदलते थे (बाटर सिस्टम)।";
+        } else {
+          aiResponse = "Economics Concepts Made Super Easy 📊:\n\n"
+              "1️⃣ **The Law of Demand and Supply**:\n"
+              "   - **Demand**: How much people want to buy something.\n"
+              "   - **Supply**: How much of that item is available in the shop.\n"
+              "   - **Rule**: If demand is high but supply is low, the price goes up. If supply is high but demand is low, the price goes down!\n"
+              "   - **Easy Example**: If there is only 1 cake left in a shop, and 10 kids want to buy it (high demand, low supply), the shopkeeper might increase its price.\n\n"
+              "2️⃣ **What is Money?**:\n"
+              "   - Money is a tool that makes it easy to buy toys, books, or food. Long ago, people traded items like cows for wheat (Barter System) before money was invented.";
+        }
+      }
+      // 21. SUBJECT: History
+      else if (query.contains("history") || query.contains("gandhi") || query.contains("independence") || query.contains("harappa") || query.contains("revolution")) {
+        if (isHindi) {
+          aiResponse = "इतिहास और स्वतंत्रता आंदोलन (History Made Easy) 📜:\n\n"
+              "1️⃣ **हड़प्पा सभ्यता (Indus Valley)**:\n"
+              "   - यह हजारों साल पहले भारत में बसी एक बहुत पुरानी सभ्यता थी। यह लोग ईंटों के सुंदर पक्के घरों में रहते थे और इनके पास नालियों की बेहतरीन व्यवस्था थी।\n\n"
+              "2️⃣ **भारत की आज़ादी (1947)**:\n"
+              "   - हमारा देश भारत पहले अंग्रेजों का गुलाम था। 15 अगस्त 1947 को भारत आज़ाद हुआ।\n"
+              "   - **महात्मा गांधी**:\n"
+              "     - इन्होंने बिना लड़ाई-झगड़े (अहिंसा) के सत्य की ताकत से अंग्रेज़ों को भारत छोड़ने पर मजबूर किया।\n"
+              "     - इन्होंने असहयोग आंदोलन और नमक सत्याग्रह जैसे बड़े शांतिपूर्ण आंदोलनों का नेतृत्व किया।\n"
+              "   - **सुभाष चंद्र बोस**: इन्होंने 'आजाद हिंद फौज' बनाई और प्रसिद्ध नारा दिया 'तुम मुझे खून दो, मैं तुम्हें आजादी दूंगा।';";
+        } else {
+          aiResponse = "History & Freedom Movements Made Simple 📜:\n\n"
+              "1️⃣ **Harappan Civilization**:\n"
+              "   - It was a very old city-based civilization that lived thousands of years ago near the Indus river. They built beautiful brick houses, straight roads, and clean drainage pipes.\n\n"
+              "2️⃣ **India's Independence (15th August 1947)**:\n"
+              "   - India was ruled by the British for a long time. Many leaders fought together to make India free:\n"
+              "     - **Mahatma Gandhi**: He used peace, truth, and non-violence to fight the British. He led the Salt March to protest unfair salt taxes.\n"
+              "     - **Subhash Chandra Bose**: He created the Indian National Army (INA) and gave the famous slogan 'Give me blood, and I will give you freedom.'";
+        }
+      }
+      // 22. SUBJECT: Geography
+      else if (query.contains("geography") || query.contains("earth") || query.contains("map") || query.contains("continent") || query.contains("river") || query.contains("soil")) {
+        if (isHindi) {
+          aiResponse = "भूगोल क्या है? (Geography Made Easy) 🌍:\n\n"
+              "1️⃣ **पृथ्वी की तीन परतें (Layers of Earth)**:\n"
+              "   - **भूपर्पटी (Crust)**: पृथ्वी की सबसे ऊपरी परत जहाँ हम पैर रखते हैं और पेड़-पौधें उगते हैं।\n"
+              "   - **मेंटल (Mantle)**: बीच की परत जो पिघले हुए पत्थरों (लावा) से बनी है।\n"
+              "   - **क्रोड (Core)**: सबसे अंदरूनी हिस्सा जो बहुत गर्म है और लोहे से बना है।\n\n"
+              "2️⃣ **हवा की परतें (Atmosphere)**:\n"
+              "   - **क्षोभमंडल (Troposphere)**: सबसे निचली परत जहाँ बादल बनते हैं और बारिश होती है।\n"
+              "   - **समतापमंडल (Stratosphere)**: जहाँ हवाई जहाज़ उड़ते हैं। इसी में **ओजोन परत** होती है जो हमें सूरज की खतरनाक किरणों से बचाती है।\n\n"
+              "3️⃣ **जल चक्र (Water Cycle)**: धूप से नदी का पानी भाप बनकर उड़ता है ➔ ऊपर जाकर बादल बनता है ➔ फिर बारिश बनकर वापस नदी में आ जाता है।";
+        } else {
+          aiResponse = "Geography Concepts Made Super Easy 🌍:\n\n"
+              "1️⃣ **Layers of the Earth (Like a Boiled Egg)**:\n"
+              "   - **Crust**: The outer hard shell where we build houses and grow trees.\n"
+              "   - **Mantle**: The middle thick layer made of very hot, melted red rocks (magma).\n"
+              "   - **Core**: The center of the Earth, which is extremely hot and made of solid iron.\n\n"
+              "2️⃣ **Atmosphere (Air Layers)**:\n"
+              "   - **Troposphere**: The lowest air layer where clouds form, rain falls, and birds fly.\n"
+              "   - **Stratosphere**: The higher layer where airplanes fly. It has the **Ozone layer** which acts like sunglasses for the Earth, blocking harmful rays.\n\n"
+              "3️⃣ **Water Cycle**:\n"
+              "   - Sun heats river water ➔ Water turns to vapor and goes up (Evaporation) ➔ Forms clouds (Condensation) ➔ Falls back as rain (Precipitation).";
+        }
+      }
+      // 23. GRAMMAR: English
+      else if (query.contains("english") || query.contains("grammar") || query.contains("noun") || query.contains("verb") || query.contains("tense")) {
+        if (isHindi) {
+          aiResponse = "अंग्रेजी व्याकरण (English Grammar Made Easy) 📝:\n\n"
+              "1️⃣ **संज्ञा (Noun)**: किसी भी नाम वाले शब्द को संज्ञा कहते हैं (व्यक्ति, वस्तु, स्थान)।\n"
+              "   - **आसान उदाहरण**: *Aman* (व्यक्ति), *Patna* (स्थान), *Ball* (वस्तु)।\n"
+              "   - **वाक्य**: *Aman* is playing with a *ball* in *Patna*.\n\n"
+              "2️⃣ **क्रिया (Verb)**: काम दर्शाने वाले शब्द को क्रिया कहते हैं।\n"
+              "   - **आसान उदाहरण**: write (लिखना), run (दौड़ना), play (खेलना)।\n"
+              "   - **वाक्य**: Aman is *running*.\n\n"
+              "3️⃣ **काल (Tenses - समय)**:\n"
+              "   - **Present Tense (वर्तमान)**: जो काम अभी होता है। (जैसे: 'I eat food.')\n"
+              "   - **Past Tense (भूतकाल)**: जो काम हो चुका है। (जैसे: 'I ate food yesterday.')\n"
+              "   - **Future Tense (भविष्यकाल)**: जो काम आगे होगा। (जैसे: 'I will eat food tomorrow.')";
+        } else {
+          aiResponse = "English Grammar Made Super Easy 📝:\n\n"
+              "1️⃣ **Noun (Naming Words)**:\n"
+              "   - A noun is the name of any person, place, or thing.\n"
+              "   - **Easy Examples**: *Aman* (person), *Patna* (place), *Apple* (thing).\n"
+              "   - **Sentence**: *Aman* is eating an *apple* in *Patna*.\n\n"
+              "2️⃣ **Verb (Doing Words)**:\n"
+              "   - A verb shows an action or what someone is doing.\n"
+              "   - **Easy Examples**: run, jump, play, write, read.\n"
+              "   - **Sentence**: The cat is *jumping*.\n\n"
+              "3️⃣ **Tenses (Time of Action)**:\n"
+              "   - **Present**: Action happening now. (e.g. 'I study.')\n"
+              "   - **Past**: Action that already happened. (e.g. 'I studied yesterday.')\n"
+              "   - **Future**: Action that will happen later. (e.g. 'I will study tomorrow.')";
+        }
+      }
+      // 24. GRAMMAR: Hindi (Specific grammar search, no general 'hindi' word collision)
+      else if (query.contains("vyakaran") || query.contains("sangya") || query.contains("kriya") || query.contains("sarvnam") || query.contains("visheshan") || query.contains("hindi grammar") || query.contains("hindi vyakaran") || query == "hindi" || query.contains("hindi bhasha") || query.contains("hindi language")) {
+        aiResponse = "हिंदी व्याकरण (Vyakaran Made Easy) ✍️:\n\n"
+            "1️⃣ **संज्ञा (Noun) - नाम वाले शब्द**:\n"
+            "   - किसी भी व्यक्ति, वस्तु, स्थान या भाव के नाम को संज्ञा कहते हैं।\n"
+            "   - **आसान उदाहरण**: राम (व्यक्ति), पटना (स्थान), किताब (वस्तु), मिठास (भाव)।\n"
+            "   - **वाक्य**: *राम* *पटना* में *किताब* पढ़ता है।\n\n"
+            "2️⃣ **क्रिया (Verb) - काम वाले शब्द**:\n"
+            "   - जिस शब्द से किसी काम के करने या होने का पता चले, उसे क्रिया कहते हैं।\n"
+            "   - **आसान उदाहरण**: दौड़ना, रोना, पढ़ना, सोना।\n"
+            "   - **वाक्य**: सीता *गाना गा रही है*।\n\n"
+            "3️⃣ **सर्वनाम (Pronoun) - संज्ञा की जगह आने वाले शब्द**:\n"
+            "   - जो शब्द संज्ञा (नाम) की जगह उपयोग किए जाते हैं ताकि नाम बार-बार न बोलना पड़े।\n"
+            "   - **उदाहरण**: मैं, तुम, वह, हम। (जैसे: 'राम अच्छा लड़का है। *वह* रोज़ स्कूल जाता है।')";
+      }
+      // 25. GENERAL SCHOOL INFO: Admission/Register
+      else if (query.contains("admission") || query.contains("join") || query.contains("fee") || query.contains("class") || query.contains("register")) {
         if (isHindi) {
           aiResponse = "स्वागत है! अग्रवाल नॉलेज हब (पटना शाखाओं) में प्रवेश खुले हैं। हम संकल्पनात्मक शिक्षा पर ध्यान केंद्रित करते हैं। पंजीकरण फॉर्म और मासिक शुल्क संबंधी प्रश्नों के लिए कार्यालय में डायरेक्टर अग्रवाल या सुश्री अंजलि वर्मा से संपर्क करें!";
         } else {
           aiResponse = "Welcome! Admissions are open at Agarwal Knowledge Hub (Patna branches) for Nursery to Class 7 and specialized Computer courses. We focus on conceptual learning and digital tools. For registration forms and monthly fee queries, please consult Director Agarwal or Ms. Anjali Verma at the admin cabin!";
         }
-      } else if (query.contains("homework") || query.contains("assignment") || query.contains("due")) {
+      }
+      // 26. GENERAL SCHOOL INFO: Homework
+      else if (query.contains("homework") || query.contains("assignment") || query.contains("due")) {
         if (isHindi) {
           aiResponse = "आप अपने पोर्टल में 'Homework' टैब के तहत सभी दिए गए होमवर्क शीट देख सकते हैं। आप पीडीएफ वर्कशीट डाउनलोड कर सकते हैं, उन्हें हल कर सकते हैं और सीधे 'Submit' स्क्रीन से स्नैपशॉट सबमिट कर सकते हैं। यदि आपके पास कोई विशिष्ट प्रश्न है, तो उसे यहाँ टाइप करें!";
         } else {
           aiResponse = "You can access all assigned homework sheets under the 'Homework' tab in your portal. You can download the PDF worksheets, solve them, and submit snapshots directly from the 'Submit' screen. If you have any specific query from a worksheet, type it here!";
         }
-      } else if (query.contains("hi") || query.contains("hello") || query.contains("hey") || query.contains("helo")) {
+      }
+      // 27. GENERAL CHAT: Hello/Hi
+      else if (query.contains("hi") || query.contains("hello") || query.contains("hey") || query.contains("helo")) {
         if (isHindi) {
           aiResponse = "नमस्ते! मैं अग्रवाल नॉलेज हब में आपका एआई डाउट असिस्टेंट हूँ। मैं गणित, कंप्यूटर विज्ञान और सामान्य होमवर्क से जुड़े संदेहों को हल करने में आपकी मदद कर सकता हूँ। आज आप कौन सा विषय पढ़ रहे हैं?";
         } else {
           aiResponse = "Hello! I am your AI Doubt Assistant at Agarwal Knowledge Hub. I can help you solve doubts on Mathematics, Computer Science, and general classroom homework. What subject are you studying today?";
         }
-      } else if (query.contains("thank") || query.contains("thanks")) {
+      }
+      // 28. GENERAL CHAT: Thank you
+      else if (query.contains("thank") || query.contains("thanks")) {
         if (isHindi) {
           aiResponse = "आपका बहुत-बहुत स्वागत है! सीखना एक यात्रा है, और हमें आपकी सहायता करने में खुशी है। मुझे बताएं कि क्या आपके पास कोई अन्य प्रश्न हैं!";
         } else {
           aiResponse = "You're very welcome! Learning is a journey, and we are happy to support you. Let me know if you have any other questions!";
         }
-      } else {
+      }
+      // 29. FALLBACK (Default Answer)
+      else {
         if (isHindi) {
           aiResponse = "यह '${text}' के बारे में एक दिलचस्प सवाल है! आपके एआई ट्यूटर के रूप में, आइए इस विषय को देखें:\n\n1. आपके पाठ्यक्रम के अनुसार, '${text}' एक महत्वपूर्ण शैक्षणिक विषय है।\n2. मैं 'Library' टैब में जाकर अपनी कक्षा के नोट्स या पीडीएफ पुस्तकों की जांच करने की सलाह देता हूँ।\n3. अगले लाइव डाउट क्लियरिंग सेशन में सुश्री अंजलि वर्मा से सीधा मार्गदर्शन प्राप्त करें!";
         } else {
