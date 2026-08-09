@@ -1,9 +1,11 @@
 #!/bin/bash
 set -e # Exit immediately if any command exits with a non-zero status
 
-# 1. Clone Flutter stable branch
-echo "Downloading Flutter SDK..."
-git clone https://github.com/flutter/flutter.git -b stable --depth 1
+# 1. Fast download prebuilt Flutter SDK archive from Google CDN
+if [ ! -d "flutter" ]; then
+  echo "Downloading prebuilt Flutter SDK archive..."
+  curl -sL https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.0-stable.tar.xz | tar -xJ
+fi
 
 # 2. Add Flutter to path
 export PATH="$PATH:`pwd`/flutter/bin"
