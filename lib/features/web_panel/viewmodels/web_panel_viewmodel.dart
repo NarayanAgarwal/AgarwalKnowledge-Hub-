@@ -91,7 +91,37 @@ class WebPanelViewModel with ChangeNotifier {
         }
         notifyListeners();
       });
-      teachersList = await _repository.getUsers(AppStrings.roleTeacher);
+      
+      _repository.streamUsers(AppStrings.roleTeacher).listen((data) {
+        teachersList = data;
+        if (teachersList.isEmpty) {
+          teachersList = [
+            UserProfile(
+              uid: "tch_1",
+              role: AppStrings.roleTeacher,
+              name: "Ms. Anjali Verma",
+              phone: "+919876543222",
+              email: "anjali@gmail.com",
+              address: "Patna",
+              userClass: "",
+              rollNumber: "",
+              gender: "Female",
+              dob: "1994-04-12",
+              admissionNumber: "TCH04",
+              school: "Agarwal Knowledge Hub",
+              parentName: "",
+              parentMobile: "",
+              emergencyContact: "",
+              profilePhotoUrl: "",
+              createdDate: DateTime.now(),
+              lastLogin: DateTime.now(),
+              isOnline: true,
+              lastActive: DateTime.now(),
+            )
+          ];
+        }
+        notifyListeners();
+      });
 
       _repository.getNotices().listen((data) {
         noticesList = data;
@@ -107,31 +137,6 @@ class WebPanelViewModel with ChangeNotifier {
         storiesList = data;
         notifyListeners();
       });
-      
-      if (teachersList.isEmpty) {
-        teachersList = [
-          UserProfile(
-            uid: "tch_1",
-            role: AppStrings.roleTeacher,
-            name: "Ms. Anjali Verma",
-            phone: "+919876543222",
-            email: "anjali@gmail.com",
-            address: "Patna",
-            userClass: "",
-            rollNumber: "",
-            gender: "Female",
-            dob: "1994-04-12",
-            admissionNumber: "TCH04",
-            school: "Agarwal Knowledge Hub",
-            parentName: "",
-            parentMobile: "",
-            emergencyContact: "",
-            profilePhotoUrl: "",
-            createdDate: DateTime.now(),
-            lastLogin: DateTime.now(),
-          )
-        ];
-      }
     } catch (e) {
       print("Error loading web panel data: $e");
     }

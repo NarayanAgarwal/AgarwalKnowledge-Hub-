@@ -589,47 +589,78 @@ class SuperAdminDashboardPanel extends StatelessWidget {
   void _showActiveStudentsDialog(BuildContext context, WebPanelViewModel webVm) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Row(
-          children: [
-            const Icon(Icons.people, color: AppColors.primaryBlue),
-            const SizedBox(width: 10),
-            Text('Active Students Roster & Live Presence (${webVm.studentsList.length})'),
-          ],
-        ),
-        content: SizedBox(
-          width: 550,
-          height: 400,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: webVm.studentsList.map((s) {
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: s.isOnline ? Colors.green.withOpacity(0.2) : Colors.grey.withOpacity(0.2),
-                    child: Icon(s.isOnline ? Icons.sensors : Icons.person, color: s.isOnline ? Colors.green : Colors.grey),
-                  ),
-                  title: Text(s.name, style: TextStyle(fontWeight: FontWeight.bold, decoration: s.isBlocked ? TextDecoration.lineThrough : null)),
-                  subtitle: Text('Class: ${s.userClass} | Phone: ${s.phone} | Roll: ${s.rollNumber}'),
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: s.isBlocked ? Colors.red.withOpacity(0.12) : (s.isOnline ? Colors.green.withOpacity(0.12) : Colors.grey.withOpacity(0.12)),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      s.isBlocked ? 'BLOCKED' : (s.isOnline ? 'LIVE ONLINE 🟢' : 'OFFLINE ⚪'), 
-                      style: TextStyle(color: s.isBlocked ? Colors.red : (s.isOnline ? Colors.green : Colors.grey), fontWeight: FontWeight.bold, fontSize: 10),
-                    ),
-                  ),
-                );
-              }).toList(),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: Row(
+              children: [
+                const Icon(Icons.people, color: AppColors.primaryBlue),
+                const SizedBox(width: 10),
+                Text('Active Students Roster & Surveillance (${webVm.studentsList.length})'),
+              ],
             ),
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
-        ],
+            content: SizedBox(
+              width: 600,
+              height: 450,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: webVm.studentsList.map((s) {
+                    final duration = s.isOnline ? DateTime.now().difference(s.lastLogin) : null;
+                    final durationStr = s.isOnline 
+                        ? 'Online now (for ${duration!.inHours}h ${duration.inMinutes % 60}m)' 
+                        : 'Offline since ${s.lastActive.day}/${s.lastActive.month} ${s.lastActive.hour}:${s.lastActive.minute.toString().padLeft(2, '0')}';
+
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: s.isOnline ? Colors.green.withOpacity(0.2) : Colors.grey.withOpacity(0.2),
+                        child: Icon(s.isOnline ? Icons.sensors : Icons.person, color: s.isOnline ? Colors.green : Colors.grey),
+                      ),
+                      title: Text(s.name, style: TextStyle(fontWeight: FontWeight.bold, decoration: s.isBlocked ? TextDecoration.lineThrough : null)),
+                      subtitle: Text('Class: ${s.userClass} | $durationStr\nPhone: ${s.phone} | Roll: ${s.rollNumber}'),
+                      isThreeLine: true,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: s.isBlocked ? Colors.red.withOpacity(0.12) : (s.isOnline ? Colors.green.withOpacity(0.12) : Colors.grey.withOpacity(0.12)),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              s.isBlocked ? 'BLOCKED' : (s.isOnline ? 'ONLINE' : 'OFFLINE'), 
+                              style: TextStyle(color: s.isBlocked ? Colors.red : (s.isOnline ? Colors.green : Colors.grey), fontWeight: FontWeight.bold, fontSize: 10),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: s.isBlocked ? Colors.green : Colors.red,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              final updated = s.copyWith(isBlocked: !s.isBlocked);
+                              webVm.updateStudent(updated);
+                              setDialogState(() {});
+                            },
+                            child: Text(s.isBlocked ? 'Unblock' : 'Block', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+            ],
+          );
+        }
       ),
     );
   }
@@ -637,48 +668,92 @@ class SuperAdminDashboardPanel extends StatelessWidget {
   void _showActiveTeachersDialog(BuildContext context, WebPanelViewModel webVm) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Row(
-          children: [
-            const Icon(Icons.assignment_ind, color: AppColors.secondaryOrange),
-            const SizedBox(width: 10),
-            Text('Active Teachers Roster & Status (${webVm.teachersList.length})'),
-          ],
-        ),
-        content: SizedBox(
-          width: 550,
-          height: 400,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: webVm.teachersList.map((t) {
-                final bool isOnLeave = t.statusNote == 'On Leave';
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: isOnLeave ? Colors.amber.withOpacity(0.2) : (t.isOnline ? Colors.green.withOpacity(0.2) : Colors.grey.withOpacity(0.2)),
-                    child: Icon(isOnLeave ? Icons.beach_access : Icons.school, color: isOnLeave ? Colors.amber.shade800 : (t.isOnline ? Colors.green : Colors.grey)),
-                  ),
-                  title: Text(t.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text('Role: ${t.role} | Phone: ${t.phone} | ID: ${t.admissionNumber}'),
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: isOnLeave ? Colors.amber.withOpacity(0.12) : (t.isOnline ? Colors.green.withOpacity(0.12) : Colors.grey.withOpacity(0.12)),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      isOnLeave ? 'ON LEAVE 🟡' : (t.isOnline ? 'LIVE TEACHING 🟢' : 'OFFLINE ⚪'), 
-                      style: TextStyle(color: isOnLeave ? Colors.amber.shade800 : (t.isOnline ? Colors.green : Colors.grey), fontWeight: FontWeight.bold, fontSize: 10),
-                    ),
-                  ),
-                );
-              }).toList(),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: Row(
+              children: [
+                const Icon(Icons.assignment_ind, color: AppColors.secondaryOrange),
+                const SizedBox(width: 10),
+                Text('Active Teachers Roster & Status (${webVm.teachersList.length})'),
+              ],
             ),
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
-        ],
+            content: SizedBox(
+              width: 600,
+              height: 450,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: webVm.teachersList.map((t) {
+                    final bool isOnLeave = t.statusNote == 'On Leave';
+                    final duration = t.isOnline ? DateTime.now().difference(t.lastLogin) : null;
+                    final durationStr = isOnLeave 
+                        ? 'On Vacation / Leave' 
+                        : (t.isOnline 
+                            ? 'Online now (for ${duration!.inHours}h ${duration.inMinutes % 60}m)' 
+                            : 'Offline since ${t.lastActive.day}/${t.lastActive.month} ${t.lastActive.hour}:${t.lastActive.minute.toString().padLeft(2, '0')}');
+
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: isOnLeave ? Colors.amber.withOpacity(0.2) : (t.isOnline ? Colors.green.withOpacity(0.2) : Colors.grey.withOpacity(0.2)),
+                        child: Icon(isOnLeave ? Icons.beach_access : Icons.school, color: isOnLeave ? Colors.amber.shade800 : (t.isOnline ? Colors.green : Colors.grey)),
+                      ),
+                      title: Text(t.name, style: TextStyle(fontWeight: FontWeight.bold, decoration: t.isBlocked ? TextDecoration.lineThrough : null)),
+                      subtitle: Text('ID: ${t.admissionNumber} | $durationStr\nPhone: ${t.phone}'),
+                      isThreeLine: true,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: t.isBlocked 
+                                  ? Colors.red.withOpacity(0.12) 
+                                  : (isOnLeave 
+                                      ? Colors.amber.withOpacity(0.12) 
+                                      : (t.isOnline ? Colors.green.withOpacity(0.12) : Colors.grey.withOpacity(0.12))),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              t.isBlocked 
+                                  ? 'BLOCKED' 
+                                  : (isOnLeave ? 'LEAVE' : (t.isOnline ? 'ONLINE' : 'OFFLINE')), 
+                              style: TextStyle(
+                                  color: t.isBlocked 
+                                      ? Colors.red 
+                                      : (isOnLeave ? Colors.amber.shade800 : (t.isOnline ? Colors.green : Colors.grey)), 
+                                  fontWeight: FontWeight.bold, 
+                                  fontSize: 10),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: t.isBlocked ? Colors.green : Colors.red,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              final updated = t.copyWith(isBlocked: !t.isBlocked);
+                              webVm.updateTeacher(updated);
+                              setDialogState(() {});
+                            },
+                            child: Text(t.isBlocked ? 'Unblock' : 'Block', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+            ],
+          );
+        }
       ),
     );
   }
@@ -1111,6 +1186,117 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
     );
   }
 
+  void _showEditStudentDialog(BuildContext context, UserProfile student) {
+    final nameCtrl = TextEditingController(text: student.name);
+    final phoneCtrl = TextEditingController(text: student.phone);
+    final emailCtrl = TextEditingController(text: student.email);
+    final classCtrl = TextEditingController(text: student.userClass);
+    final rollCtrl = TextEditingController(text: student.rollNumber);
+    final addressCtrl = TextEditingController(text: student.address);
+    final parentNameCtrl = TextEditingController(text: student.parentName);
+    final parentMobileCtrl = TextEditingController(text: student.parentMobile);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.edit_outlined, color: AppColors.primaryBlue),
+            const SizedBox(width: 10),
+            const Text('Edit Student Details'),
+          ],
+        ),
+        content: SizedBox(
+          width: 460,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomTextField(
+                  controller: nameCtrl,
+                  labelText: 'Student Name',
+                  prefixIcon: Icons.person_outline,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: phoneCtrl,
+                  labelText: 'Real Phone Number',
+                  prefixIcon: Icons.phone_android_outlined,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: emailCtrl,
+                  labelText: 'Real Email Address (Gmail)',
+                  prefixIcon: Icons.email_outlined,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: classCtrl,
+                  labelText: 'Class Assignment',
+                  prefixIcon: Icons.school_outlined,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: rollCtrl,
+                  labelText: 'Roll Number',
+                  prefixIcon: Icons.format_list_numbered_outlined,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: addressCtrl,
+                  labelText: 'Address',
+                  prefixIcon: Icons.location_on_outlined,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: parentNameCtrl,
+                  labelText: 'Parent Name',
+                  prefixIcon: Icons.family_restroom,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: parentMobileCtrl,
+                  labelText: 'Parent Mobile',
+                  prefixIcon: Icons.phone_callback,
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryBlue,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              final updated = student.copyWith(
+                name: nameCtrl.text.trim(),
+                phone: phoneCtrl.text.trim(),
+                email: emailCtrl.text.trim(),
+                userClass: classCtrl.text.trim(),
+                rollNumber: rollCtrl.text.trim(),
+                address: addressCtrl.text.trim(),
+                parentName: parentNameCtrl.text.trim(),
+                parentMobile: parentMobileCtrl.text.trim(),
+              );
+              Provider.of<WebPanelViewModel>(context, listen: false).updateStudent(updated);
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Details of ${student.name} updated successfully! 🔄')),
+              );
+            },
+            child: const Text('Save Changes'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final webVm = Provider.of<WebPanelViewModel>(context);
@@ -1258,6 +1444,11 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
                               icon: const Icon(Icons.visibility_outlined, color: AppColors.primaryBlue),
                               tooltip: 'View Online History & Logs',
                               onPressed: () => _showStudentActivityDialog(context, student),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+                              tooltip: 'Edit Personal Details',
+                              onPressed: () => _showEditStudentDialog(context, student),
                             ),
 
                             // Super Admin Block/Unblock Control Button
@@ -1431,6 +1622,76 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
     );
   }
 
+  void _showTeacherActivityDialog(BuildContext context, UserProfile teacher) {
+    final bool isOnline = teacher.isOnline;
+    final bool isOnLeave = teacher.statusNote == 'On Leave';
+    
+    String presenceText = '';
+    String durationText = '';
+    
+    if (isOnLeave) {
+      presenceText = 'ON LEAVE 🟡 (Vacation / Leave Active)';
+      durationText = 'Teacher is currently off duty.';
+    } else if (isOnline) {
+      presenceText = 'LIVE ONLINE 🟢 (Active in Class / App)';
+      final duration = DateTime.now().difference(teacher.lastLogin);
+      if (duration.inMinutes < 1) {
+        durationText = 'Just connected a few seconds ago.';
+      } else {
+        durationText = 'Online for ${duration.inHours} hrs, ${duration.inMinutes % 60} mins (since ${teacher.lastLogin.hour}:${teacher.lastLogin.minute.toString().padLeft(2, '0')}).';
+      }
+    } else {
+      presenceText = 'OFFLINE ⚪ (Inactive)';
+      final diff = DateTime.now().difference(teacher.lastActive);
+      if (diff.inMinutes < 60) {
+        durationText = 'Offline since ${diff.inMinutes} minutes ago.';
+      } else if (diff.inHours < 24) {
+        durationText = 'Offline since ${diff.inHours} hours ago.';
+      } else {
+        durationText = 'Offline since ${teacher.lastActive.day}/${teacher.lastActive.month}/${teacher.lastActive.year}.';
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.school, color: AppColors.secondaryOrange),
+            const SizedBox(width: 8),
+            Text('${teacher.name} - Teacher Activity Log'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('• Teacher ID: ${teacher.admissionNumber.isNotEmpty ? teacher.admissionNumber : 'TCH-001'}', style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Text('• Assigned Subjects / Role: ${teacher.role}'),
+            const SizedBox(height: 6),
+            Text('• Contact Phone: ${teacher.phone}'),
+            const SizedBox(height: 6),
+            Text('• Account Status: ${teacher.isBlocked ? 'BLOCKED / SUSPENDED 🔴' : 'ACTIVE 🟢'}', 
+                style: TextStyle(color: teacher.isBlocked ? Colors.red : Colors.green, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Text('• Live Presence: $presenceText', style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Text('• Session History: $durationText', style: TextStyle(color: Colors.grey.shade600, fontStyle: FontStyle.italic)),
+            const SizedBox(height: 6),
+            Text('• Last Active Timestamp: ${teacher.lastActive.day}/${teacher.lastActive.month}/${teacher.lastActive.year} at ${teacher.lastActive.hour}:${teacher.lastActive.minute.toString().padLeft(2, '0')}'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Close Log'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final webVm = Provider.of<WebPanelViewModel>(context);
@@ -1569,8 +1830,13 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            // Super Admin Grant/Revoke Leave Button
-                            if (isSuperAdmin)
+                            IconButton(
+                              icon: const Icon(Icons.visibility_outlined, color: AppColors.primaryBlue),
+                              tooltip: 'View Online History & Logs',
+                              onPressed: () => _showTeacherActivityDialog(context, teacher),
+                            ),
+                            if (isSuperAdmin) ...[
+                              const SizedBox(width: 4),
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: isOnLeave ? Colors.green : Colors.amber.shade700,
@@ -1593,11 +1859,31 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
                                 },
                                 child: Text(isOnLeave ? 'Mark Active' : 'Grant Leave', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                               ),
-                            
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline, color: AppColors.error),
-                              onPressed: () => webVm.deleteTeacher(teacher.uid),
-                            ),
+                              const SizedBox(width: 8),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: teacher.isBlocked ? Colors.green : Colors.red,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                onPressed: () {
+                                  final updated = teacher.copyWith(isBlocked: !teacher.isBlocked);
+                                  webVm.updateTeacher(updated);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(teacher.isBlocked ? '${teacher.name} Unblocked!' : '${teacher.name} Blocked!'),
+                                    ),
+                                  );
+                                },
+                                child: Text(teacher.isBlocked ? 'Unblock' : 'Block', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline, color: AppColors.error),
+                                onPressed: () => webVm.deleteTeacher(teacher.uid),
+                              ),
+                            ],
                           ],
                         ),
                       );
@@ -1610,7 +1896,8 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
         ),
         
         // Right: Form to add teacher
-        Container(
+        if (isSuperAdmin)
+          Container(
           width: 340,
           decoration: BoxDecoration(
             color: widget.isDark ? AppColors.darkSurface : Colors.white,

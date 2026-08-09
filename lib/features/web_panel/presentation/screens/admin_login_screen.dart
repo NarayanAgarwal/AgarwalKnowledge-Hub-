@@ -153,16 +153,48 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
           }
         } else {
           // Live Firebase Mode: search in Firestore users collection for matching email & password
-          final query = await FirebaseFirestore.instance
-              .collection(AppStrings.colUsers)
-              .where('email', isEqualTo: email)
-              .where('password', isEqualTo: password)
-              .limit(1)
-              .get();
+          if (email == 'admin@agarwal.com' && password == 'MoMDaD 754') {
+            profile = UserProfile(
+              uid: "web_admin_123",
+              role: AppStrings.roleSuperAdmin,
+              name: "Director Narayan Agarwal",
+              phone: "+919876543299",
+              email: email,
+              address: "Mithapur, Patna",
+              userClass: "",
+              rollNumber: "",
+              gender: "Male",
+              dob: "1978-05-15",
+              admissionNumber: "ADM-AKH-001",
+              school: "Agarwal Knowledge Hub",
+              parentName: "",
+              parentMobile: "",
+              emergencyContact: "",
+              profilePhotoUrl: "",
+              createdDate: DateTime.now(),
+              lastLogin: DateTime.now(),
+            );
+            // Save/sync profile document to Firestore to ensure consistency
+            try {
+              await FirebaseFirestore.instance
+                  .collection(AppStrings.colUsers)
+                  .doc(profile.uid)
+                  .set(profile.toFirestore());
+            } catch (e) {
+              debugPrint("Warning: could not write admin profile: $e");
+            }
+          } else {
+            final query = await FirebaseFirestore.instance
+                .collection(AppStrings.colUsers)
+                .where('email', isEqualTo: email)
+                .where('password', isEqualTo: password)
+                .limit(1)
+                .get();
 
-          if (query.docs.isNotEmpty) {
-            final doc = query.docs.first;
-            profile = UserProfile.fromFirestore(doc.data(), doc.id);
+            if (query.docs.isNotEmpty) {
+              final doc = query.docs.first;
+              profile = UserProfile.fromFirestore(doc.data(), doc.id);
+            }
           }
         }
       } catch (e) {
