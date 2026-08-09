@@ -22,7 +22,6 @@ dependencies:
   firebase_storage: ^11.6.9
   firebase_messaging: ^14.7.19
   firebase_analytics: ^10.8.9
-  firebase_crashlytics: ^3.4.19
   firebase_app_check: ^0.2.1-dev.2
 
   # UI and Visuals

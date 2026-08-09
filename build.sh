@@ -20,7 +20,7 @@ flutter pub get
 
 # 5. Build production web bundle (disable service worker cache to enforce fresh page loading)
 echo "Building Flutter Web release assets..."
-flutter build web --release --pwa-strategy=none --dart-define=FLUTTER_WEB_RENDERER=html --no-tree-shake-icons \
+flutter build web --release --pwa-strategy=none --web-renderer html --no-tree-shake-icons \
   --dart-define=FIREBASE_API_KEY="$FIREBASE_API_KEY" \
   --dart-define=FIREBASE_PROJECT_ID="$FIREBASE_PROJECT_ID" \
   --dart-define=FIREBASE_APP_ID="$FIREBASE_APP_ID" \
