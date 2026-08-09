@@ -1000,14 +1000,15 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
   }
 
   void _showStudentActivityDialog(BuildContext context, UserProfile student) {
+    final bool isGmailUser = student.email.isNotEmpty;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Row(
           children: [
-            const Icon(Icons.security, color: AppColors.primaryBlue),
+            Icon(isGmailUser ? Icons.email : Icons.phone_android, color: AppColors.primaryBlue),
             const SizedBox(width: 8),
-            Text('${student.name} - Activity & Surveillance Log'),
+            Text('${student.name} - ${isGmailUser ? "Gmail/Email" : "Mobile"} Activity Log'),
           ],
         ),
         content: Column(
@@ -1018,16 +1019,20 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
             const SizedBox(height: 6),
             Text('• Current Class: ${student.userClass} (Roll No: ${student.rollNumber})'),
             const SizedBox(height: 6),
-            Text('• Phone Number: ${student.phone}'),
+            Text('• Auth Method: ${isGmailUser ? "Gmail / Email Login (${student.email})" : "Mobile OTP Login (${student.phone})"}', 
+                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
             const SizedBox(height: 6),
-            Text('• Parent Name: ${student.parentName} (${student.parentMobile})'),
+            Text('• Parent Name: ${student.parentName.isNotEmpty ? student.parentName : "N/A"} (${student.parentMobile.isNotEmpty ? student.parentMobile : "N/A"})'),
             const SizedBox(height: 6),
             Text('• Account Status: ${student.isBlocked ? 'BLOCKED / SUSPENDED 🔴' : 'ACTIVE 🟢'}', 
                 style: TextStyle(color: student.isBlocked ? Colors.red : Colors.green, fontWeight: FontWeight.bold)),
             const SizedBox(height: 6),
-            Text('• Live Presence: ${student.isOnline ? 'Online now (Active in App)' : 'Offline'}'),
+            Text('• Live Presence: ${student.isOnline ? 'Online now (Active in App 🟢)' : 'Offline ⚪'}'),
             const SizedBox(height: 6),
             Text('• Last Active Timestamp: ${student.lastActive.day}/${student.lastActive.month}/${student.lastActive.year} at ${student.lastActive.hour}:${student.lastActive.minute.toString().padLeft(2, '0')}'),
+            const SizedBox(height: 6),
+            Text('• Session History Log: ${isGmailUser ? "Gmail OAuth Session Verified (Live Tracker Active)" : "SMS OTP Session Verified (Live Tracker Active)"}',
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontStyle: FontStyle.italic)),
           ],
         ),
         actions: [

@@ -302,8 +302,30 @@ class AuthRepositoryImpl implements AuthRepository {
 
     // Look up user profile in Firestore
     if (_useMock) {
-      // Return default mock student or existing mock profile
-      return await getUserProfile("student_user_123");
+      final gmailStudent = UserProfile(
+        uid: "std_gmail_${email.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}",
+        role: AppStrings.roleStudent,
+        name: email.contains('@') ? email.split('@')[0].toUpperCase() : "Gmail Student User",
+        phone: "+919800112233",
+        email: email,
+        address: "Mithapur, Patna",
+        userClass: "Class 5",
+        rollNumber: "15",
+        gender: "Male",
+        dob: "2015-01-01",
+        admissionNumber: "ADM-GMAIL-${DateTime.now().millisecond}",
+        school: "Agarwal Knowledge Hub",
+        parentName: "Gmail Parent",
+        parentMobile: "+919800112244",
+        emergencyContact: "+919800112244",
+        profilePhotoUrl: "",
+        createdDate: DateTime.now().subtract(const Duration(days: 10)),
+        lastLogin: DateTime.now(),
+        isOnline: true,
+        lastActive: DateTime.now(),
+      );
+      _mockUser = gmailStudent;
+      return gmailStudent;
     }
 
     // Production mode: Query Firestore users collection by email
