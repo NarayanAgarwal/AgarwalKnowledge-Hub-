@@ -124,6 +124,37 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
     }
   }
 
+  Future<String?> _callServerlessApi(String query) async {
+    try {
+      String origin = "https://agarwalknowledgehub.vercel.app";
+      if (kIsWeb) {
+        try {
+          final webOrigin = js.context['window']['location']['origin'] as String?;
+          if (webOrigin != null && webOrigin.isNotEmpty) {
+            origin = webOrigin;
+          }
+        } catch (_) {}
+      }
+      
+      final response = await http.post(
+        Uri.parse('$origin/api/doubt-ai'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'query': query}),
+      ).timeout(const Duration(seconds: 15));
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['reply'] as String;
+      } else {
+        debugPrint("Serverless API error: ${response.statusCode} - ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      debugPrint("Serverless API exception: $e");
+      return null;
+    }
+  }
+
   String _cleanText(String text) {
     return text.replaceAll('**', '').replaceAll('`', '');
   }
@@ -215,7 +246,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
 
       String aiResponse = "";
       
-      // 1. Try Live Gemini AI if configured
+      // 1. Try Custom User API key if configured locally
       if (_geminiApiKey.isNotEmpty) {
         final liveReply = await _callGeminiApi(text);
         if (liveReply != null && liveReply.trim().isNotEmpty) {
@@ -228,8 +259,20 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
           return;
         }
       }
+      
+      // 2. Try Vercel Serverless Backend Proxy (which uses securely configured API Key)
+      final serverlessReply = await _callServerlessApi(text);
+      if (serverlessReply != null && serverlessReply.trim().isNotEmpty) {
+        aiResponse = serverlessReply.trim();
+        setState(() {
+          _messages.add(MessageBubble(text: aiResponse, isUser: false, time: DateTime.now()));
+          _isTyping = false;
+        });
+        _scrollToBottom();
+        return;
+      }
 
-      // 2. Offline Database Fallback
+      // 3. Offline Database Fallback
       final query = text.toLowerCase();
       
       // Smart Language Request Detection
@@ -550,7 +593,50 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "💡 Tip: Enter a specific term (e.g. type 'vlookup', 'mail merge', or 'slide master') to get step-by-step guides!";
         }
       }
-      // 10. SUBJECT: Rhyme
+      // 10. SUBJECT: History Akbar/Mughals/Kings (Fixes Akbar question fallback issue)
+      else if (query.contains("akbar") || query.contains("ashoka") || query.contains("birbal") || query.contains("king") || query.contains("emperor") || query.contains("mughal") || query.contains("akbar kon")) {
+        if (isHindi) {
+          aiResponse = "इतिहास गाइड: सम्राट अकबर और बीरबल (Emperor Akbar & Birbal) 👑:\n\n"
+              "1️⃣ अकबर कौन था? (Who was Akbar?):\n"
+              "   - अकबर भारत के एक महान मुगल सम्राट (Mughal Emperor) थे। उन्होंने बहुत कम उम्र में शासन संभाला था।\n"
+              "   - वे सभी धर्मों का सम्मान करते थे और उन्होंने दीन-ए-इलाही नाम का एक नया विचार शुरू किया था।\n"
+              "   - उन्होंने प्रसिद्ध स्मारक फतेहपुर सीकरी और आगरा का किला बनवाया था।\n\n"
+              "2️⃣ अकबर और बीरबल की कहानियां:\n"
+              "   - बीरबल अकबर के दरबार के सबसे बुद्धिमान सलाहकार और नौ रत्नों (Nine Jewels) में से एक थे।\n"
+              "   - वे अपनी चतुराई और हास्य-व्यंग्य से अकबर की हर कठिन समस्या का तुरंत हल निकाल देते थे। जैसे खिचड़ी पकाना की कहानी से उन्होंने अकबर को अपनी गलती का एहसास कराया था।";
+        } else {
+          aiResponse = "History Guide: Emperor Akbar and Birbal 👑:\n\n"
+              "1️⃣ Who was Akbar?:\n"
+              "   - Akbar was one of the greatest Mughal Emperors of India. He ruled with wisdom and unified a large part of India.\n"
+              "   - He was known for encouraging art, literature, and religious harmony.\n"
+              "   - He had nine great wise people in his court called the Navaratnas (Nine Jewels).\n\n"
+              "2️⃣ Who was Birbal?:\n"
+              "   - Birbal was Akbar's closest advisor and one of the Nine Jewels. He was famous for his quick wit, clever answers, and moral stories.";
+        }
+      }
+      // 11. SUBJECT: Space / Solar System / Planets
+      else if (query.contains("solar system") || query.contains("planet") || query.contains("sun") || query.contains("moon") || query.contains("star") || query.contains("space")) {
+        if (isHindi) {
+          aiResponse = "सौरमंडल और अंतरिक्ष (Solar System & Space) 🪐:\n\n"
+              "1️⃣ सौरमंडल क्या है? (What is Solar System?):\n"
+              "   - सूर्य (Sun) और उसके चारों ओर चक्कर लगाने वाले 8 ग्रहों (Planets) के परिवार को सौरमंडल कहते हैं।\n"
+              "   - सूर्य इस परिवार का मुखिया है और यह बहुत गर्म गैस का एक तारा है।\n\n"
+              "2️⃣ आठ ग्रह (8 Planets in order):\n"
+              "   - बुध (Mercury) ➔ शुक्र (Venus) ➔ पृथ्वी (Earth - जहाँ हम रहते हैं) ➔ मंगल (Mars - लाल ग्रह) ➔ बृहस्पति (Jupiter - सबसे बड़ा ग्रह) ➔ शनि (Saturn - छल्ले वाला ग्रह) ➔ अरुण (Uranus) ➔ वरुण (Neptune)।\n\n"
+              "3️⃣ चंद्रमा (Moon):\n"
+              "   - चंद्रमा पृथ्वी का उपग्रह (satellite) है जो पृथ्वी के चक्कर लगाता है। यह खुद नहीं चमकता, बल्कि सूर्य की रोशनी से चमकता है।";
+        } else {
+          aiResponse = "Solar System and Space Guide 🪐:\n\n"
+              "1️⃣ What is the Solar System?:\n"
+              "   - The Solar System is the sun and all the objects that travel around it, including 8 planets and their moons.\n"
+              "   - The Sun is a giant, hot star at the center.\n\n"
+              "2️⃣ The 8 Planets (in order from the Sun):\n"
+              "   1. Mercury (Closest) ➔ 2. Venus (Hottest) ➔ 3. Earth (Our home) ➔ 4. Mars (Red planet) ➔ 5. Jupiter (Largest) ➔ 6. Saturn (Has beautiful rings) ➔ 7. Uranus ➔ 8. Neptune (Coldest).\n\n"
+              "3️⃣ The Moon:\n"
+              "   - The Moon is Earth's natural satellite. It does not have its own light, it shines by reflecting sunlight.";
+        }
+      }
+      // 12. SUBJECT: Rhyme
       else if (query.contains("twinkle") || query.contains("rhyme") || query.contains("johny") || query.contains("humpty")) {
         if (isHindi) {
           aiResponse = "बच्चों के लिए प्रसिद्ध बाल कविताएं (Nursery Rhymes) 🎵:\n\n"
@@ -559,7 +645,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   अप अबव द वर्ल्ड सो हाई, लाइक ए डायमंड इन द स्काई।'\n\n"
               "2️⃣ जॉनी जॉनी यस पापा (Johny Johny):\n"
               "   'जॉनी जॉनी, यस पापा? ईटिंग शुगर, नो पापा!\n"
-              "   टेलिंग लाइज़, नो पापा! ओपन योर माउथ, हा हा हा!'\n\n"
+              "   टेलिंग लाइज़, नो पापा! OPEN YOUR MOUTH, हा हा हा!'\n\n"
               "💡 आसान स्पष्टीकरण: ये कविताएँ छोटे बच्चों को अक्षरों की आवाज, मज़ा और याद रखने की कला सिखाती हैं। इन्हें संगीत के साथ सुनने के लिए होम स्क्रीन पर 'Play Study' सेक्शन देखें!";
         } else {
           aiResponse = "Here are classic Nursery Rhymes for early learning 🎵:\n\n"
@@ -572,7 +658,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "💡 Simple Explanation: Nursery rhymes help children learn word sounds, rhythm, and new words in a fun way. Tap the 'Play Study' tab on your Home screen to play them with voice synthesis!";
         }
       } 
-      // 11. SUBJECT: Counting
+      // 13. SUBJECT: Counting
       else if (query.contains("counting") || query.contains("number") || query.contains("counting number")) {
         if (isHindi) {
           aiResponse = "आइए संख्या गिनती (Counting Numbers) को आसान शब्दों में समझें 🔟:\n\n"
@@ -595,7 +681,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "Go to the 'Play Study' tab on the dashboard to click and count animated stars!";
         }
       } 
-      // 12. SUBJECT: Alphabets (English)
+      // 14. SUBJECT: Alphabets (English)
       else if (query.contains("alphabet") || query.contains("abcd")) {
         if (isHindi) {
           aiResponse = "आइए अंग्रेजी वर्णमाला (English Alphabets) को आसान शब्दों में सीखें 🔠:\n\n"
@@ -615,7 +701,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "Open the 'Play Study' page on the dashboard to swipe through A to Z cards!";
         }
       } 
-      // 13. SUBJECT: Varnmala (Hindi Swar/Vyanjan)
+      // 15. SUBJECT: Varnmala (Hindi Swar/Vyanjan)
       else if (query.contains("swar") || query.contains("vyanjan") || query.contains("varnmala")) {
         if (isHindi) {
           aiResponse = "आइए हिंदी वर्णमाला (Varnmala) को बहुत आसान तरीके से समझें ✍️:\n\n"
@@ -641,7 +727,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "💡 Simple Rule: Every Hindi consonant has a hidden 'a' (अ) sound when we speak it. Open the 'Play Study' section on the Home screen to practice speaking them!";
         }
       }
-      // 14. SUBJECT: Fraction
+      // 16. SUBJECT: Fraction
       else if (query.contains("fraction")) {
         if (isHindi) {
           aiResponse = "गणित शंका हल! भिन्न (Fraction) क्या है? 🔢:\n\n"
@@ -667,7 +753,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "• Example: 2/5 + 1/5 = (2 + 1)/5 = 3/5.";
         }
       }
-      // 15. SUBJECT: Math (Priority higher now, catches algebraic queries like "a+b", "square", "formula" or "+" symbols)
+      // 17. SUBJECT: Math (Priority higher now, catches algebraic queries like "a+b", "square", "formula" or "+" symbols)
       else if (query.contains("math") || query.contains("sum") || query.contains("add") || query.contains("multiply") || query.contains("divide") || query.contains("algebra") || query.contains("geometry") || query.contains("formula") || query.contains("square") || query.contains("equation") || query.contains("solve") || query.contains("+") || query.contains("-") || query.contains("*") || query.contains("/") || query.contains("a+b") || query.contains("a-b")) {
         if (isHindi) {
           aiResponse = "गणित गाइड (Mathematics Simple Guide) 📐:\n\n"
@@ -707,7 +793,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   - Easy Example: Find x in: x + 5 = 12. Move 5 to the right side (it changes to minus): x = 12 - 5 ➔ x = 7.";
         }
       }
-      // 16. SUBJECT: Physics / Gravity
+      // 18. SUBJECT: Physics / Gravity
       else if (query.contains("physics") || query.contains("gravity") || query.contains("force") || query.contains("motion") || query.contains("light") || query.contains("electricity")) {
         if (isHindi) {
           aiResponse = "भौतिक विज्ञान गाइड (Physics Made Easy) ⚡:\n\n"
@@ -732,7 +818,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   - When light bounces off a shiny surface like a mirror, it is called reflection. This is why you can see your face in the mirror!";
         }
       }
-      // 17. SUBJECT: Chemistry
+      // 19. SUBJECT: Chemistry
       else if (query.contains("chemistry") || query.contains("acid") || query.contains("base") || query.contains("element") || query.contains("atom") || query.contains("molecule")) {
         if (isHindi) {
           aiResponse = "रसायन विज्ञान (Chemistry Made Easy) 🧪:\n\n"
@@ -756,7 +842,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   - Neutral: Distilled water is neutral (neither sour nor bitter).";
         }
       }
-      // 18. SUBJECT: Biology / Photosynthesis
+      // 20. SUBJECT: Biology / Photosynthesis
       else if (query.contains("biology") || query.contains("cell") || query.contains("plant") || query.contains("photosynthesis") || query.contains("human body")) {
         if (isHindi) {
           aiResponse = "जीव विज्ञान गाइड (Biology Made Easy) 🧬:\n\n"
@@ -780,7 +866,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   - Your heart is like a strong pump that beats all day to send blood and oxygen to all parts of your body.";
         }
       }
-      // 19. SUBJECT: Science general
+      // 21. SUBJECT: Science general
       else if (query.contains("science")) {
         if (isHindi) {
           aiResponse = "विज्ञान क्या है? (What is Science?) 🔬:\n\n"
@@ -798,7 +884,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "💡 Easy Tip: Type a topic like 'gravity' or 'cell' to get simple definitions and examples!";
         }
       }
-      // 20. SUBJECT: Economics & Social Science
+      // 22. SUBJECT: Economics & Social Science
       else if (query.contains("economics") || query.contains("money") || query.contains("demand") || query.contains("supply") || query.contains("market") || query.contains("social science") || query.contains("political science") || query.contains("civics") || query.contains("constitution") || query.contains("government")) {
         if (isHindi) {
           aiResponse = "सामाजिक विज्ञान और नागरिक शास्त्र (Social & Political Science) 🏛️:\n\n"
@@ -820,7 +906,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   - E.g. if 10 kids want to buy the last single cupcake in the store (high demand, low supply), the shopkeeper might raise its price!";
         }
       }
-      // 21. SUBJECT: History
+      // 23. SUBJECT: History general
       else if (query.contains("history") || query.contains("gandhi") || query.contains("independence") || query.contains("harappa") || query.contains("revolution")) {
         if (isHindi) {
           aiResponse = "इतिहास और स्वतंत्रता आंदोलन (History Made Easy) 📜:\n\n"
@@ -842,7 +928,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "     - Subhash Chandra Bose: He created the Indian National Army (INA) and gave the famous slogan 'Give me blood, and I will give you freedom.'";
         }
       }
-      // 22. SUBJECT: Geography
+      // 24. SUBJECT: Geography
       else if (query.contains("geography") || query.contains("earth") || query.contains("map") || query.contains("continent") || query.contains("river") || query.contains("soil")) {
         if (isHindi) {
           aiResponse = "भूगोल क्या है? (Geography Made Easy) 🌍:\n\n"
@@ -867,7 +953,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   - Sun heats river water ➔ Water turns to vapor and goes up (Evaporation) ➔ Forms clouds (Condensation) ➔ Falls back as rain (Precipitation).";
         }
       }
-      // 23. GRAMMAR: English & Basic Good English / Conversational Rules
+      // 25. GRAMMAR: English & Basic Good English / Conversational Rules
       else if (query.contains("english") || query.contains("grammar") || query.contains("noun") || query.contains("verb") || query.contains("tense") || query.contains("speaking") || query.contains("good english") || query.contains("talk")) {
         if (isHindi) {
           aiResponse = "अंग्रेजी बोलना और व्याकरण (Good English Speaking & Grammar) 📝:\n\n"
@@ -901,7 +987,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   - Future: I will play soccer tomorrow.";
         }
       }
-      // 24. GRAMMAR: Hindi (Specific grammar search, no general 'hindi' word collision)
+      // 26. GRAMMAR: Hindi (Specific grammar search, no general 'hindi' word collision)
       else if (query.contains("vyakaran") || query.contains("sangya") || query.contains("kriya") || query.contains("sarvnam") || query.contains("visheshan") || query.contains("hindi grammar") || query.contains("hindi vyakaran") || query == "hindi" || query.contains("hindi bhasha") || query.contains("hindi language")) {
         aiResponse = "हिंदी व्याकरण (Vyakaran Made Easy) ✍️:\n\n"
             "1️⃣ संज्ञा (Noun) - नाम वाले शब्द:\n"
@@ -916,7 +1002,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
             "   - जो शब्द संज्ञा (नाम) की जगह उपयोग किए जाते हैं ताकि नाम बार-बार न बोलना पड़े।\n"
             "   - उदाहरण: मैं, तुम, वह, हम। (जैसे: 'राम अच्छा लड़का है। वह रोज़ स्कूल जाता है।')";
       }
-      // 25. GENERAL SCHOOL INFO: Admission/Register
+      // 27. GENERAL SCHOOL INFO: Admission/Register
       else if (query.contains("admission") || query.contains("join") || query.contains("fee") || query.contains("class") || query.contains("register")) {
         if (isHindi) {
           aiResponse = "स्वागत है! अग्रवाल नॉलेज हब (पटना शाखाओं) में प्रवेश खुले हैं। हम संकल्पनात्मक शिक्षा पर ध्यान केंद्रित करते हैं। पंजीकरण फॉर्म और मासिक शुल्क संबंधी प्रश्नों के लिए कार्यालय में डायरेक्टर अग्रवाल या सुश्री अंजलि वर्मा से संपर्क करें!";
@@ -924,7 +1010,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
           aiResponse = "Welcome! Admissions are open at Agarwal Knowledge Hub (Patna branches) for Nursery to Class 7 and specialized Computer courses. We focus on conceptual learning and digital tools. For registration forms and monthly fee queries, please consult Director Agarwal or Ms. Anjali Verma at the admin cabin!";
         }
       }
-      // 26. GENERAL SCHOOL INFO: Homework
+      // 28. GENERAL SCHOOL INFO: Homework
       else if (query.contains("homework") || query.contains("assignment") || query.contains("due")) {
         if (isHindi) {
           aiResponse = "आप अपने पोर्टल में 'Homework' टैब के तहत सभी दिए गए होमवर्क शीट देख सकते हैं। आप पीडीएफ वर्कशीट डाउनलोड कर सकते हैं, उन्हें हल कर सकते हैं और सीधे 'Submit' स्क्रीन से स्नैपशॉट सबमिट कर सकते हैं। यदि आपके पास कोई विशिष्ट प्रश्न है, तो उसे यहाँ टाइप करें!";
@@ -932,7 +1018,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
           aiResponse = "You can access all assigned homework sheets under the 'Homework' tab in your portal. You can download the PDF worksheets, solve them, and submit snapshots directly from the 'Submit' screen. If you have any specific query from a worksheet, type it here!";
         }
       }
-      // 27. GENERAL CHAT: Hello/Hi
+      // 29. GENERAL CHAT: Hello/Hi
       else if (query.contains("hi") || query.contains("hello") || query.contains("hey") || query.contains("helo")) {
         if (isHindi) {
           aiResponse = "नमस्ते! मैं अग्रवाल नॉलेज हब में आपका एआई डाउट असिस्टेंट हूँ। मैं गणित, कंप्यूटर विज्ञान और सामान्य होमवर्क से जुड़े संदेहों को हल करने में आपकी मदद कर सकता हूँ। आज आप कौन सा विषय पढ़ रहे हैं?";
@@ -940,7 +1026,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
           aiResponse = "Hello! I am your AI Doubt Assistant at Agarwal Knowledge Hub. I can help you solve doubts on Mathematics, Computer Science, and general classroom homework. What subject are you studying today?";
         }
       }
-      // 28. GENERAL CHAT: Thank you
+      // 30. GENERAL CHAT: Thank you
       else if (query.contains("thank") || query.contains("thanks")) {
         if (isHindi) {
           aiResponse = "आपका बहुत-बहुत स्वागत है! सीखना एक यात्रा है, और हमें आपकी सहायता करने में खुशी है। मुझे बताएं कि क्या आपके पास कोई अन्य प्रश्न हैं!";
@@ -948,7 +1034,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
           aiResponse = "You're very welcome! Learning is a journey, and we are happy to support you. Let me know if you have any other questions!";
         }
       }
-      // 29. FALLBACK (Default Answer)
+      // 31. FALLBACK (Default Answer)
       else {
         if (isHindi) {
           aiResponse = "यह '${text}' के बारे में एक दिलचस्प सवाल है! आपके एआई ट्यूटर के रूप में, आइए इस विषय को देखें:\n\n1. आपके पाठ्यक्रम के अनुसार, '${text}' एक महत्वपूर्ण शैक्षणिक विषय है।\n2. मैं 'Library' टैब में जाकर अपनी कक्षा के नोट्स या पीडीएफ पुस्तकों की जांच करने की सलाह देता हूँ।\n3. अगले लाइव डाउट क्लियरिंग सेशन में सुश्री अंजलि वर्मा से सीधा मार्गदर्शन प्राप्त करें!";
