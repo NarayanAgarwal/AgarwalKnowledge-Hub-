@@ -31,46 +31,9 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   bool get isMockMode => _useMock;
 
-  void enableMockMode(UserProfile mockUser) async {
+  void enableMockMode([UserProfile? mockUser]) {
     _useMock = true;
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final savedMockJson = prefs.getString('mock_user_profile');
-      if (savedMockJson != null) {
-        final data = jsonDecode(savedMockJson) as Map<String, dynamic>;
-        var name = data['name'] ?? mockUser.name;
-        if (name == "Aman Agarwal") {
-          name = "Narayan Agarwal";
-          final updatedData = Map<String, dynamic>.from(data);
-          updatedData['name'] = "Narayan Agarwal";
-          await prefs.setString('mock_user_profile', jsonEncode(updatedData));
-        }
-        _mockUser = UserProfile(
-          uid: data['uid'] ?? mockUser.uid,
-          role: data['role'] ?? mockUser.role,
-          name: name,
-          phone: data['phone'] ?? mockUser.phone,
-          email: data['email'] ?? mockUser.email,
-          address: data['address'] ?? mockUser.address,
-          userClass: data['class'] ?? mockUser.userClass,
-          rollNumber: data['rollNumber'] ?? mockUser.rollNumber,
-          gender: data['gender'] ?? mockUser.gender,
-          dob: data['dob'] ?? mockUser.dob,
-          admissionNumber: data['admissionNumber'] ?? mockUser.admissionNumber,
-          school: data['school'] ?? mockUser.school,
-          parentName: data['parentName'] ?? mockUser.parentName,
-          parentMobile: data['parentMobile'] ?? mockUser.parentMobile,
-          emergencyContact: data['emergencyContact'] ?? mockUser.emergencyContact,
-          profilePhotoUrl: data['profilePhotoUrl'] ?? mockUser.profilePhotoUrl,
-          createdDate: data['createdDate'] != null ? DateTime.parse(data['createdDate']) : mockUser.createdDate,
-          lastLogin: data['lastLogin'] != null ? DateTime.parse(data['lastLogin']) : mockUser.lastLogin,
-        );
-      } else {
-        _mockUser = mockUser;
-      }
-    } catch (_) {
-      _mockUser = mockUser;
-    }
+    _mockUser = null; // Strictly null on startup until user logs in!
   }
 
   @override

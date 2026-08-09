@@ -114,26 +114,7 @@ void main() async {
 
   if (kIsWeb && !firebaseWebInitialized) {
     print("Launching Agarwal Knowledge Hub in mock mode.");
-    authRepo.enableMockMode(UserProfile(
-      uid: "student_user_123",
-      role: "Student",
-      name: "Narayan Agarwal",
-      phone: "+919876543210",
-      email: "aman@agarwal.com",
-      address: "Mithapur, Patna",
-      userClass: "Class 5",
-      rollNumber: "12",
-      gender: "Male",
-      dob: "2015-02-10",
-      admissionNumber: "ADM2026512",
-      school: "Agarwal Knowledge Hub",
-      parentName: "Suresh Agarwal",
-      parentMobile: "+919876543220",
-      emergencyContact: "+919876543221",
-      profilePhotoUrl: "",
-      createdDate: DateTime.now(),
-      lastLogin: DateTime.now(),
-    ));
+    authRepo.enableMockMode();
     firestoreRepo.enableMockMode();
     storageRepo.enableMockMode();
     notificationService.enableMockMode();
@@ -147,26 +128,7 @@ void main() async {
       print("Firebase not configured. Launching in mock mode: $e");
       
       // Enable Mock fallbacks
-      authRepo.enableMockMode(UserProfile(
-        uid: "student_user_123",
-        role: "Student",
-        name: "Narayan Agarwal",
-        phone: "+919876543210",
-        email: "aman@agarwal.com",
-        address: "Mithapur, Patna",
-        userClass: "Class 5",
-        rollNumber: "12",
-        gender: "Male",
-        dob: "2015-02-10",
-        admissionNumber: "ADM2026512",
-        school: "Agarwal Knowledge Hub",
-        parentName: "Suresh Agarwal",
-        parentMobile: "+919876543220",
-        emergencyContact: "+919876543221",
-        profilePhotoUrl: "",
-        createdDate: DateTime.now(),
-        lastLogin: DateTime.now(),
-      ));
+      authRepo.enableMockMode();
       firestoreRepo.enableMockMode();
       storageRepo.enableMockMode();
       notificationService.enableMockMode();
