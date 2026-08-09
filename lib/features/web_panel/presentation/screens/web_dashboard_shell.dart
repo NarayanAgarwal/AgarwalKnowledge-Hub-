@@ -580,10 +580,139 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
 // ==========================================
 // SUB SCREEN 1: SUPER ADMIN DASHBOARD
 // ==========================================
-class SuperAdminDashboardPanel extends StatelessWidget {
-  final bool isDark;
+  void _showActiveStudentsDialog(BuildContext context, WebPanelViewModel webVm) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.people, color: AppColors.primaryBlue),
+            const SizedBox(width: 10),
+            Text('Active Students Roster & Live Presence (${webVm.studentsList.length})'),
+          ],
+        ),
+        content: SizedBox(
+          width: 550,
+          height: 400,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: webVm.studentsList.map((s) {
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: s.isOnline ? Colors.green.withOpacity(0.2) : Colors.grey.withOpacity(0.2),
+                    child: Icon(s.isOnline ? Icons.sensors : Icons.person, color: s.isOnline ? Colors.green : Colors.grey),
+                  ),
+                  title: Text(s.name, style: TextStyle(fontWeight: FontWeight.bold, decoration: s.isBlocked ? TextDecoration.lineThrough : null)),
+                  subtitle: Text('Class: ${s.userClass} | Phone: ${s.phone} | Roll: ${s.rollNumber}'),
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: s.isBlocked ? Colors.red.withOpacity(0.12) : (s.isOnline ? Colors.green.withOpacity(0.12) : Colors.grey.withOpacity(0.12)),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      s.isBlocked ? 'BLOCKED' : (s.isOnline ? 'LIVE ONLINE 🟢' : 'OFFLINE ⚪'), 
+                      style: TextStyle(color: s.isBlocked ? Colors.red : (s.isOnline ? Colors.green : Colors.grey), fontWeight: FontWeight.bold, fontSize: 10),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+        ],
+      ),
+    );
+  }
 
-  const SuperAdminDashboardPanel({super.key, required this.isDark});
+  void _showActiveTeachersDialog(BuildContext context, WebPanelViewModel webVm) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.assignment_ind, color: AppColors.secondaryOrange),
+            const SizedBox(width: 10),
+            Text('Active Teachers Roster & Status (${webVm.teachersList.length})'),
+          ],
+        ),
+        content: SizedBox(
+          width: 550,
+          height: 400,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: webVm.teachersList.map((t) {
+                final bool isOnLeave = t.statusNote == 'On Leave';
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: isOnLeave ? Colors.amber.withOpacity(0.2) : (t.isOnline ? Colors.green.withOpacity(0.2) : Colors.grey.withOpacity(0.2)),
+                    child: Icon(isOnLeave ? Icons.beach_access : Icons.school, color: isOnLeave ? Colors.amber.shade800 : (t.isOnline ? Colors.green : Colors.grey)),
+                  ),
+                  title: Text(t.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text('Role: ${t.role} | Phone: ${t.phone} | ID: ${t.admissionNumber}'),
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isOnLeave ? Colors.amber.withOpacity(0.12) : (t.isOnline ? Colors.green.withOpacity(0.12) : Colors.grey.withOpacity(0.12)),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      isOnLeave ? 'ON LEAVE 🟡' : (t.isOnline ? 'LIVE TEACHING 🟢' : 'OFFLINE ⚪'), 
+                      style: TextStyle(color: isOnLeave ? Colors.amber.shade800 : (t.isOnline ? Colors.green : Colors.grey), fontWeight: FontWeight.bold, fontSize: 10),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+        ],
+      ),
+    );
+  }
+
+  void _showActiveClassesDialog(BuildContext context, WebPanelViewModel webVm) {
+    final classes = ['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.class_, color: AppColors.accentGreen),
+            SizedBox(width: 10),
+            Text('Active Academic Classes Roster (Class 1 to 12)'),
+          ],
+        ),
+        content: SizedBox(
+          width: 500,
+          height: 400,
+          child: ListView.separated(
+            itemCount: classes.length,
+            separatorBuilder: (ctx, idx) => const Divider(),
+            itemBuilder: (ctx, idx) {
+              final c = classes[idx];
+              final count = webVm.studentsList.where((s) => s.userClass == c).length;
+              return ListTile(
+                leading: const CircleAvatar(backgroundColor: Colors.teal, child: Icon(Icons.school, color: Colors.white)),
+                title: Text(c, style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: const Text('Board: CBSE / BSEB | Subjects: Math, Science, English, Computer...'),
+                trailing: Text('$count Registered Student(s)', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.teal)),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -594,19 +723,42 @@ class SuperAdminDashboardPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Row of stats cards
+          // Row of stats cards with click-to-view active rosters
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: 4,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
-            childAspectRatio: 2.2,
+            childAspectRatio: 2.0,
             children: [
-              _buildStatCard('Total Students', '${webVm.totalStudents}', Icons.people, AppColors.primaryBlue),
-              _buildStatCard('Total Teachers', '${webVm.totalTeachers}', Icons.assignment_ind, AppColors.secondaryOrange),
-              _buildStatCard('Active Classes', '${webVm.totalClasses}', Icons.class_, AppColors.accentGreen),
-              _buildStatCard('Doubt Inquiries', '${webVm.doubtQueries.where((d) => d['status'] == 'Pending').length}', Icons.chat_bubble, Colors.purple),
+              _buildStatCard(
+                'Total Students', 
+                '${webVm.totalStudents}', 
+                Icons.people, 
+                AppColors.primaryBlue,
+                onTap: () => _showActiveStudentsDialog(context, webVm),
+              ),
+              _buildStatCard(
+                'Total Teachers', 
+                '${webVm.totalTeachers}', 
+                Icons.assignment_ind, 
+                AppColors.secondaryOrange,
+                onTap: () => _showActiveTeachersDialog(context, webVm),
+              ),
+              _buildStatCard(
+                'Active Classes', 
+                '${webVm.totalClasses}', 
+                Icons.class_, 
+                AppColors.accentGreen,
+                onTap: () => _showActiveClassesDialog(context, webVm),
+              ),
+              _buildStatCard(
+                'Doubt Inquiries', 
+                '${webVm.doubtQueries.where((d) => d['status'] == 'Pending').length}', 
+                Icons.chat_bubble, 
+                Colors.purple,
+              ),
             ],
           ),
           
@@ -685,36 +837,39 @@ class SuperAdminDashboardPanel extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String title, String count, IconData icon, Color color) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? null : Colors.white,
-        gradient: isDark
-            ? LinearGradient(
-                colors: [
-                  color.withOpacity(0.18),
-                  color.withOpacity(0.03),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : null,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark ? color.withOpacity(0.25) : Colors.grey.shade100,
-          width: 1.5,
+  Widget _buildStatCard(String title, String count, IconData icon, Color color, {VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? null : Colors.white,
+          gradient: isDark
+              ? LinearGradient(
+                  colors: [
+                    color.withOpacity(0.18),
+                    color.withOpacity(0.03),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isDark ? color.withOpacity(0.25) : Colors.grey.shade100,
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: isDark ? color.withOpacity(0.15) : color.withOpacity(0.12),
+              offset: const Offset(0, 4),
+              blurRadius: 10,
+            )
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark ? color.withOpacity(0.15) : color.withOpacity(0.12),
-            offset: const Offset(0, 4),
-            blurRadius: 10,
-          )
-        ],
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
           CircleAvatar(
             radius: 24,
             backgroundColor: color.withOpacity(0.15),
