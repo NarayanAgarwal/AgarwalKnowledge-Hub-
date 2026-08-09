@@ -172,20 +172,20 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
         if (isHindi) {
           aiResponse = "आइए संख्या गिनती (Counting Numbers) को व्यावहारिक उदाहरणों के साथ समझें 🔟:\n\n"
               "1️⃣ **संख्या १ (One)**: 🌟 (एक तारा) - 'एक सूर्य चमकता है।'\n"
-              "2️⃣ **संख्या २ (Two)**: 🌟🌟 (दो तारे) - $1 + 1 = 2$\n"
-              "3️⃣ **संख्या ३ (Three)**: 🌟🌟🌟 (तीन तारे) - $2 + 1 = 3$\n"
-              "4️⃣ **संख्या ४ (Four)**: 🌟🌟🌟🌟 (चार तारे) - $3 + 1 = 4$\n"
-              "5️⃣ **संख्या ५ (Five)**: 🌟🌟🌟🌟🌟 (पाँच तारे) - $4 + 1 = 5$\n\n"
-              "💡 **व्यावहारिक उदाहरण**: यदि आपके पास 3 सेब हैं और अंजली मैम आपको 2 सेब और देती हैं, तो कुल जोड़ $3 + 2 = 5$ होगा। इन्हें क्रमिक रूप से गिनें: 4, 5।\n"
+              "2️⃣ **संख्या २ (Two)**: 🌟🌟 (दो तारे) - 1 + 1 = 2\n"
+              "3️⃣ **संख्या ३ (Three)**: 🌟🌟🌟 (तीन तारे) - 2 + 1 = 3\n"
+              "4️⃣ **संख्या ४ (Four)**: 🌟🌟🌟🌟 (चार तारे) - 3 + 1 = 4\n"
+              "5️⃣ **संख्या ५ (Five)**: 🌟🌟🌟🌟🌟 (पाँच तारे) - 4 + 1 = 5\n\n"
+              "💡 **व्यावहारिक उदाहरण**: यदि आपके पास 3 सेब हैं और अंजली मैम आपको 2 सेब और देती हैं, तो कुल जोड़ 3 + 2 = 5 होगा। इन्हें क्रमिक रूप से गिनें: 4, 5।\n"
               "ऐप के 'Play Study' सेक्शन में गिनती सीखने के लिए विशेष टूल्स उपलब्ध हैं!";
         } else {
           aiResponse = "Let's study numerical counting structures with practical examples 🔟:\n\n"
               "1️⃣ **Number 1 (One)**: 🌟 (One star) - e.g., 'One bright sun.'\n"
-              "2️⃣ **Number 2 (Two)**: 🌟🌟 (Two stars) - Formed by adding $1 + 1 = 2$.\n"
-              "3️⃣ **Number 3 (Three)**: 🌟🌟🌟 (Three stars) - Formed by adding $2 + 1 = 3$.\n"
-              "4️⃣ **Number 4 (Four)**: 🌟🌟🌟🌟 (Four stars) - Formed by adding $3 + 1 = 4$.\n"
-              "5️⃣ **Number 5 (Five)**: 🌟🌟🌟🌟🌟 (Five stars) - Formed by adding $4 + 1 = 5$.\n\n"
-              "💡 **Practical Example**: If you possess 4 marbles, and buy 1 more, you aggregate them as $4 + 1 = 5$ marbles. Head over to the 'Play Study' page on the dashboard to interact with animated counting objects!";
+              "2️⃣ **Number 2 (Two)**: 🌟🌟 (Two stars) - Formed by adding 1 + 1 = 2.\n"
+              "3️⃣ **Number 3 (Three)**: 🌟🌟🌟 (Three stars) - Formed by adding 2 + 1 = 3.\n"
+              "4️⃣ **Number 4 (Four)**: 🌟🌟🌟🌟 (Four stars) - Formed by adding 3 + 1 = 4.\n"
+              "5️⃣ **Number 5 (Five)**: 🌟🌟🌟🌟🌟 (Five stars) - Formed by adding 4 + 1 = 5.\n\n"
+              "💡 **Practical Example**: If you possess 4 marbles, and buy 1 more, you aggregate them as 4 + 1 = 5 marbles. Head over to the 'Play Study' page on the dashboard to interact with animated counting objects!";
         }
       } else if (query.contains("alphabet") || query.contains("abcd")) {
         if (isHindi) {
@@ -233,72 +233,72 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
       } else if (query.contains("fraction")) {
         if (isHindi) {
           aiResponse = "गणित की शंका हल! भिन्न (Fraction) को गहराई और उदाहरणों से समझें 🔢:\n\n"
-              "**परिभाषा**: भिन्न एक ऐसी संख्या है जो किसी संपूर्ण वस्तु (Whole Object) के किसी निश्चित हिस्से को दर्शाती है। इसे $\\frac{\\text{अंश (Numerator)}}{\\text{हर (Denominator)}}$ के रूप में लिखा जाता है।\n\n"
-              "💡 **व्यावहारिक उदाहरण**: यदि आपके पास 1 रोटी है और आप उसे 4 बराबर भागों में काटकर 1 भाग अपने मित्र को देते हैं, तो मित्र को रोटी का $\\frac{1}{4}$ हिस्सा मिला और आपके पास $\\frac{3}{4}$ हिस्सा बचा।\n\n"
+              "**परिभाषा**: भिन्न एक ऐसी संख्या है जो किसी संपूर्ण वस्तु (Whole Object) के किसी निश्चित हिस्से को दर्शाती है। इसे 'अंश (Numerator) / हर (Denominator)' के रूप में लिखा जाता है।\n\n"
+              "💡 **व्यावहारिक उदाहरण**: यदि आपके पास 1 रोटी है और आप उसे 4 बराबर भागों में काटकर 1 भाग अपने मित्र को देते हैं, तो मित्र को रोटी का 1/4 हिस्सा मिला और आपके पास 3/4 हिस्सा बचा।\n\n"
               "**भिन्नों का जोड़ (Addition of Fractions)**:\n"
               "1. **समान हर (Like Denominators)**: हर को वही रखते हुए अंशों को सीधे जोड़ें।\n"
-              "   $$\\text{उदाहरण: } \\frac{2}{7} + \\frac{3}{7} = \\frac{2+3}{7} = \\frac{5}{7}$$\n"
+              "   उदाहरण: 2/7 + 3/7 = (2+3)/7 = 5/7\n"
               "2. **असमान हर (Unlike Denominators)**: पहले हर का LCM लें, फिर जोड़ें।\n"
-              "   $$\\text{उदाहरण: } \\frac{1}{2} + \\frac{1}{3} \\implies \\text{LCM of 2 and 3 is 6} \\implies \\frac{3}{6} + \\frac{2}{6} = \\frac{5}{6}$$";
+              "   उदाहरण: 1/2 + 1/3 (2 और 3 का LCM = 6) -> 3/6 + 2/6 = 5/6";
         } else {
           aiResponse = "Mathematics Doubt Solved! Detailed breakdown of Fractions 🔢:\n\n"
-              "**Definition**: A fraction represents a numerical division of a whole entity. It is structured as $\\frac{\\text{Numerator}}{\\text{Denominator}}$, where the Numerator counts the parts taken and the Denominator represents the total partition slices.\n\n"
-              "💡 **Practical Example**: Imagine a pizza divided into 8 equal slices. If you consume 3 slices, you have eaten $\\frac{3}{8}$ of the pizza, leaving $\\frac{5}{8}$ of it untouched.\n\n"
+              "**Definition**: A fraction represents a numerical division of a whole entity. It is structured as 'Numerator / Denominator', where the Numerator counts the parts taken and the Denominator represents the total partition slices.\n\n"
+              "💡 **Practical Example**: Imagine a pizza divided into 8 equal slices. If you consume 3 slices, you have eaten 3/8 of the pizza, leaving 5/8 of it untouched.\n\n"
               "**Addition Rules (Step-by-Step)**:\n"
               "1. **Like Denominators**: Add numerators directly over the shared denominator:\n"
-              "   $$\\text{Example: } \\frac{4}{9} + \\frac{2}{9} = \\frac{4 + 2}{9} = \\frac{6}{9} = \\frac{2}{3}$$\n"
+              "   Example: 4/9 + 2/9 = (4 + 2)/9 = 6/9 = 2/3\n"
               "2. **Unlike Denominators**: Find the Least Common Multiple (LCM) of denominators first, convert to equivalent fractions, then sum them:\n"
-              "   $$\\text{Example: } \\frac{2}{5} + \\frac{1}{4} \\implies \\text{LCM of 5 and 4 is 20} \\implies \\frac{8}{20} + \\frac{5}{20} = \\frac{13}{20}$$";
+              "   Example: 2/5 + 1/4 (LCM of 5 and 4 is 20) -> 8/20 + 5/20 = 13/20";
         }
       } else if (query.contains("math") || query.contains("sum") || query.contains("add") || query.contains("multiply") || query.contains("divide") || query.contains("algebra") || query.contains("geometry")) {
         if (isHindi) {
           aiResponse = "गणित शिक्षक गाइड (कक्षा 1-10) - विस्तृत नियम और सूत्र 📐:\n\n"
               "1️⃣ **अंकगणित (BODMAS नियम)**:\n"
-              "   - गणना का क्रम: Brackets (कोष्ठक) ➔ Orders (घातांक) ➔ Division (भाग) ➔ Multiplication (गुणा) ➔ Addition (जोड़) ➔ Subtraction (घटाव)।\n"
-              "   - **उदाहरण**: $24 - 4 \\times 5 + (6 \\div 2)$ को हल करें:\n"
-              "     1. कोष्ठक हल करें: $(6 \\div 2) = 3$\n"
-              "     2. गुणा करें: $4 \\times 5 = 20$\n"
-              "     3. जोड़ और घटाव: $24 - 20 + 3 = 4 + 3 = 7$\n\n"
+              "   - गणना का क्रम: Brackets (कोष्ठक) -> Orders (घातांक) -> Division (भाग) -> Multiplication (गुणा) -> Addition (जोड़) -> Subtraction (घटाव)।\n"
+              "   - **उदाहरण**: 24 - 4 * 5 + (6 / 2) को हल करें:\n"
+              "     1. कोष्ठक हल करें: (6 / 2) = 3\n"
+              "     2. गुणा करें: 4 * 5 = 20\n"
+              "     3. जोड़ और घटाव: 24 - 20 + 3 = 4 + 3 = 7\n\n"
               "2️⃣ **ज्यामिति (Geometry Area & Perimeter)**:\n"
-              "   - आयत (Rectangle) का परिमाप = $2 \\times (\\text{लंबाई} + \\text{चौड़ाई})$।\n"
-              "   - वृत्त (Circle) का क्षेत्रफल = $\\pi r^2$ (त्रिज्या $r = 7\\text{ cm} \\implies \\text{क्षेत्रफल} = \\frac{22}{7} \\times 7 \\times 7 = 154\\text{ cm}^2$)।\n\n"
+              "   - आयत (Rectangle) का परिमाप = 2 * (लंबाई + चौड़ाई)।\n"
+              "   - वृत्त (Circle) का क्षेत्रफल = pi * r^2 (त्रिज्या r = 7 cm -> क्षेत्रफल = 22/7 * 7 * 7 = 154 cm^2)।\n\n"
               "3️⃣ **बीजगणित (Algebra Solving)**:\n"
-              "   - **उदाहरण**: $4x + 8 = 20$ में $x$ का मान ज्ञात करें:\n"
-              "     $4x = 20 - 8 \\implies 4x = 12 \\implies x = 3$।";
+              "   - **उदाहरण**: 4x + 8 = 20 में x का मान ज्ञात करें:\n"
+              "     4x = 20 - 8 -> 4x = 12 -> x = 3।";
         } else {
           aiResponse = "Comprehensive Mathematics Academic Guide (Grades 1-10) 📐:\n\n"
               "1️⃣ **Arithmetic (BODMAS Rule for Equation Solving)**:\n"
-              "   - Evaluation sequence: Brackets ➔ Orders (powers) ➔ Division ➔ Multiplication ➔ Addition ➔ Subtraction.\n"
-              "   - **Step-by-Step Example**: Evaluate $30 - 5 \\times (8 - 6) \\div 2$\n"
-              "     1. Solve Brackets: $(8 - 6) = 2$\n"
-              "     2. Multiply & Divide (left-to-right): $5 \\times 2 \\div 2 = 10 \\div 2 = 5$\n"
-              "     3. Final Subtract: $30 - 5 = 25$\n\n"
+              "   - Evaluation sequence: Brackets -> Orders (powers) -> Division -> Multiplication -> Addition -> Subtraction.\n"
+              "   - **Step-by-Step Example**: Evaluate 30 - 5 * (8 - 6) / 2\n"
+              "     1. Solve Brackets: (8 - 6) = 2\n"
+              "     2. Multiply & Divide (left-to-right): 5 * 2 / 2 = 10 / 2 = 5\n"
+              "     3. Final Subtract: 30 - 5 = 25\n\n"
               "2️⃣ **Geometry (Perimeter & Area Formulas)**:\n"
-              "   - Rectangle Perimeter = $2 \\cdot (\\text{Length} + \\text{Width})$.\n"
-              "   - Circle Area = $\\pi r^2$. Example: For radius $r = 14\\text{ cm}$, $\\text{Area} = \\frac{22}{7} \\cdot 14 \\cdot 14 = 616\\text{ cm}^2$.\n\n"
+              "   - Rectangle Perimeter = 2 * (Length + Width).\n"
+              "   - Circle Area = pi * r^2. Example: For radius r = 14 cm, Area = 22/7 * 14 * 14 = 616 cm^2.\n\n"
               "3️⃣ **Algebra (Solving Linear Equations)**:\n"
-              "   - **Example**: Find $x$ for $7x - 9 = 26 \\implies 7x = 35 \\implies x = 5$.";
+              "   - **Example**: Find x for 7x - 9 = 26 -> 7x = 35 -> x = 5.";
         }
       } else if (query.contains("physics") || query.contains("gravity") || query.contains("force") || query.contains("motion") || query.contains("light") || query.contains("electricity")) {
         if (isHindi) {
           aiResponse = "भौतिकी गाइड (Physics In-Depth) ⚡:\n\n"
               "1️⃣ **बल और न्यूटन के नियम (Force & Motion)**:\n"
-              "   - सूत्र: $F = m \\times a$ (बल = द्रव्यमान $\\times$ त्वरण)। बल का मात्रक न्यूटन ($N$) है।\n"
-              "   - **उदाहरण**: $10\\text{ kg}$ की गेंद पर $5\\text{ m/s}^2$ का त्वरण उत्पन्न करने के लिए बल = $10 \\times 5 = 50\\text{ N}$।\n\n"
+              "   - सूत्र: F = m * a (बल = द्रव्यमान * त्वरण)। बल का मात्रक न्यूटन (N) है।\n"
+              "   - **उदाहरण**: 10 kg की गेंद पर 5 m/s^2 का त्वरण उत्पन्न करने के लिए बल = 10 * 5 = 50 N।\n\n"
               "2️⃣ **गुरुत्वाकर्षण (Gravity)**:\n"
-              "   - वह बल जिससे पृथ्वी सभी वस्तुओं को अपने केंद्र की ओर आकर्षित करती है। इसका त्वरण ($g$) $\\approx 9.8\\text{ m/s}^2$ होता है।\n"
-              "   - **उदाहरण**: पृथ्वी पर $10\\text{ kg}$ की वस्तु का भार = $m \\times g = 10 \\times 9.8 = 98\\text{ N}$।\n\n"
+              "   - वह बल जिससे पृथ्वी सभी वस्तुओं को अपने केंद्र की ओर आकर्षित करती है। इसका त्वरण (g) लगभग 9.8 m/s^2 होता है।\n"
+              "   - **उदाहरण**: पृथ्वी पर 10 kg की वस्तु का भार = m * g = 10 * 9.8 = 98 N।\n\n"
               "3️⃣ **प्रकाश का अपवर्तन (Refraction of Light)**:\n"
               "   - जब प्रकाश किरण हवा (विरल) से पानी (सघन) में जाती है, तो वह अभिलंब (normal) की ओर झुक जाती है। इसी कारण पानी में डूबी पेंसिल टेढ़ी दिखाई देती है।";
         } else {
           aiResponse = "Physics Theoretical Core Guide & Real-life Applications ⚡:\n\n"
               "1️⃣ **Newton's Laws of Motion & Force**:\n"
-              "   - Core Formula: $F = m \\cdot a$ (Force = mass $\\times$ acceleration). Unit is Newton ($N$).\n"
-              "   - **Example**: Calculate force required to accelerate a $15\\text{ kg}$ object at $4\\text{ m/s}^2$.\n"
-              "     $$F = 15 \\cdot 4 = 60\\text{ Newtons } (N)$$\n\n"
+              "   - Core Formula: F = m * a (Force = mass * acceleration). Unit is Newton (N).\n"
+              "   - **Example**: Calculate force required to accelerate a 15 kg object at 4 m/s^2.\n"
+              "     F = 15 * 4 = 60 Newtons (N)\n\n"
               "2️⃣ **Gravitational Force & Weight**:\n"
-              "   - Gravity ($g \\approx 9.8\\text{ m/s}^2$) pulls objects towards Earth's core.\n"
-              "   - **Example**: Weight of a $5\\text{ kg}$ object is $W = m \\cdot g = 5 \\cdot 9.8 = 49\\text{ Newtons}$. On the Moon, gravity is only $\\frac{1}{6}$th of Earth, so the same object weighs just $8.1\\text{ N}$!\n\n"
+              "   - Gravity (g = 9.8 m/s^2) pulls objects towards Earth's core.\n"
+              "   - **Example**: Weight of a 5 kg object is W = m * g = 5 * 9.8 = 49 Newtons. On the Moon, gravity is only 1/6th of Earth, so the same object weighs just 8.1 N!\n\n"
               "3️⃣ **Snell's Law & Light Refraction**:\n"
               "   - Refraction is the bending of light when passing from one medium to another. Example: A straw placed in a glass of water looks broken or bent due to speed changes of light in air vs. water.";
         }
@@ -307,24 +307,24 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
           aiResponse = "रसायन विज्ञान (Chemistry Complete Study) 🧪:\n\n"
               "1️⃣ **परमाणु की संरचना (Atomic Structure)**:\n"
               "   - परमाणु पदार्थ की मूल इकाई है। इसके केंद्रक (nucleus) में प्रोटॉन (+) और न्यूट्रॉन होते हैं, और इलेक्ट्रॉन (-) बाहरी कक्षाओं में चक्कर लगाते हैं।\n"
-              "   - **उदाहरण**: कार्बन ($C$) के परमाणु में 6 प्रोटॉन, 6 न्यूट्रॉन और 6 इलेक्ट्रॉन होते हैं।\n\n"
+              "   - **उदाहरण**: कार्बन (C) के परमाणु में 6 प्रोटॉन, 6 न्यूट्रॉन और 6 इलेक्ट्रॉन होते हैं।\n\n"
               "2️⃣ **pH स्केल और अम्ल-क्षार (pH Scale & Acids/Bases)**:\n"
               "   - pH 0 से 6.9: अम्ल (Acids) - स्वाद में खट्टे, नीले लिटमस को लाल करते हैं (उदा: नींबू का रस - साइट्रिक एसिड)।\n"
               "   - pH 7.1 से 14: क्षार (Bases) - स्वाद में कड़वे, लाल लिटमस को नीला करते हैं (उदा: साबुन का पानी)।\n"
               "   - pH 7.0: उदासीन (Neutral) (उदा: शुद्ध डिस्टिल्ड पानी)।\n\n"
               "3️⃣ **रासायनिक प्रतिक्रिया (Chemical Equation Example)**:\n"
-              "   - मैग्नीशियम को हवा में जलाने पर मैग्नीशियम ऑक्साइड बनता है: $2Mg + O_2 \\rightarrow 2MgO$।";
+              "   - मैग्नीशियम को हवा में जलाने पर मैग्नीशियम ऑक्साइड बनता है: 2Mg + O2 -> 2MgO।";
         } else {
           aiResponse = "Chemistry Theoretical Core Guide & Formulas 🧪:\n\n"
               "1️⃣ **Atoms, Elements & Molecular Compounds**:\n"
-              "   - An Atom is the smallest unit of matter, containing a nucleus of Protons ($+$) and Neutrons (neutral), surrounded by orbiting Electrons ($-$).\n"
-              "   - **Example**: Water ($H_2O$) is a compound formed by two Hydrogen atoms covalent-bonded with one Oxygen atom.\n\n"
+              "   - An Atom is the smallest unit of matter, containing a nucleus of Protons (+) and Neutrons (neutral), surrounded by orbiting Electrons (-).\n"
+              "   - **Example**: Water (H2O) is a compound formed by two Hydrogen atoms covalent-bonded with one Oxygen atom.\n\n"
               "2️⃣ **pH Scale Mechanics**:\n"
-              "   - pH < 7: Acidic (sour, turns blue litmus paper red, e.g., citric acid in lemons, stomach $HCl$).\n"
+              "   - pH < 7: Acidic (sour, turns blue litmus paper red, e.g., citric acid in lemons, stomach HCl).\n"
               "   - pH > 7: Basic/Alkaline (bitter, slippery feel, turns red litmus paper blue, e.g., sodium bicarbonate, soap).\n"
               "   - pH = 7: Neutral (e.g., pure distilled water).\n\n"
               "3️⃣ **Chemical Balancing Example**:\n"
-              "   - Methane combustion: $CH_4 + 2O_2 \\rightarrow CO_2 + 2H_2O$ (shows conservation of mass).";
+              "   - Methane combustion: CH4 + 2O2 -> CO2 + 2H2O (shows conservation of mass).";
         }
       } else if (query.contains("biology") || query.contains("cell") || query.contains("plant") || query.contains("photosynthesis") || query.contains("human body")) {
         if (isHindi) {
@@ -332,8 +332,8 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "1️⃣ **कोशिका: जीवन की इकाई (Cell Biology)**:\n"
               "   - कोशिका सभी सजीवों की मूलभूत संरचनात्मक इकाई है। जंतु कोशिका में कोशिका भित्ति नहीं होती, जबकि पादप कोशिका में सेल्युलोज से बनी कठोर कोशिका भित्ति (Cell Wall) और क्लोरोप्लास्ट (हरित लवक) होते हैं।\n\n"
               "2️⃣ **प्रकाश संश्लेषण (Photosynthesis)**:\n"
-              "   - हरी पत्तियाँ सूर्य के प्रकाश में क्लोरोफिल की सहायता से कार्बन डाइऑक्साइड ($CO_2$) और पानी ($H_2O$) का उपयोग करके ग्लूकोज (भोजन) बनाती हैं और ऑक्सीजन मुक्त करती हैं।\n"
-              "   - **अभिक्रिया सूत्र**: $6CO_2 + 6H_2O + \\text{प्रकाश ऊर्जा} \\rightarrow C_6H_{12}O_6 + 6O_2$।\n\n"
+              "   - हरी पत्तियाँ सूर्य के प्रकाश में क्लोरोफिल की सहायता से कार्बन डाइऑक्साइड (CO2) और पानी (H2O) का उपयोग करके ग्लूकोज (भोजन) बनाती हैं और ऑक्सीजन मुक्त करती हैं।\n"
+              "   - **अभिक्रिया सूत्र**: 6CO2 + 6H2O + प्रकाश ऊर्जा -> C6H12O6 + 6O2।\n\n"
               "3️⃣ **मानव शरीर प्रणाली (Human Body Systems)**:\n"
               "   - परिसंचरण तंत्र (Circulatory System) में हृदय रक्त को पूरे शरीर में पंप करता है। धमनियाँ (Arteries) साफ ऑक्सीजन युक्त रक्त ले जाती हैं और शिराएँ (Veins) अशुद्ध रक्त वापस हृदय तक लाती हैं।";
         } else {
@@ -341,8 +341,8 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "1️⃣ **Cell Structure (Animal vs. Plant Cells)**:\n"
               "   - The cell is the basic structural and functional unit of life. Plant cells possess a rigid, external Cell Wall and green Chloroplasts for energy conversion, which animal cells lack.\n\n"
               "2️⃣ **Photosynthesis Process & Formula**:\n"
-              "   - Plants convert inorganic molecules ($CO_2$ and $H_2O$) into organic glucose sugar ($C_6H_{12}O_6$) utilizing solar energy captured by chlorophyll pigments, expelling oxygen ($O_2$) as a vital byproduct.\n"
-              "   - **Balanced Equation**: $6CO_2 + 6H_2O + \\text{light energy} \\rightarrow C_6H_{12}O_6 + 6O_2$.\n\n"
+              "   - Plants convert inorganic molecules (CO2 and H2O) into organic glucose sugar (C6H12O6) utilizing solar energy captured by chlorophyll pigments, expelling oxygen (O2) as a vital byproduct.\n"
+              "   - **Balanced Equation**: 6CO2 + 6H2O + light energy -> C6H12O6 + 6O2.\n\n"
               "3️⃣ **Human Circulation System**:\n"
               "   - The human cardiovascular system utilizes the heart to pump blood. Arteries transport oxygenated blood away from the heart to feed tissues, while Veins return deoxygenated blood containing carbon dioxide back to the heart.";
         }
@@ -366,8 +366,8 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
         if (isHindi) {
           aiResponse = "अर्थशास्त्र गाइड (Economics & Markets) 📊:\n\n"
               "1️⃣ **मांग और आपूर्ति का नियम (Law of Demand and Supply)**:\n"
-              "   - **मांग का नियम**: जब किसी वस्तु की कीमत बढ़ती है, तो उसकी मांग घटती है (कीमत ➔ मांग ⬇️)।\n"
-              "   - **आपूर्ति का नियम**: जब कीमत बढ़ती है, तो उत्पादक अधिक मुनाफा कमाने के लिए बाजार में आपूर्ति बढ़ा देते हैं (कीमत ➔ आपूर्ति ⬆️)।\n"
+              "   - **मांग का नियम**: जब किसी वस्तु की कीमत बढ़ती है, तो उसकी मांग घटती है (कीमत -> मांग घटेगी)।\n"
+              "   - **आपूर्ति का नियम**: जब कीमत बढ़ती है, तो उत्पादक अधिक मुनाफा कमाने के लिए बाजार में आपूर्ति बढ़ा देते हैं (कीमत -> आपूर्ति बढ़ेगी)।\n"
               "   - **उदाहरण**: यदि आम का सीजन शुरू होता है और बाजार में बहुत सारे आम आ जाते हैं (आपूर्ति बढ़ जाती है), तो आम की कीमत कम हो जाती है।\n\n"
               "2️⃣ **भारतीय अर्थव्यवस्था के क्षेत्र (Sectors of Economy)**:\n"
               "   - **प्राथमिक क्षेत्र**: कृषि, पशुपालन, और खनन।\n"
@@ -391,7 +391,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   - यह एक प्राचीन कांस्य युगीन (Bronze Age) सभ्यता थी जो सिंधु नदी घाटी में विकसित हुई थी। यह अपनी सुनियोजित नगर नियोजन प्रणाली (grid system), पक्की ईंटों के घरों और उन्नत जल निकासी व्यवस्था (drainage system) के लिए जानी जाती है।\n\n"
               "2️⃣ **भारतीय स्वतंत्रता आंदोलन (Indian Freedom Struggle)**:\n"
               "   - भारत को ब्रिटिश शासन से 15 अगस्त 1947 को स्वतंत्रता मिली।\n"
-              "   - **महात्मा गांधी और आंदोलन**: गांधीजी ने अहिंसा (Non-Violence) और सत्याग्रह के माध्यम से असहयोग आंदोलन (Non-Cooperation Movement, 1920), नमक सत्याग्रह (Dandi March, 1930) और भारत छोड़ो आंदोलन (Quit India, 1942) का नेतृत्व किया।\n"
+              "   - **महात्मा गांधी और आंदोलन**: गांधीजी ने असहयोग आंदोलन (1920), नमक सत्याग्रह (Dandi March, 1930) और भारत छोड़ो आंदोलन (1942) का नेतृत्व किया।\n"
               "   - **क्रांतिकारी नेता**: नेताजी सुभाष चंद्र बोस ने 'आजाद हिंद फौज' का गठन किया और नारा दिया 'तुम मुझे खून दो, मैं तुम्हें आजादी दूंगा।';";
         } else {
           aiResponse = "Historical Milestones & National Movements 📜:\n\n"
@@ -424,7 +424,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   - **Core**: Innermost dense layer made of Nickel and Iron (NiFe). The liquid outer core generates Earth's protective magnetic field, while the inner core is solid due to immense pressure.\n\n"
               "2️⃣ **Atmosphere Layers**:\n"
               "   - **Troposphere**: Lowest layer (0-12 km) containing 75% of atmospheric mass and all weather phenomena.\n"
-              "   - **Stratosphere**: Contains the crucial **Ozone ($O_3$) Layer** which absorbs 98% of the sun's ionizing ultraviolet radiation.\n\n"
+              "   - **Stratosphere**: Contains the crucial **Ozone (O3) Layer** which absorbs 98% of the sun's ionizing ultraviolet radiation.\n\n"
               "3️⃣ **Rock Types & Soil Profiles**:\n"
               "   - Igneous Rocks (crystallized from cooling magma, e.g., basalt), Sedimentary Rocks (accumulated mineral deposits, e.g., limestone), and Metamorphic Rocks (transformed by heat & pressure, e.g., marble).";
         }
@@ -524,7 +524,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   - **कदम**: 'View' टैब पर जाएं ➔ 'Slide Master' चुनें ➔ सबसे ऊपर वाली मास्टर स्लाइड में लोगो लगाएं और फॉन्ट चुनें। 'Close Master View' करने पर यह स्वतः सभी स्लाइडों पर लागू हो जाएगा।\n\n"
               "2️⃣ **Morph ट्रांजिशन (आधुनिक एनिमेशन प्रभाव)**:\n"
               "   - **उपयोग**: यह दो स्लाइडों के बीच की आकृतियों को सुचारू रूप से बदलता (smooth transition) है।\n"
-              "   - **कदम**: पहली स्लाइड पर एक वृत्त (circle) बनाएं ➔ स्लाइड को डुप्लीकेट करें ➔ दूसरी स्लाइड पर उस वृत्त को बड़ा करें और दाईं ओर खिसकाएं ➔ 'Transitions' में जाकर **'Morph'** चुनें।\n\n"
+              "   - **कदम**: पहली स्लाइड पर एक वृत्त (circle) बनाएं ➔ स्लाइड को डुप्लीकेट करें ➔ दूसरी स्लाइड पर उस वृत्त को बड़ा करें और दाईं ओर खिसकाएं ➔ 'Transitions' में जाकर 'Morph' चुनें।\n\n"
               "3️⃣ **शॉर्टकट कुंजी**:\n"
               "   - F5: प्रेजेंटेशन को पहले पन्ने से शुरू करता है।\n"
               "   - Shift + F5: वर्तमान खुली हुई स्लाइड से शो चलाता है।";
@@ -535,7 +535,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   - **Step-by-Step**: Go to 'View' tab ➔ select 'Slide Master' ➔ edit the top master layout card. Insert your custom company logo and set headers. Click 'Close Master View'. All current and future slides will reflect this template.\n\n"
               "2️⃣ **Morph Transition (Advanced Motion Effects)**:\n"
               "   - **Purpose**: Creates highly premium, fluid movement animations of shapes and text moving across sequential slides.\n"
-              "   - **Step-by-Step**: Place an image on Slide 1 ➔ Duplicate Slide 1 ➔ On Slide 2, scale the image up and relocate it to the opposite corner ➔ Go to 'Transitions' tab and select **'Morph'**.\n\n"
+              "   - **Step-by-Step**: Place an image on Slide 1 ➔ Duplicate Slide 1 ➔ On Slide 2, scale the image up and relocate it to the opposite corner ➔ Go to 'Transitions' tab and select 'Morph'.\n\n"
               "3️⃣ **Keyboard Shortcuts**:\n"
               "   - F5: Begins the slideshow presentation from slide 1.\n"
               "   - Shift + F5: Initiates presentation from the current active slide.";
@@ -547,11 +547,11 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   - कंप्यूटर एक डिजिटल इलेक्ट्रॉनिक मशीन है जो यूजर से डेटा (Input) लेती है, उसे सीपीयू में प्रोसेस (Process) करती है, और एक व्यवस्थित अर्थपूर्ण आउटपुट (Output) देती है।\n"
               "   - **वॉन न्यूमैन आर्किटेक्चर (Von Neumann)**: इसमें पांच मुख्य भाग होते हैं: Control Unit (सिग्नल भेजना), ALU (गणित करना), Main Memory (RAM), Secondary Storage (हार्ड ड्राइव) और Input/Output इंटरफेस।\n\n"
               "2️⃣ **कंप्यूटर की पीढ़ियों का इतिहास (History & Evolution)**:\n"
-              "   - **पहली पीढ़ी (1940-1956)**: *वैक्यूम ट्यूब (Vacuum Tubes)* का उपयोग। ये बहुत बड़े थे और भारी मात्रा में गर्मी पैदा करते थे (उदा: ENIAC, EDVAC)।\n"
-              "   - **दूसरी पीढ़ी (1956-1963)**: *ट्रांजिस्टर (Transistors)* का आगमन। ये छोटे, तेज और सस्ते थे (उदा: IBM 7090)।\n"
-              "   - **तीसरी पीढ़ी (1963-1971)**: *इंटीग्रेटेड सर्किट (IC)* का उपयोग। एक सिंगल सिलिकॉन चिप पर सैकड़ों ट्रांजिस्टर लगाया गए।\n"
-              "   - **चौथी पीढ़ी (1971-वर्तमान)**: *माइक्रोप्रोसेसर (Microprocessor)*। बहुत बड़े पैमाने पर एकीकरण (VLSI) करके पूरा CPU एक चिप पर बनाया गया (उदा: Intel 4004)।\n"
-              "   - **पांचवीं पीढ़ी (भविष्य)**: *आर्टिफिशियल इंटेलिजेंस (AI)*, सुपरकंप्यूटर, क्वांटम कंप्यूटिंग और रोबोटिक्स।";
+              "   - **पहली पीढ़ी (1940-1956)**: वैक्यूम ट्यूब (Vacuum Tubes) का उपयोग। ये बहुत बड़े थे और भारी मात्रा में गर्मी पैदा करते थे (उदा: ENIAC, EDVAC)।\n"
+              "   - **दूसरी पीढ़ी (1956-1963)**: ट्रांजिस्टर (Transistors) का आगमन। ये छोटे, तेज और सस्ते थे (उदा: IBM 7090)।\n"
+              "   - **तीसरी पीढ़ी (1963-1971)**: इंटीग्रेटेड सर्किट (IC) का उपयोग। एक सिंगल सिलिकॉन चिप पर सैकड़ों ट्रांजिस्टर लगाया गए।\n"
+              "   - **चौथी पीढ़ी (1971-वर्तमान)**: माइक्रोप्रोसेसर (Microprocessor)। बहुत बड़े पैमाने पर एकीकरण (VLSI) करके पूरा CPU एक चिप पर बनाया गया (उदा: Intel 4004)।\n"
+              "   - **पांचवीं पीढ़ी (भविष्य)**: आर्टिफिशियल इंटेलिजेंस (AI) और सुपरकंप्यूटर।";
         } else {
           aiResponse = "Computer Architecture, Systems Science & History 💻:\n\n"
               "1️⃣ **Core Engineering Architecture (Von Neumann Design)**:\n"
@@ -571,7 +571,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
         if (isHindi) {
           aiResponse = "कंप्यूटर हार्डवेयर और आंतरिक घटक (System Hardware & Components) 🔌:\n\n"
               "1️⃣ **CPU (सेंट्रल प्रोसेसिंग यूनिट - प्रोसेसर)**:\n"
-              "   - इसे कंप्यूटर का हृदय और मस्तिष्क कहते हैं। यह प्रति सेकंड अरबों निर्देशों को प्रोसेस करता है। प्रोसेसर की गति **गीगाहर्ट्ज़ (GHz)** में मापी जाती है (उदा: 3.5 GHz का मतलब 3.5 अरब क्लॉक चक्र प्रति सेकंड)। इसमें ALU (Arithmetic Logic Unit) और Control Unit होते हैं।\n\n"
+              "   - इसे कंप्यूटर का हृदय और मस्तिष्क कहते हैं। यह प्रति सेकंड अरबों निर्देशों को प्रोसेस करता है। प्रोसेसर की गति गीगाहर्ट्ज़ (GHz) में मापी जाती है (उदा: 3.5 GHz का मतलब 3.5 अरब क्लॉक चक्र प्रति सेकंड)। इसमें ALU (Arithmetic Logic Unit) और Control Unit होते हैं।\n\n"
               "2️⃣ **RAM बनाम ROM (मेमोरी के प्रकार)**:\n"
               "   - **RAM (Random Access Memory)**: यह एक प्राथमिक वोलेटाइल (अस्थायी) मेमोरी है। यह वर्तमान में निष्पादित हो रहे प्रोग्रामों का डेटा होल्ड करती है। बिजली कटने पर इसका सारा डेटा मिट जाता है (उदा: DDR4, DDR5 RAM)।\n"
               "   - **ROM (Read Only Memory)**: यह नॉन-वोलेटाइल (स्थायी) होती है। इसमें मदरबोर्ड बनाने वाली कंपनी द्वारा 'BIOS/UEFI' प्रोग्राम राइट किया जाता है, जो कंप्यूटर को बूट करने और हार्डवेयर का परीक्षण करने (POST) का कार्य करता है।\n\n"
@@ -582,7 +582,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
           aiResponse = "Computer Hardware & Micro-Component Engineering 🔌:\n\n"
               "1️⃣ **CPU Logic Core Design**:\n"
               "   - The microprocessor contains millions of microscopic logic gates. It features two prime compartments:\n"
-              "     - **ALU (Arithmetic Logic Unit)**: Executes arithmetic functions ($+, -, \\times, \\div$) and logical comparisons ($<, >, =$).\n"
+              "     - **ALU (Arithmetic Logic Unit)**: Executes arithmetic functions (+, -, *, /) and logical comparisons (<, >, =).\n"
               "     - **CU (Control Unit)**: Directs the data flow inside the motherboard and translates assembly instructions into execution signals.\n\n"
               "2️⃣ **Volatile vs. Non-Volatile Memory**:\n"
               "   - **RAM (Random Access Memory)**: Primary volatile storage. High bandwidth channels feed data from storage to CPU cache. Loses memory charge once power supply shuts off.\n"
@@ -635,9 +635,9 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
           aiResponse = "Computer Networks, Protocols & Internet Infrastructure 🌐:\n\n"
               "1️⃣ **IP Address Formats (Device Identifiers)**:\n"
               "   - **IPv4**: A 32-bit address split into 4 octets separated by decimals (e.g., 192.168.1.50). Limits global addresses to ~4.3 billion.\n"
-              "   - **IPv6**: A 128-bit hexadecimal addressing format designed to handle the billions of IoT devices globally. E.g. `2001:0db8:85a3:0000:0000:8a2e:0370:7334`.\n"
+              "   - **IPv6**: A 128-bit hexadecimal addressing format designed to handle the billions of IoT devices globally. E.g. 2001:0db8:85a3:0000:0000:8a2e:0370:7334.\n"
               "2️⃣ **Domain Name System (DNS - Resolution Pipeline)**:\n"
-              "   - Converts human domains (e.g. `google.com`) to computer-readable numerical IP addresses. When you enter a URL, the router queries a DNS Resolver, which checks Root, TLD, and Authoritative Name Servers to return the IP address.\n\n"
+              "   - Converts human domains (e.g. google.com) to computer-readable numerical IP addresses. When you enter a URL, the router queries a DNS Resolver, which checks Root, TLD, and Authoritative Name Servers to return the IP address.\n\n"
               "3️⃣ **Core Protocol Suites**:\n"
               "   - **TCP/IP**: TCP establishes the connection handshakes, guarantees packet sequence delivery, and handles packet errors. IP handles routing and addressing.\n"
               "   - **HTTP/HTTPS**: Hypertext Transfer Protocol. HTTPS encrypts packets using SSL/TLS certificates over port 443.";
@@ -676,7 +676,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
         }
       } else if (query.contains("coding") || query.contains("programming") || query.contains("python") || query.contains("java") || query.contains("c++") || query.contains("javascript") || query.contains("compiler") || query.contains("loop") || query.contains("algorithm")) {
         if (isHindi) {
-          aiResponse = "प्रोग्रामिंग, कोडिंग और सॉफ्टवेयर डेवलपमेंट लॉजिक 💻:\n\n"
+          aiResponse = "प्रोग्रामिंग, कोडिंग और ऑल्गोरिदम लॉजिक 💻:\n\n"
               "1️⃣ **प्रमुख भाषाओं की गहरी समझ**:\n"
               "   - **Python**: सीखने में सबसे आसान। आर्टिफिशियल इंटेलिजेंस (AI), मशीन लर्निंग, डेटा साइंस और स्क्रिप्टिंग की दुनिया की सर्वश्रेष्ठ भाषा।\n"
               "     - *उदाहरण कोड*:\n"
@@ -714,7 +714,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "एमएस ऑफिस व्यावसायिक कार्यों के लिए दुनिया का सबसे पसंदीदा सुइट है:\n"
               "1️⃣ **एमएस वर्ड (MS Word)**: पत्र, प्रमाण पत्र, असाइनमेंट, और नोट्स तैयार करने का वर्ड प्रोसेसर। (उन्नत सीखें: Mail Merge, Macros, Tables)।\n"
               "2️⃣ **एमएस एक्सेल (MS Excel)**: संख्यात्मक डेटा, बजट रिपोर्ट, और ग्राफ बनाने की स्प्रेडशीट। (उन्नत सीखें: XLOOKUP, Pivot Tables, SUMIFS)।\n"
-              "3️⃣ **एमएस पावरपॉइंट (MS PowerPoint)**: शैक्षणिक और व्यावसायिक विषयों को प्रस्तुत करने का स्लाइड शो टूल। (उन्नत सीखें: Slide Master, Morph Animation, SmartArt)।\n"
+              "3️⃣ **एमएस पावरपॉइंट (MS PowerPoint)**: आकर्षक स्लाइड्स और स्लाइड मास्टर प्रस्तुतियाँ बनाने का टूल। (उन्नत सीखें: Slide Master, Morph Animation, SmartArt)।\n"
               "4️⃣ **एमएस आउटलुक (MS Outlook)**: ईमेल भेजने, कैलेंडर मैनेज करने, और बैठकों को शेड्यूल करने का टूल।\n\n"
               "💡 **सलाह**: आप किस प्रोग्राम के फॉर्मूले या शॉर्टकट को विस्तार से सीखना चाहते हैं? उसका नाम लिखें (जैसे: 'vlookup', 'mail merge', 'slide master')!";
         } else {
