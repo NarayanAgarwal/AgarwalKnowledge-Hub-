@@ -580,6 +580,11 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
 // ==========================================
 // SUB SCREEN 1: SUPER ADMIN DASHBOARD
 // ==========================================
+class SuperAdminDashboardPanel extends StatelessWidget {
+  final bool isDark;
+
+  const SuperAdminDashboardPanel({super.key, required this.isDark});
+
   void _showActiveStudentsDialog(BuildContext context, WebPanelViewModel webVm) {
     showDialog(
       context: context,
