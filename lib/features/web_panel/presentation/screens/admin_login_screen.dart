@@ -41,13 +41,13 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       final String password = _passwordController.text.trim();
       final authVm = Provider.of<AuthViewModel>(context, listen: false);
 
-      // Enforce Permanent Fixed Password for Super Admin
+      // Strict Permanent Fixed Password Check for Super Admin Role
       if (_selectedRole == AppStrings.roleSuperAdmin || email == 'admin@agarwal.com') {
-        if (password != 'MoMDaD 754' && password != '123456') {
+        if (password != 'MoMDaD 754') {
           setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Access Denied: Incorrect Super Admin Password! Security password required.'),
+              content: Text('Access Denied: Incorrect Super Admin Password! Permanent security password required: MoMDaD 754'),
               backgroundColor: Colors.red,
             ),
           );
@@ -60,7 +60,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       try {
         if (authVm.isMockMode) {
           await Future.delayed(const Duration(milliseconds: 800));
-          if ((email == 'admin@agarwal.com' || _selectedRole == AppStrings.roleSuperAdmin) && (password == 'MoMDaD 754' || password == '123456')) {
+          if ((email == 'admin@agarwal.com' || _selectedRole == AppStrings.roleSuperAdmin) && password == 'MoMDaD 754') {
             profile = UserProfile(
               uid: "web_admin_123",
               role: AppStrings.roleSuperAdmin,
@@ -123,30 +123,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               createdDate: DateTime.now(),
               lastLogin: DateTime.now(),
             );
-          } else if (password == '123456') {
-            profile = UserProfile(
-              uid: "web_custom_123",
-              role: _selectedRole,
-              name: "Staff User (${_selectedRole})",
-              phone: "+919876543200",
-              email: email,
-              address: "Patna",
-              userClass: "",
-              rollNumber: "",
-              gender: "Male",
-              dob: "1988-08-08",
-              admissionNumber: "STF-AKH-999",
-              school: "Agarwal Knowledge Hub",
-              parentName: "",
-              parentMobile: "",
-              emergencyContact: "",
-              profilePhotoUrl: "",
-              createdDate: DateTime.now(),
-              lastLogin: DateTime.now(),
-            );
           }
         } else {
-          // Live Firebase Mode: search in Firestore users collection
+          // Live Firebase Mode: search in Firestore users collection for matching email & password
           final query = await FirebaseFirestore.instance
               .collection(AppStrings.colUsers)
               .where('email', isEqualTo: email)
@@ -185,7 +164,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Invalid Email or Password! Try admin@agarwal.com with password 123456.'),
+              content: Text('Access Denied: Invalid Email or Password! Super Admin password is MoMDaD 754.'),
               backgroundColor: Colors.red,
             ),
           );
