@@ -21,8 +21,10 @@ abstract class FirestoreRepository {
 
   // Homework
   Stream<List<Homework>> getHomeworkList(String userClass);
+  Stream<List<Homework>> getAllHomework();
   Future<void> uploadHomework(Homework homework);
   Future<void> deleteHomework(String homeworkId);
+  Future<void> markHomeworkAsSeen(String homeworkId, String studentName);
 
   // Notes/PDFs/Videos
   Stream<List<Note>> getNotesList(String userClass, String mediaType);

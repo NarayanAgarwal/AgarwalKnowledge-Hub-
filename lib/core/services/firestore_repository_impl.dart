@@ -341,6 +341,27 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   }
 
   @override
+  Stream<List<Homework>> getAllHomework() async* {
+    if (_useMock) {
+      yield _mockHomework;
+      await for (final _ in _mockUpdateController.stream) {
+        yield _mockHomework;
+      }
+      return;
+    }
+    yield* _db
+        .collection(AppStrings.colHomework)
+        .snapshots()
+        .map((snap) {
+          final list = snap.docs
+              .map((doc) => Homework.fromFirestore(doc.data(), doc.id))
+              .toList();
+          list.sort((a, b) => b.createdDate.compareTo(a.createdDate));
+          return list;
+        });
+  }
+
+  @override
   Future<void> uploadHomework(Homework homework) async {
     if (_useMock) {
       _mockHomework.add(homework);
@@ -358,6 +379,47 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
       return;
     }
     await _db.collection(AppStrings.colHomework).doc(homeworkId).delete();
+  }
+
+  @override
+  Future<void> markHomeworkAsSeen(String homeworkId, String studentName) async {
+    if (_useMock) {
+      final idx = _mockHomework.indexWhere((hw) => hw.id == homeworkId);
+      if (idx != -1) {
+        final hw = _mockHomework[idx];
+        if (!hw.seenBy.contains(studentName)) {
+          final updatedHw = Homework(
+            id: hw.id,
+            title: hw.title,
+            description: hw.description,
+            userClass: hw.userClass,
+            fileUrl: hw.fileUrl,
+            fileName: hw.fileName,
+            deadline: hw.deadline,
+            teacherId: hw.teacherId,
+            teacherName: hw.teacherName,
+            createdDate: hw.createdDate,
+            subject: hw.subject,
+            seenBy: [...hw.seenBy, studentName],
+          );
+          _mockHomework[idx] = updatedHw;
+          _mockUpdateController.add(null);
+        }
+      }
+      return;
+    }
+    
+    final docRef = _db.collection(AppStrings.colHomework).doc(homeworkId);
+    await _db.runTransaction((transaction) async {
+      final snapshot = await transaction.get(docRef);
+      if (snapshot.exists) {
+        final list = List<String>.from(snapshot.data()?['seenBy'] ?? []);
+        if (!list.contains(studentName)) {
+          list.add(studentName);
+          transaction.update(docRef, {'seenBy': list});
+        }
+      }
+    });
   }
 
   // Notes/PDFs/Videos

@@ -4,12 +4,39 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/models/homework.dart';
 import '../../../../core/services/download_provider.dart';
 import '../../../../core/services/progress_provider.dart';
+import '../../../auth/viewmodels/auth_viewmodel.dart';
+import '../../../dashboard/viewmodels/dashboard_viewmodel.dart';
 import 'homework_submit_screen.dart';
 
-class HomeworkDetailScreen extends StatelessWidget {
+class HomeworkDetailScreen extends StatefulWidget {
   final Homework homework;
 
   const HomeworkDetailScreen({super.key, required this.homework});
+
+  @override
+  State<HomeworkDetailScreen> createState() => _HomeworkDetailScreenState();
+}
+
+class _HomeworkDetailScreenState extends State<HomeworkDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _markAsSeen();
+  }
+
+  void _markAsSeen() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        final authVm = Provider.of<AuthViewModel>(context, listen: false);
+        final dashVm = Provider.of<DashboardViewModel>(context, listen: false);
+        if (authVm.userProfile != null && authVm.userProfile!.role == 'Student') {
+          dashVm.markHomeworkAsSeen(widget.homework.id, authVm.userProfile!.name);
+        }
+      } catch (e) {
+        debugPrint("Error marking homework as seen: $e");
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +44,8 @@ class HomeworkDetailScreen extends StatelessWidget {
     final progressProvider = Provider.of<ProgressProvider>(context);
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final String status = progressProvider.getHomeworkStatus(homework.id);
-    final bool isDownloaded = homework.fileUrl.isEmpty ? false : downloadProvider.isDownloaded(homework.fileUrl);
+    final String status = progressProvider.getHomeworkStatus(widget.homework.id);
+    final bool isDownloaded = widget.homework.fileUrl.isEmpty ? false : downloadProvider.isDownloaded(widget.homework.fileUrl);
 
     return Scaffold(
       appBar: AppBar(
@@ -41,7 +68,7 @@ class HomeworkDetailScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            homework.title,
+                            widget.homework.title,
                             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -50,12 +77,17 @@ class HomeworkDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Teacher: ${homework.teacherName}',
+                      'Subject: ${widget.homework.subject}',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.secondaryOrange),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Teacher: ${widget.homework.teacherName}',
                       style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.grey),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Due Date: ${homework.deadline.day}/${homework.deadline.month}/${homework.deadline.year}',
+                      'Due Date: ${widget.homework.deadline.day}/${widget.homework.deadline.month}/${widget.homework.deadline.year}',
                       style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                   ],
@@ -71,13 +103,13 @@ class HomeworkDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              homework.description,
+              widget.homework.description,
               style: const TextStyle(fontSize: 14, height: 1.5),
             ),
             
             const SizedBox(height: 24),
 
-            if (homework.fileUrl.isNotEmpty) ...[
+            if (widget.homework.fileUrl.isNotEmpty) ...[
               const Text(
                 'Attachments',
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
@@ -86,7 +118,7 @@ class HomeworkDetailScreen extends StatelessWidget {
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
-                  title: Text(homework.fileName.isNotEmpty ? homework.fileName : 'attachment.pdf'),
+                  title: Text(widget.homework.fileName.isNotEmpty ? widget.homework.fileName : 'attachment.pdf'),
                   subtitle: Text(isDownloaded ? 'Downloaded Offline' : 'Size: 1.2 MB'),
                   trailing: isDownloaded
                       ? const Icon(Icons.check_circle, color: AppColors.accentGreen)
@@ -94,9 +126,9 @@ class HomeworkDetailScreen extends StatelessWidget {
                           icon: const Icon(Icons.download, color: AppColors.primaryBlue),
                           onPressed: () {
                             downloadProvider.startDownload(
-                              homework.id,
-                              homework.fileName.isNotEmpty ? homework.fileName : 'Homework PDF',
-                              homework.fileUrl,
+                              widget.homework.id,
+                              widget.homework.fileName.isNotEmpty ? widget.homework.fileName : 'Homework PDF',
+                              widget.homework.fileUrl,
                               'pdf',
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -119,7 +151,7 @@ class HomeworkDetailScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => HomeworkSubmitScreen(homework: homework),
+                      builder: (context) => HomeworkSubmitScreen(homework: widget.homework),
                     ),
                   );
                 },

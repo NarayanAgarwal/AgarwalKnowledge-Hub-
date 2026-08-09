@@ -75,6 +75,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   Widget build(BuildContext context) {
     final authVm = Provider.of<AuthViewModel>(context);
+    final dashVm = Provider.of<DashboardViewModel>(context);
     final user = authVm.userProfile;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -84,6 +85,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: _currentIndex != 0
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  setState(() {
+                    _currentIndex = 0;
+                  });
+                },
+              )
+            : null,
         title: Text(_currentIndex == 0 ? AppStrings.appName : _getTabTitle(_currentIndex)),
         actions: [
           IconButton(
@@ -108,7 +119,29 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         ],
       ),
       drawer: _buildSideDrawer(context, user, isDark),
-      body: _screens[_currentIndex],
+      body: Column(
+        children: [
+          if (dashVm.isMockEnabled)
+            Container(
+              width: double.infinity,
+              color: Colors.amber[800],
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+              child: const Row(
+                children: [
+                  Icon(Icons.warning_amber_rounded, color: Colors.white, size: 16),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Running in Local Mock Mode. Changes will not sync to the cloud database.',
+                      style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          Expanded(child: _screens[_currentIndex]),
+        ],
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [

@@ -156,6 +156,7 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
   @override
   Widget build(BuildContext context) {
     final authVm = Provider.of<AuthViewModel>(context);
+    final webVm = Provider.of<WebPanelViewModel>(context);
     final user = authVm.userProfile;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final double width = MediaQuery.sizeOf(context).width;
@@ -201,6 +202,25 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
                 // Top Navigation Bar
                 _buildTopBar(context, user, isDark),
                 
+                if (webVm.isMockEnabled)
+                  Container(
+                    width: double.infinity,
+                    color: Colors.amber[800],
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.warning_amber_rounded, color: Colors.white, size: 16),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Administrative Warning: You are operating in Local Mock Mode. Notice and Homework edits will not persist to the online cloud database.',
+                            style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                 // Active Panel View Area
                 Expanded(
                   child: Container(
@@ -1206,72 +1226,432 @@ class HomeworkManagementPanel extends StatefulWidget {
 }
 
 class _HomeworkManagementPanelState extends State<HomeworkManagementPanel> {
-  final _titleController = TextEditingController();
-  final _classController = TextEditingController();
-  final _descController = TextEditingController();
+  String _selectedClass = 'Class 5';
 
-  void _onUpload() {
+  final List<String> _classes = [
+    'Class 1',
+    'Class 2',
+    'Class 3',
+    'Class 4',
+    'Class 5',
+    'Class 6',
+    'Class 7',
+    'Class 8',
+    'Class 9',
+    'Class 10',
+    'Computer Theory',
+    'Computer Practical',
+  ];
+
+  final List<String> _subjects = [
+    'Mathematics',
+    'Science',
+    'English',
+    'Hindi',
+    'History',
+    'Geography',
+    'Political Science',
+    'Social Science',
+    'Computer Science',
+    'General',
+  ];
+
+  final List<Map<String, dynamic>> _homeworkRows = [
+    {
+      'subject': 'Mathematics',
+      'title': 'Maths Exercise 1',
+      'description': 'Solve Questions 1 to 5 from Page 20.',
+    }
+  ];
+
+  void _addSubjectRow() {
+    setState(() {
+      _homeworkRows.add({
+        'subject': 'Science',
+        'title': '',
+        'description': '',
+      });
+    });
+  }
+
+  void _removeSubjectRow(int index) {
+    if (_homeworkRows.length > 1) {
+      setState(() {
+        _homeworkRows.removeAt(index);
+      });
+    }
+  }
+
+  void _onPublish() async {
     final webVm = Provider.of<WebPanelViewModel>(context, listen: false);
-    final hw = Homework(
-      id: 'hw_${DateTime.now().millisecondsSinceEpoch}',
-      title: _titleController.text.trim(),
-      description: _descController.text.trim(),
-      userClass: _classController.text.trim(),
-      fileUrl: '',
-      fileName: '',
-      deadline: DateTime.now().add(const Duration(days: 2)),
-      teacherId: 'web_admin',
-      teacherName: 'Super Admin',
-      createdDate: DateTime.now(),
-    );
+    final authVm = Provider.of<AuthViewModel>(context, listen: false);
+    final currentUserName = authVm.userProfile?.name ?? 'Super Admin';
+    final currentUserId = authVm.userProfile?.uid ?? 'web_admin';
 
-    webVm.uploadHomework(hw);
+    int count = 0;
+    for (var row in _homeworkRows) {
+      final String title = row['title']?.toString().trim() ?? '';
+      final String desc = row['description']?.toString().trim() ?? '';
+      final String subj = row['subject']?.toString() ?? 'General';
 
-    _titleController.clear();
-    _classController.clear();
-    _descController.clear();
+      if (title.isEmpty || desc.isEmpty) continue;
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Homework task created successfully.')));
+      final hw = Homework(
+        id: 'hw_${DateTime.now().millisecondsSinceEpoch}_$count',
+        title: title,
+        description: desc,
+        userClass: _selectedClass,
+        fileUrl: '',
+        fileName: '',
+        deadline: DateTime.now().add(const Duration(days: 2)),
+        teacherId: currentUserId,
+        teacherName: currentUserName,
+        createdDate: DateTime.now(),
+        subject: subj,
+        seenBy: const [],
+      );
+
+      await webVm.uploadHomework(hw);
+      count++;
+    }
+
+    if (count > 0) {
+      setState(() {
+        _homeworkRows.clear();
+        _homeworkRows.add({
+          'subject': 'Mathematics',
+          'title': '',
+          'description': '',
+        });
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Successfully published $count homework tasks for $_selectedClass!')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill out title and instructions for at least one subject.')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final webVm = Provider.of<WebPanelViewModel>(context);
+    final authVm = Provider.of<AuthViewModel>(context);
+    final userRole = authVm.userProfile?.role ?? 'Super Admin';
+
+    // Verify roles: Super Admin, Principal (Admin), and Teacher have access
+    final bool hasPermission = userRole == 'Super Admin' || userRole == 'Admin' || userRole == 'Teacher';
+
+    if (!hasPermission) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24.0),
+          child: Text(
+            'Access Denied: Only Super Admin, Principal, and Teachers can publish or view homework logs.',
+            style: TextStyle(fontSize: 16, color: Colors.red, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: MaxWidthContainer(
-        child: GlassContainer(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Create New Homework', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 24),
-              CustomTextField(
-                controller: _titleController,
-                labelText: 'Task Title',
-                hintText: 'e.g. Fractions Worksheet 1',
-                prefixIcon: Icons.assignment,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GlassContainer(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Create New Homework (Multi-Subject Dashboard)', 
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 24),
+                  
+                  // Class Selection Dropdown
+                  Row(
+                    children: [
+                      const Icon(Icons.school, color: AppColors.primaryBlue),
+                      const SizedBox(width: 12),
+                      const Text('Select Target Class: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedClass,
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          items: _classes.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                          onChanged: (val) {
+                            if (val != null) {
+                              setState(() {
+                                _selectedClass = val;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  const Text('Homework Assignments by Subject', 
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
+                  const SizedBox(height: 16),
+
+                  // Dynamic list of subject homework builders
+                  Column(
+                    children: List.generate(_homeworkRows.length, (index) {
+                      final row = _homeworkRows[index];
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: widget.isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.02),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppColors.primaryBlue.withOpacity(0.15)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Subject Assignment #${index + 1}', 
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                                if (_homeworkRows.length > 1)
+                                  IconButton(
+                                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                    onPressed: () => _removeSubjectRow(index),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            
+                            // Subject selector
+                            DropdownButtonFormField<String>(
+                              value: row['subject'],
+                              decoration: InputDecoration(
+                                labelText: 'Subject',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                              items: _subjects.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                              onChanged: (val) {
+                                if (val != null) {
+                                  setState(() {
+                                    row['subject'] = val;
+                                  });
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            
+                            // Task Title
+                            TextFormField(
+                              initialValue: row['title'],
+                              decoration: InputDecoration(
+                                labelText: 'Task Title',
+                                hintText: 'e.g. Worksheet or Chapter revision',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                              onChanged: (val) {
+                                row['title'] = val;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            
+                            // Description / What to do
+                            TextFormField(
+                              initialValue: row['description'],
+                              maxLines: 3,
+                              decoration: InputDecoration(
+                                labelText: 'Homework Instructions / What to do',
+                                hintText: 'Provide detailed list of questions, pages, or guidelines...',
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                              onChanged: (val) {
+                                row['description'] = val;
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                  ),
+                  
+                  const SizedBox(height: 8),
+                  
+                  // Row Action Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.add),
+                        label: const Text('Add Subject'),
+                        onPressed: _addSubjectRow,
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.cloud_upload),
+                        label: const Text('Publish Homework to Class'),
+                        onPressed: _onPublish,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryBlue,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _classController,
-                labelText: 'Assign Class',
-                hintText: 'e.g. Class 5',
-                prefixIcon: Icons.school,
+            ),
+            
+            const SizedBox(height: 32),
+            
+            // Homework logs and student views tracker list
+            GlassContainer(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Homework Status & Student Seen Tracker', 
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      Chip(
+                        label: Text('${webVm.homeworksList.length} Tasks active'),
+                        backgroundColor: AppColors.primaryBlue.withOpacity(0.1),
+                        labelStyle: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  webVm.homeworksList.isEmpty
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 32.0),
+                            child: Text('No homework has been published yet.', style: TextStyle(color: Colors.grey)),
+                          ),
+                        )
+                      : ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: webVm.homeworksList.length,
+                          separatorBuilder: (context, index) => const Divider(height: 24),
+                          itemBuilder: (context, index) {
+                            final hw = webVm.homeworksList[index];
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.primaryBlue.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(6),
+                                              ),
+                                              child: Text(
+                                                hw.userClass,
+                                                style: const TextStyle(
+                                                  color: AppColors.primaryBlue,
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.secondaryOrange.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(6),
+                                              ),
+                                              child: Text(
+                                                hw.subject,
+                                                style: const TextStyle(
+                                                  color: AppColors.secondaryOrange,
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(hw.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          'Deadline: ${hw.deadline.day}/${hw.deadline.month}/${hw.deadline.year}',
+                                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.remove_red_eye_outlined, color: Colors.green, size: 14),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              '${hw.seenBy.length} Student(s) seen',
+                                              style: const TextStyle(
+                                                fontSize: 12, 
+                                                color: Colors.green, 
+                                                fontWeight: FontWeight.bold
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  hw.description,
+                                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                if (hw.seenBy.isNotEmpty) ...[
+                                  const SizedBox(height: 8),
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.green.withOpacity(0.06),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      'Seen by: ${hw.seenBy.join(", ")}',
+                                      style: const TextStyle(fontSize: 11, color: Colors.green, fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            );
+                          },
+                        ),
+                ],
               ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _descController,
-                labelText: 'Description / Instructions',
-                hintText: 'Page 30 questions 1 to 5...',
-                prefixIcon: Icons.description,
-              ),
-              const SizedBox(height: 24),
-              CustomButton(
-                text: 'Publish Homework',
-                onPressed: _onUpload,
-              )
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -1438,16 +1818,22 @@ class NoticeBoardPanel extends StatefulWidget {
 class _NoticeBoardPanelState extends State<NoticeBoardPanel> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
+  String _selectedType = 'General';
+  
+  final List<String> _types = ['General', 'Urgent', 'Announcement'];
 
   void _onPublish() {
     final webVm = Provider.of<WebPanelViewModel>(context, listen: false);
+    final authVm = Provider.of<AuthViewModel>(context, listen: false);
+    final senderName = authVm.userProfile?.name ?? 'Super Admin';
+
     final notice = Notice(
       id: 'ntc_${DateTime.now().millisecondsSinceEpoch}',
       title: _titleController.text.trim(),
       content: _contentController.text.trim(),
-      type: 'General',
+      type: _selectedType,
       createdDate: DateTime.now(),
-      sender: 'Super Admin',
+      sender: senderName,
     );
 
     webVm.publishNotice(notice);
@@ -1460,35 +1846,177 @@ class _NoticeBoardPanelState extends State<NoticeBoardPanel> {
 
   @override
   Widget build(BuildContext context) {
+    final webVm = Provider.of<WebPanelViewModel>(context);
+    final authVm = Provider.of<AuthViewModel>(context);
+    final userRole = authVm.userProfile?.role ?? 'Super Admin';
+
+    // Verify roles: Super Admin, Principal (Admin), and Teacher have access
+    final bool hasPermission = userRole == 'Super Admin' || userRole == 'Admin' || userRole == 'Teacher';
+
+    if (!hasPermission) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24.0),
+          child: Text(
+            'Access Denied: Only Super Admin, Principal, and Teachers can publish or view notice logs.',
+            style: TextStyle(fontSize: 16, color: Colors.red, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: MaxWidthContainer(
-        child: GlassContainer(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Publish Notice Board Announcement', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 24),
-              CustomTextField(
-                controller: _titleController,
-                labelText: 'Notice Title',
-                hintText: 'e.g. Holiday Announcement',
-                prefixIcon: Icons.announcement,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GlassContainer(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Publish Notice Board Announcement', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 24),
+                  
+                  // Notice Title
+                  CustomTextField(
+                    controller: _titleController,
+                    labelText: 'Notice Title',
+                    hintText: 'e.g. Holiday Announcement',
+                    prefixIcon: Icons.announcement,
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Notice Type Selector
+                  DropdownButtonFormField<String>(
+                    value: _selectedType,
+                    decoration: InputDecoration(
+                      labelText: 'Notice Type',
+                      prefixIcon: const Icon(Icons.label, color: AppColors.primaryBlue),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    items: _types.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
+                    onChanged: (val) {
+                      if (val != null) {
+                        setState(() {
+                          _selectedType = val;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Content Details
+                  CustomTextField(
+                    controller: _contentController,
+                    labelText: 'Notice Content Details',
+                    hintText: 'Schools will remain closed...',
+                    prefixIcon: Icons.description,
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  CustomButton(
+                    text: 'Publish Announcement',
+                    onPressed: _onPublish,
+                  )
+                ],
               ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _contentController,
-                labelText: 'Notice Content Details',
-                hintText: 'Schools will remain closed...',
-                prefixIcon: Icons.description,
+            ),
+            
+            const SizedBox(height: 32),
+            
+            // Notice logs and status tracker list
+            GlassContainer(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Notice Bulletin Board History', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      Chip(
+                        label: Text('${webVm.noticesList.length} Announcements'),
+                        backgroundColor: AppColors.primaryBlue.withOpacity(0.1),
+                        labelStyle: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  webVm.noticesList.isEmpty
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 32.0),
+                            child: Text('No announcements published yet.', style: TextStyle(color: Colors.grey)),
+                          ),
+                        )
+                      : ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: webVm.noticesList.length,
+                          separatorBuilder: (context, index) => const Divider(height: 24),
+                          itemBuilder: (context, index) {
+                            final notice = webVm.noticesList[index];
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(notice.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                              const SizedBox(width: 8),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: notice.type == 'Urgent' ? AppColors.error : AppColors.primaryBlue,
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                child: Text(
+                                                  notice.type,
+                                                  style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'Published on: ${notice.createdDate.day}/${notice.createdDate.month}/${notice.createdDate.year} by ${notice.sender}',
+                                            style: const TextStyle(fontSize: 11, color: Colors.grey),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                      onPressed: () async {
+                                        await webVm.deleteNotice(notice.id);
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Announcement deleted successfully.')),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  notice.content,
+                                  style: TextStyle(fontSize: 13, color: Colors.grey[600], height: 1.4),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                ],
               ),
-              const SizedBox(height: 24),
-              CustomButton(
-                text: 'Publish Announcement',
-                onPressed: _onPublish,
-              )
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

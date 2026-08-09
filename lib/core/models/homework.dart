@@ -11,6 +11,8 @@ class Homework {
   final String teacherId;
   final String teacherName;
   final DateTime createdDate;
+  final String subject;
+  final List<String> seenBy;
 
   Homework({
     required this.id,
@@ -23,6 +25,8 @@ class Homework {
     required this.teacherId,
     required this.teacherName,
     required this.createdDate,
+    this.subject = 'General',
+    this.seenBy = const [],
   });
 
   factory Homework.fromFirestore(Map<String, dynamic> data, String id) {
@@ -37,6 +41,8 @@ class Homework {
       teacherId: data['teacherId'] ?? '',
       teacherName: data['teacherName'] ?? '',
       createdDate: (data['createdDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      subject: data['subject'] ?? 'General',
+      seenBy: List<String>.from(data['seenBy'] ?? []),
     );
   }
 
@@ -51,6 +57,8 @@ class Homework {
       'teacherId': teacherId,
       'teacherName': teacherName,
       'createdDate': Timestamp.fromDate(createdDate),
+      'subject': subject,
+      'seenBy': seenBy,
     };
   }
 }

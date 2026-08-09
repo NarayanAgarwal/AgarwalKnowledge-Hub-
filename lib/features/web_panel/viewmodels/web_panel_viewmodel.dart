@@ -79,6 +79,11 @@ class WebPanelViewModel with ChangeNotifier {
         notifyListeners();
       });
 
+      _repository.getAllHomework().listen((data) {
+        homeworksList = data;
+        notifyListeners();
+      });
+
       _repository.getStories().listen((data) {
         storiesList = data;
         notifyListeners();

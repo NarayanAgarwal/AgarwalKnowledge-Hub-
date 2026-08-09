@@ -36,6 +36,8 @@ class DashboardViewModel with ChangeNotifier {
   String get searchQuery => _searchQuery;
   List<dynamic> get searchResults => _searchResults;
 
+  bool get isMockEnabled => _repository.isMockEnabled;
+
   DashboardViewModel(this._repository);
 
   // Load dashboard content based on class
@@ -156,5 +158,9 @@ class DashboardViewModel with ChangeNotifier {
     }
 
     _searchResults = results;
+  }
+
+  Future<void> markHomeworkAsSeen(String homeworkId, String studentName) async {
+    await _repository.markHomeworkAsSeen(homeworkId, studentName);
   }
 }
