@@ -501,6 +501,21 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
                   Text(user.role, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
                 ],
               ),
+              const SizedBox(width: 14),
+              // Logout & Lock Security Access button
+              IconButton(
+                icon: const Icon(Icons.logout, color: Colors.red),
+                tooltip: 'Logout & Lock Security Access',
+                onPressed: () async {
+                  await authVm.logout();
+                  if (context.mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    );
+                  }
+                },
+              ),
             ],
           ),
         ],
