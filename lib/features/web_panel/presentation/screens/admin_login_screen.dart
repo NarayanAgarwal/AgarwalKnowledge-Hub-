@@ -37,17 +37,40 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
-      final String email = _emailController.text.trim();
+      final String email = _emailController.text.trim().toLowerCase();
       final String password = _passwordController.text.trim();
       final authVm = Provider.of<AuthViewModel>(context, listen: false);
 
-      // Strict Permanent Fixed Password Check for Super Admin Role
+      // 1. Strict Email Format Verification (must contain @ and valid domain like .com)
+      final emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+      if (!emailRegExp.hasMatch(email)) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Access Denied: Please enter a valid Email address containing @ and .com'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      // 2. Strict Permanent Security Password & Email Check for Super Admin
       if (_selectedRole == AppStrings.roleSuperAdmin || email == 'admin@agarwal.com') {
+        if (email != 'admin@agarwal.com') {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Access Denied: Super Admin login email must be admin@agarwal.com'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
         if (password != 'MoMDaD 754') {
           setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Access Denied: Incorrect Super Admin Password! Permanent security password required: MoMDaD 754'),
+              content: Text('Access Denied: Incorrect Super Admin Password! Required: MoMDaD 754'),
               backgroundColor: Colors.red,
             ),
           );
@@ -60,7 +83,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       try {
         if (authVm.isMockMode) {
           await Future.delayed(const Duration(milliseconds: 800));
-          if ((email == 'admin@agarwal.com' || _selectedRole == AppStrings.roleSuperAdmin) && password == 'MoMDaD 754') {
+          
+          if (email == 'admin@agarwal.com' && password == 'MoMDaD 754') {
             profile = UserProfile(
               uid: "web_admin_123",
               role: AppStrings.roleSuperAdmin,
@@ -147,7 +171,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       if (profile != null) {
         if (profile.role != _selectedRole && _selectedRole != AppStrings.roleStudent && _selectedRole != AppStrings.roleParent) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Role Mismatch: Account role is "${profile.role}", but you selected "$_selectedRole".')),
+            SnackBar(
+              content: Text('Role Mismatch: Account role is "${profile.role}", but you selected "$_selectedRole".'),
+              backgroundColor: Colors.orange,
+            ),
           );
           return;
         }
@@ -164,7 +191,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Access Denied: Invalid Email or Password! Super Admin password is MoMDaD 754.'),
+              content: Text('Access Denied: Invalid Email Address or Password! Login Rejected.'),
               backgroundColor: Colors.red,
             ),
           );
@@ -226,6 +253,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                 padding: const EdgeInsets.all(32.0),
                 child: Form(
                   key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
