@@ -19,6 +19,10 @@ class UserProfile {
   final String profilePhotoUrl;
   final DateTime createdDate;
   final DateTime lastLogin;
+  final bool isOnline;
+  final DateTime lastActive;
+  final bool isBlocked;
+  final String statusNote; // 'Active', 'On Leave', 'Teaching', 'Suspended'
 
   UserProfile({
     required this.uid,
@@ -39,7 +43,11 @@ class UserProfile {
     required this.profilePhotoUrl,
     required this.createdDate,
     required this.lastLogin,
-  });
+    this.isOnline = false,
+    DateTime? lastActive,
+    this.isBlocked = false,
+    this.statusNote = 'Active',
+  }) : lastActive = lastActive ?? createdDate;
 
   factory UserProfile.fromFirestore(Map<String, dynamic> data, String id) {
     return UserProfile(
@@ -61,6 +69,10 @@ class UserProfile {
       profilePhotoUrl: data['profilePhotoUrl'] ?? '',
       createdDate: (data['createdDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       lastLogin: (data['lastLogin'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      isOnline: data['isOnline'] ?? false,
+      lastActive: (data['lastActive'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      isBlocked: data['isBlocked'] ?? false,
+      statusNote: data['statusNote'] ?? 'Active',
     );
   }
 
@@ -84,6 +96,10 @@ class UserProfile {
       'profilePhotoUrl': profilePhotoUrl,
       'createdDate': createdDate.toIso8601String(),
       'lastLogin': lastLogin.toIso8601String(),
+      'isOnline': isOnline,
+      'lastActive': lastActive.toIso8601String(),
+      'isBlocked': isBlocked,
+      'statusNote': statusNote,
     };
   }
 
@@ -107,6 +123,10 @@ class UserProfile {
       profilePhotoUrl: json['profilePhotoUrl'] ?? '',
       createdDate: DateTime.parse(json['createdDate'] ?? DateTime.now().toIso8601String()),
       lastLogin: DateTime.parse(json['lastLogin'] ?? DateTime.now().toIso8601String()),
+      isOnline: json['isOnline'] ?? false,
+      lastActive: json['lastActive'] != null ? DateTime.parse(json['lastActive']) : DateTime.now(),
+      isBlocked: json['isBlocked'] ?? false,
+      statusNote: json['statusNote'] ?? 'Active',
     );
   }
 
@@ -129,6 +149,10 @@ class UserProfile {
       'profilePhotoUrl': profilePhotoUrl,
       'createdDate': Timestamp.fromDate(createdDate),
       'lastLogin': Timestamp.fromDate(lastLogin),
+      'isOnline': isOnline,
+      'lastActive': Timestamp.fromDate(lastActive),
+      'isBlocked': isBlocked,
+      'statusNote': statusNote,
     };
   }
 
@@ -150,6 +174,10 @@ class UserProfile {
     String? profilePhotoUrl,
     DateTime? createdDate,
     DateTime? lastLogin,
+    bool? isOnline,
+    DateTime? lastActive,
+    bool? isBlocked,
+    String? statusNote,
   }) {
     return UserProfile(
       uid: uid,
@@ -170,6 +198,10 @@ class UserProfile {
       profilePhotoUrl: profilePhotoUrl ?? this.profilePhotoUrl,
       createdDate: createdDate ?? this.createdDate,
       lastLogin: lastLogin ?? this.lastLogin,
+      isOnline: isOnline ?? this.isOnline,
+      lastActive: lastActive ?? this.lastActive,
+      isBlocked: isBlocked ?? this.isBlocked,
+      statusNote: statusNote ?? this.statusNote,
     );
   }
 }

@@ -183,7 +183,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => DownloadProvider()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
         ChangeNotifierProvider(create: (_) => ProgressProvider()),
-        ChangeNotifierProvider(create: (_) => WebPanelViewModel(firestoreRepo)),
+        ChangeNotifierProvider(create: (_) => WebPanelViewModel(firestoreRepo, storageRepo)),
         ChangeNotifierProvider(create: (_) => LibraryProvider()),
         ChangeNotifierProvider(create: (_) => AudioProvider()),
         ChangeNotifierProvider(create: (_) => AcademicProvider()),

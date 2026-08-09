@@ -6,5 +6,13 @@ abstract class StorageRepository {
     required File file,
     required String fileName,
   });
+
+  Future<String> uploadFileBytes({
+    required String path,
+    required List<int> bytes,
+    required String fileName,
+    required String mimeType,
+  });
+
   Future<void> deleteFile(String fileUrl);
 }

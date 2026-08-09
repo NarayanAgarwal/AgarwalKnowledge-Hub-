@@ -138,6 +138,9 @@ class AuthViewModel with ChangeNotifier {
     try {
       final profile = await _authRepository.loginWithPassword(phone, password);
       if (profile != null) {
+        if (profile.isBlocked) {
+          throw Exception("Your account has been suspended/blocked by Super Admin. Please contact administration.");
+        }
         _userProfile = profile;
         
         final prefs = await SharedPreferences.getInstance();
@@ -382,5 +385,16 @@ class AuthViewModel with ChangeNotifier {
     }
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> updateOnlineStatus(bool isOnline) async {
+    if (_userProfile == null) return;
+    final updated = _userProfile!.copyWith(
+      isOnline: isOnline,
+      lastActive: DateTime.now(),
+    );
+    _userProfile = updated;
+    notifyListeners();
+    await _authRepository.saveUserProfile(updated);
   }
 }

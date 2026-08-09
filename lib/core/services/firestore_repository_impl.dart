@@ -239,6 +239,24 @@ class FirestoreRepositoryImpl implements FirestoreRepository {
   }
 
   @override
+  Stream<List<UserProfile>> streamUsers(String role) async* {
+    if (_useMock) {
+      yield _mockUsers.where((u) => u.role == role).toList();
+      await for (final _ in _mockUpdateController.stream) {
+        yield _mockUsers.where((u) => u.role == role).toList();
+      }
+      return;
+    }
+    yield* _db
+        .collection(AppStrings.colUsers)
+        .where('role', isEqualTo: role)
+        .snapshots()
+        .map((snap) => snap.docs
+            .map((doc) => UserProfile.fromFirestore(doc.data(), doc.id))
+            .toList());
+  }
+
+  @override
   Future<void> createUserProfile(UserProfile profile) async {
     if (_useMock) {
       _mockUsers.removeWhere((u) => u.uid == profile.uid);

@@ -17,6 +17,9 @@ import '../../../../core/models/notice.dart';
 import '../../../../core/models/quiz.dart';
 import '../../../../core/models/story.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
 class WebDashboardShell extends StatefulWidget {
   const WebDashboardShell({super.key});
@@ -796,12 +799,82 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
     _classController.clear();
     _rollController.clear();
     
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Student registered successfully.')));
+  Widget _buildMiniStat(String label, String value, IconData icon, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(width: 10),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+            Text(label, style: TextStyle(fontSize: 11, color: Colors.grey[600])),
+          ],
+        ),
+      ],
+    );
+  }
+
+  void _showStudentActivityDialog(BuildContext context, UserProfile student) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.security, color: AppColors.primaryBlue),
+            const SizedBox(width: 8),
+            Text('${student.name} - Activity & Surveillance Log'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('• Admission Number: ${student.admissionNumber.isNotEmpty ? student.admissionNumber : 'ADM-5001'}', style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Text('• Current Class: ${student.userClass} (Roll No: ${student.rollNumber})'),
+            const SizedBox(height: 6),
+            Text('• Phone Number: ${student.phone}'),
+            const SizedBox(height: 6),
+            Text('• Parent Name: ${student.parentName} (${student.parentMobile})'),
+            const SizedBox(height: 6),
+            Text('• Account Status: ${student.isBlocked ? 'BLOCKED / SUSPENDED 🔴' : 'ACTIVE 🟢'}', 
+                style: TextStyle(color: student.isBlocked ? Colors.red : Colors.green, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 6),
+            Text('• Live Presence: ${student.isOnline ? 'Online now (Active in App)' : 'Offline'}'),
+            const SizedBox(height: 6),
+            Text('• Last Active Timestamp: ${student.lastActive.day}/${student.lastActive.month}/${student.lastActive.year} at ${student.lastActive.hour}:${student.lastActive.minute.toString().padLeft(2, '0')}'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Close Log'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final webVm = Provider.of<WebPanelViewModel>(context);
+    final authVm = Provider.of<AuthViewModel>(context);
+    final isSuperAdmin = authVm.userProfile?.role == AppStrings.roleSuperAdmin;
+
+    final int totalCount = webVm.studentsList.length;
+    final int onlineCount = webVm.studentsList.where((s) => s.isOnline).length;
+    final int offlineCount = webVm.studentsList.where((s) => !s.isOnline).length;
+    final int blockedCount = webVm.studentsList.where((s) => s.isBlocked).length;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -814,7 +887,43 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Students Roster', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                // Top Live Active Surveillance Counter Bar
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: widget.isDark ? AppColors.darkSurface : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.primaryBlue.withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildMiniStat('Total Students', '$totalCount', Icons.people, AppColors.primaryBlue),
+                      _buildMiniStat('Live Active 🟢', '$onlineCount', Icons.sensors, Colors.green),
+                      _buildMiniStat('Offline ⚪', '$offlineCount', Icons.sensors_off, Colors.grey),
+                      _buildMiniStat('Blocked ⛔', '$blockedCount', Icons.block, Colors.red),
+                    ],
+                  ),
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Student Roster & Activity Surveillance', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                    if (isSuperAdmin)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.red.withOpacity(0.3)),
+                        ),
+                        child: const Text('Super Admin Surveillance Controls Active 🛡️', 
+                            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 11)),
+                      ),
+                  ],
+                ),
                 const SizedBox(height: 16),
                 Card(
                   child: ListView.separated(
@@ -825,12 +934,113 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
                     itemBuilder: (context, index) {
                       final student = webVm.studentsList[index];
                       return ListTile(
-                        leading: const CircleAvatar(child: Icon(Icons.person)),
-                        title: Text(student.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text('Class: ${student.userClass} | Phone: ${student.phone}'),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline, color: AppColors.error),
-                          onPressed: () => webVm.deleteStudent(student.uid),
+                        leading: Stack(
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: student.isBlocked ? Colors.red.withOpacity(0.2) : null,
+                              child: Icon(student.isBlocked ? Icons.block : Icons.person, color: student.isBlocked ? Colors.red : null),
+                            ),
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: Container(
+                                width: 12,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  color: student.isBlocked ? Colors.red : (student.isOnline ? Colors.green : Colors.grey),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white, width: 1.5),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        title: Row(
+                          children: [
+                            Text(
+                              student.name, 
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                decoration: student.isBlocked ? TextDecoration.lineThrough : null,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            if (student.isBlocked)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Text(
+                                  'BLOCKED',
+                                  style: TextStyle(color: Colors.red, fontSize: 9, fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            else if (student.isOnline)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Text(
+                                  'Online Now 🟢',
+                                  style: TextStyle(color: Colors.green, fontSize: 9, fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            else
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Text(
+                                  'Offline ⚪',
+                                  style: TextStyle(color: Colors.grey, fontSize: 9, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                          ],
+                        ),
+                        subtitle: Text('Class: ${student.userClass} | Phone: ${student.phone} | Roll: ${student.rollNumber}'),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Info surveillance dialog icon
+                            IconButton(
+                              icon: const Icon(Icons.visibility_outlined, color: AppColors.primaryBlue),
+                              tooltip: 'View Online History & Logs',
+                              onPressed: () => _showStudentActivityDialog(context, student),
+                            ),
+
+                            // Super Admin Block/Unblock Control Button
+                            if (isSuperAdmin)
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: student.isBlocked ? Colors.green : Colors.red,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                onPressed: () {
+                                  final updated = student.copyWith(isBlocked: !student.isBlocked);
+                                  webVm.updateStudent(updated);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(student.isBlocked ? '${student.name} Unblocked!' : '${student.name} Blocked!'),
+                                    ),
+                                  );
+                                },
+                                child: Text(student.isBlocked ? 'Unblock' : 'Block', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                              ),
+                            
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, color: AppColors.error),
+                              onPressed: () => webVm.deleteStudent(student.uid),
+                            ),
+                          ],
                         ),
                       );
                     },
@@ -942,12 +1152,41 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
     _phoneController.clear();
     _subjectController.clear();
     
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Teacher registered successfully.')));
+  Widget _buildTeacherStat(String label, String value, IconData icon, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(width: 10),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+            Text(label, style: TextStyle(fontSize: 11, color: Colors.grey[600])),
+          ],
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final webVm = Provider.of<WebPanelViewModel>(context);
+    final authVm = Provider.of<AuthViewModel>(context);
+    final isSuperAdmin = authVm.userProfile?.role == AppStrings.roleSuperAdmin;
+
+    final int totalCount = webVm.teachersList.length;
+    final int onlineCount = webVm.teachersList.where((t) => t.isOnline).length;
+    final int leaveCount = webVm.teachersList.where((t) => t.statusNote == 'On Leave').length;
+    final int offlineCount = webVm.teachersList.where((t) => !t.isOnline && t.statusNote != 'On Leave').length;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -960,7 +1199,43 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Teachers Roster', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                // Top Live Active Surveillance Counter Bar
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: widget.isDark ? AppColors.darkSurface : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.secondaryOrange.withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildTeacherStat('Total Teachers', '$totalCount', Icons.assignment_ind, AppColors.secondaryOrange),
+                      _buildTeacherStat('Teaching Live 🟢', '$onlineCount', Icons.sensors, Colors.green),
+                      _buildTeacherStat('Offline ⚪', '$offlineCount', Icons.sensors_off, Colors.grey),
+                      _buildTeacherStat('On Leave 🟡', '$leaveCount', Icons.beach_access, Colors.amber),
+                    ],
+                  ),
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Teachers Roster & Active Class Surveillance', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                    if (isSuperAdmin)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.secondaryOrange.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: AppColors.secondaryOrange.withOpacity(0.3)),
+                        ),
+                        child: const Text('Super Admin Teacher Controls Active 🛡️', 
+                            style: TextStyle(color: AppColors.secondaryOrange, fontWeight: FontWeight.bold, fontSize: 11)),
+                      ),
+                  ],
+                ),
                 const SizedBox(height: 16),
                 Card(
                   child: ListView.separated(
@@ -970,13 +1245,106 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
                     separatorBuilder: (context, index) => const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final teacher = webVm.teachersList[index];
+                      final bool isOnLeave = teacher.statusNote == 'On Leave';
+
                       return ListTile(
-                        leading: const CircleAvatar(child: Icon(Icons.school)),
-                        title: Text(teacher.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text('Role: ${teacher.role} | Phone: ${teacher.phone}'),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline, color: AppColors.error),
-                          onPressed: () => webVm.deleteTeacher(teacher.uid),
+                        leading: Stack(
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: isOnLeave ? Colors.amber.withOpacity(0.2) : null,
+                              child: Icon(isOnLeave ? Icons.beach_access : Icons.school, color: isOnLeave ? Colors.amber.shade800 : null),
+                            ),
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: Container(
+                                width: 12,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  color: isOnLeave ? Colors.amber : (teacher.isOnline ? Colors.green : Colors.grey),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white, width: 1.5),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        title: Row(
+                          children: [
+                            Text(teacher.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(width: 8),
+                            if (isOnLeave)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.amber.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Text(
+                                  'ON LEAVE 🟡',
+                                  style: TextStyle(color: Colors.amber, fontSize: 9, fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            else if (teacher.isOnline)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Text(
+                                  'Live Teaching 🟢',
+                                  style: TextStyle(color: Colors.green, fontSize: 9, fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            else
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Text(
+                                  'Offline ⚪',
+                                  style: TextStyle(color: Colors.grey, fontSize: 9, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                          ],
+                        ),
+                        subtitle: Text('Role: ${teacher.role} | Phone: ${teacher.phone} | ID: ${teacher.admissionNumber}'),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Super Admin Grant/Revoke Leave Button
+                            if (isSuperAdmin)
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isOnLeave ? Colors.green : Colors.amber.shade700,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                onPressed: () {
+                                  final updated = teacher.copyWith(
+                                    statusNote: isOnLeave ? 'Active' : 'On Leave',
+                                    isOnline: isOnLeave ? teacher.isOnline : false,
+                                  );
+                                  webVm.updateTeacher(updated);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(isOnLeave ? '${teacher.name} marked Active!' : '${teacher.name} granted Leave!'),
+                                    ),
+                                  );
+                                },
+                                child: Text(isOnLeave ? 'Mark Active' : 'Grant Leave', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                              ),
+                            
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, color: AppColors.error),
+                              onPressed: () => webVm.deleteTeacher(teacher.uid),
+                            ),
+                          ],
                         ),
                       );
                     },
@@ -1239,6 +1607,8 @@ class _HomeworkManagementPanelState extends State<HomeworkManagementPanel> {
     'Class 8',
     'Class 9',
     'Class 10',
+    'Class 11',
+    'Class 12',
     'Computer Theory',
     'Computer Practical',
   ];
@@ -1253,14 +1623,20 @@ class _HomeworkManagementPanelState extends State<HomeworkManagementPanel> {
     'Political Science',
     'Social Science',
     'Computer Science',
+    'Computer',
     'General',
   ];
+
+  bool _isPublishing = false;
 
   final List<Map<String, dynamic>> _homeworkRows = [
     {
       'subject': 'Mathematics',
       'title': 'Maths Exercise 1',
       'description': 'Solve Questions 1 to 5 from Page 20.',
+      'imageBytes': null,
+      'imageName': null,
+      'mimeType': null,
     }
   ];
 
@@ -1270,6 +1646,9 @@ class _HomeworkManagementPanelState extends State<HomeworkManagementPanel> {
         'subject': 'Science',
         'title': '',
         'description': '',
+        'imageBytes': null,
+        'imageName': null,
+        'mimeType': null,
       });
     });
   }
@@ -1282,38 +1661,81 @@ class _HomeworkManagementPanelState extends State<HomeworkManagementPanel> {
     }
   }
 
+  void _pickImage(Map<String, dynamic> row) async {
+    final picker = ImagePicker();
+    try {
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+        setState(() {
+          row['imageBytes'] = bytes;
+          row['imageName'] = image.name;
+          row['mimeType'] = image.mimeType ?? 'image/jpeg';
+        });
+      }
+    } catch (e) {
+      debugPrint("Error picking image: $e");
+    }
+  }
+
   void _onPublish() async {
     final webVm = Provider.of<WebPanelViewModel>(context, listen: false);
     final authVm = Provider.of<AuthViewModel>(context, listen: false);
     final currentUserName = authVm.userProfile?.name ?? 'Super Admin';
     final currentUserId = authVm.userProfile?.uid ?? 'web_admin';
 
+    setState(() => _isPublishing = true);
+
     int count = 0;
-    for (var row in _homeworkRows) {
-      final String title = row['title']?.toString().trim() ?? '';
-      final String desc = row['description']?.toString().trim() ?? '';
-      final String subj = row['subject']?.toString() ?? 'General';
+    try {
+      for (var row in _homeworkRows) {
+        final String title = row['title']?.toString().trim() ?? '';
+        final String desc = row['description']?.toString().trim() ?? '';
+        final String subj = row['subject']?.toString() ?? 'General';
 
-      if (title.isEmpty || desc.isEmpty) continue;
+        if (title.isEmpty || desc.isEmpty) continue;
 
-      final hw = Homework(
-        id: 'hw_${DateTime.now().millisecondsSinceEpoch}_$count',
-        title: title,
-        description: desc,
-        userClass: _selectedClass,
-        fileUrl: '',
-        fileName: '',
-        deadline: DateTime.now().add(const Duration(days: 2)),
-        teacherId: currentUserId,
-        teacherName: currentUserName,
-        createdDate: DateTime.now(),
-        subject: subj,
-        seenBy: const [],
-      );
+        String fileUrl = '';
+        String fileName = '';
 
-      await webVm.uploadHomework(hw);
-      count++;
+        if (row['imageBytes'] != null) {
+          final String uploadName = 'hw_${DateTime.now().millisecondsSinceEpoch}_${row['imageName']}';
+          fileUrl = await webVm.uploadHomeworkFile(
+            row['imageBytes'] as List<int>,
+            uploadName,
+            row['mimeType']?.toString() ?? 'image/jpeg',
+          );
+          fileName = row['imageName']?.toString() ?? 'homework_image.jpg';
+        }
+
+        final hw = Homework(
+          id: 'hw_${DateTime.now().millisecondsSinceEpoch}_$count',
+          title: title,
+          description: desc,
+          userClass: _selectedClass,
+          fileUrl: fileUrl,
+          fileName: fileName,
+          deadline: DateTime.now().add(const Duration(days: 2)),
+          teacherId: currentUserId,
+          teacherName: currentUserName,
+          createdDate: DateTime.now(),
+          subject: subj,
+          seenBy: const [],
+        );
+
+        await webVm.uploadHomework(hw);
+        count++;
+      }
+    } catch (e) {
+      debugPrint("Error publishing homework tasks: $e");
     }
+
+    setState(() => _isPublishing = false);
 
     if (count > 0) {
       setState(() {
@@ -1322,6 +1744,9 @@ class _HomeworkManagementPanelState extends State<HomeworkManagementPanel> {
           'subject': 'Mathematics',
           'title': '',
           'description': '',
+          'imageBytes': null,
+          'imageName': null,
+          'mimeType': null,
         });
       });
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1476,6 +1901,78 @@ class _HomeworkManagementPanelState extends State<HomeworkManagementPanel> {
                                 row['description'] = val;
                               },
                             ),
+                            const SizedBox(height: 16),
+                            
+                            // Add Picture / Image Upload Box
+                            InkWell(
+                              onTap: _isPublishing ? null : () => _pickImage(row),
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(
+                                  color: AppColors.secondaryOrange.withOpacity(0.08),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: AppColors.secondaryOrange.withOpacity(0.4), width: 1.5),
+                                ),
+                                child: row['imageBytes'] != null
+                                    ? Row(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Image.memory(
+                                              row['imageBytes'] as Uint8List,
+                                              width: 50,
+                                              height: 50,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Selected Homework Image Attachment:',
+                                                  style: TextStyle(fontSize: 11, color: widget.isDark ? Colors.grey[400] : Colors.grey[700]),
+                                                ),
+                                                Text(
+                                                  row['imageName']?.toString() ?? 'image.jpg',
+                                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.green),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                            onPressed: () {
+                                              setState(() {
+                                                row['imageBytes'] = null;
+                                                row['imageName'] = null;
+                                                row['mimeType'] = null;
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                    : const Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.add_a_photo_outlined, color: AppColors.secondaryOrange, size: 24),
+                                          SizedBox(width: 10),
+                                          Text(
+                                            '📷 Attach Homework Picture / Diagram (Click to select from phone gallery)',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColors.secondaryOrange,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                              ),
+                            ),
                           ],
                         ),
                       );
@@ -1491,22 +1988,30 @@ class _HomeworkManagementPanelState extends State<HomeworkManagementPanel> {
                       OutlinedButton.icon(
                         icon: const Icon(Icons.add),
                         label: const Text('Add Subject'),
-                        onPressed: _addSubjectRow,
+                        onPressed: _isPublishing ? null : _addSubjectRow,
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                       ),
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.cloud_upload),
-                        label: const Text('Publish Homework to Class'),
-                        onPressed: _onPublish,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryBlue,
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                      ),
+                      _isPublishing
+                          ? const Row(
+                              children: [
+                                CircularProgressIndicator(),
+                                SizedBox(width: 12),
+                                Text('Publishing and Uploading...', style: TextStyle(fontWeight: FontWeight.bold)),
+                              ],
+                            )
+                          : ElevatedButton.icon(
+                              icon: const Icon(Icons.cloud_upload),
+                              label: const Text('Publish Homework to Class'),
+                              onPressed: _onPublish,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primaryBlue,
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              ),
+                            ),
                     ],
                   ),
                 ],

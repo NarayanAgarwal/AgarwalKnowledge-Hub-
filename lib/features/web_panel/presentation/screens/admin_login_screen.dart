@@ -9,6 +9,7 @@ import '../../../../core/widgets/glass_container.dart';
 import '../../../auth/viewmodels/auth_viewmodel.dart';
 import 'web_dashboard_shell.dart';
 import '../../../../core/models/user_profile.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -35,43 +36,161 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   void _onLogin() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      
-      // Simulate admin verification
-      await Future.delayed(const Duration(milliseconds: 1500));
-      
-      if (!mounted) return;
-      
-      // Seed details in AuthViewModel
-      final authVm = Provider.of<AuthViewModel>(context, listen: false);
-      final profile = UserProfile(
-        uid: "web_admin_123",
-        role: _selectedRole,
-        name: "Director Agarwal",
-        phone: "+919876543299",
-        email: _emailController.text.trim(),
-        address: "Mithapur, Patna",
-        userClass: "",
-        rollNumber: "",
-        gender: "Male",
-        dob: "1978-05-15",
-        admissionNumber: "ADM-AKH-001",
-        school: "Agarwal Knowledge Hub",
-        parentName: "",
-        parentMobile: "",
-        emergencyContact: "",
-        profilePhotoUrl: "",
-        createdDate: DateTime.now(),
-        lastLogin: DateTime.now(),
-      );
 
-      await authVm.completeProfile(profile);
+      final String email = _emailController.text.trim();
+      final String password = _passwordController.text.trim();
+      final authVm = Provider.of<AuthViewModel>(context, listen: false);
+
+      // Enforce Permanent Fixed Password for Super Admin
+      if (_selectedRole == AppStrings.roleSuperAdmin || email == 'admin@agarwal.com') {
+        if (password != 'MoMDaD 754' && password != '123456') {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Access Denied: Incorrect Super Admin Password! Security password required.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+      }
+
+      UserProfile? profile;
+
+      try {
+        if (authVm.isMockMode) {
+          await Future.delayed(const Duration(milliseconds: 800));
+          if ((email == 'admin@agarwal.com' || _selectedRole == AppStrings.roleSuperAdmin) && (password == 'MoMDaD 754' || password == '123456')) {
+            profile = UserProfile(
+              uid: "web_admin_123",
+              role: AppStrings.roleSuperAdmin,
+              name: "Director Narayan Agarwal",
+              phone: "+919876543299",
+              email: email,
+              address: "Mithapur, Patna",
+              userClass: "",
+              rollNumber: "",
+              gender: "Male",
+              dob: "1978-05-15",
+              admissionNumber: "ADM-AKH-001",
+              school: "Agarwal Knowledge Hub",
+              parentName: "",
+              parentMobile: "",
+              emergencyContact: "",
+              profilePhotoUrl: "",
+              createdDate: DateTime.now(),
+              lastLogin: DateTime.now(),
+            );
+          } else if (email == 'principal@agarwal.com' && password == '123456') {
+            profile = UserProfile(
+              uid: "web_principal_123",
+              role: AppStrings.roleAdmin,
+              name: "Principal Suresh Prasad",
+              phone: "+919876543298",
+              email: email,
+              address: "Kankarbagh, Patna",
+              userClass: "",
+              rollNumber: "",
+              gender: "Male",
+              dob: "1972-04-10",
+              admissionNumber: "PRN-AKH-002",
+              school: "Agarwal Knowledge Hub",
+              parentName: "",
+              parentMobile: "",
+              emergencyContact: "",
+              profilePhotoUrl: "",
+              createdDate: DateTime.now(),
+              lastLogin: DateTime.now(),
+            );
+          } else if (email == 'teacher@agarwal.com' && password == '123456') {
+            profile = UserProfile(
+              uid: "web_teacher_123",
+              role: AppStrings.roleTeacher,
+              name: "Ms. Anjali Verma",
+              phone: "+919876543222",
+              email: email,
+              address: "Patna",
+              userClass: "",
+              rollNumber: "",
+              gender: "Female",
+              dob: "1994-04-12",
+              admissionNumber: "TCH04",
+              school: "Agarwal Knowledge Hub",
+              parentName: "",
+              parentMobile: "",
+              emergencyContact: "",
+              profilePhotoUrl: "",
+              createdDate: DateTime.now(),
+              lastLogin: DateTime.now(),
+            );
+          } else if (password == '123456') {
+            profile = UserProfile(
+              uid: "web_custom_123",
+              role: _selectedRole,
+              name: "Staff User (${_selectedRole})",
+              phone: "+919876543200",
+              email: email,
+              address: "Patna",
+              userClass: "",
+              rollNumber: "",
+              gender: "Male",
+              dob: "1988-08-08",
+              admissionNumber: "STF-AKH-999",
+              school: "Agarwal Knowledge Hub",
+              parentName: "",
+              parentMobile: "",
+              emergencyContact: "",
+              profilePhotoUrl: "",
+              createdDate: DateTime.now(),
+              lastLogin: DateTime.now(),
+            );
+          }
+        } else {
+          // Live Firebase Mode: search in Firestore users collection
+          final query = await FirebaseFirestore.instance
+              .collection(AppStrings.colUsers)
+              .where('email', isEqualTo: email)
+              .where('password', isEqualTo: password)
+              .limit(1)
+              .get();
+
+          if (query.docs.isNotEmpty) {
+            final doc = query.docs.first;
+            profile = UserProfile.fromFirestore(doc.data(), doc.id);
+          }
+        }
+      } catch (e) {
+        debugPrint("Error authenticating admin user: $e");
+      }
 
       setState(() => _isLoading = false);
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const WebDashboardShell()),
-      );
+      if (profile != null) {
+        if (profile.role != _selectedRole && _selectedRole != AppStrings.roleStudent && _selectedRole != AppStrings.roleParent) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Role Mismatch: Account role is "${profile.role}", but you selected "$_selectedRole".')),
+          );
+          return;
+        }
+
+        await authVm.completeProfile(profile);
+
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const WebDashboardShell()),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid Email or Password! Try admin@agarwal.com with password 123456.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -207,6 +326,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         validator: (val) {
                           if (val == null || val.trim().isEmpty) {
                             return AppStrings.valRequiredField;
+                          }
+                          final emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                          if (!emailRegExp.hasMatch(val.trim())) {
+                            return 'Please enter a valid Gmail address (must contain @ and .com)';
                           }
                           return null;
                         },

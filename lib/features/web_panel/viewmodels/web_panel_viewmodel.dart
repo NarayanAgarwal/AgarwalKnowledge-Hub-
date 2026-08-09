@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/services/firestore_repository.dart';
+import '../../../../core/services/storage_repository.dart';
 import '../../../../core/models/user_profile.dart';
 import '../../../../core/models/attendance.dart';
 import '../../../../core/models/homework.dart';
@@ -57,13 +58,24 @@ class WebPanelViewModel with ChangeNotifier {
     }
   ];
 
+  final StorageRepository _storageRepository;
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
   bool get isMockEnabled => _repository.isMockEnabled;
 
-  WebPanelViewModel(this._repository) {
+  WebPanelViewModel(this._repository, this._storageRepository) {
     _loadAllLists();
+  }
+
+  Future<String> uploadHomeworkFile(List<int> bytes, String fileName, String mimeType) async {
+    return await _storageRepository.uploadFileBytes(
+      path: 'homework_attachments',
+      bytes: bytes,
+      fileName: fileName,
+      mimeType: mimeType,
+    );
   }
 
   Future<void> _loadAllLists() async {
@@ -71,7 +83,14 @@ class WebPanelViewModel with ChangeNotifier {
     notifyListeners();
 
     try {
-      studentsList = await _repository.getUsers(AppStrings.roleStudent);
+      _repository.streamUsers(AppStrings.roleStudent).listen((data) {
+        studentsList = data;
+        // Keep default fallback users if streamed list is empty (mock mode startup)
+        if (studentsList.isEmpty) {
+          _seedDefaultMockStudents();
+        }
+        notifyListeners();
+      });
       teachersList = await _repository.getUsers(AppStrings.roleTeacher);
 
       _repository.getNotices().listen((data) {
@@ -89,52 +108,6 @@ class WebPanelViewModel with ChangeNotifier {
         notifyListeners();
       });
       
-      // Load sample list if database arrays are empty
-      if (studentsList.isEmpty) {
-        studentsList = [
-          UserProfile(
-            uid: "std_1",
-            role: AppStrings.roleStudent,
-            name: "Aman Agarwal",
-            phone: "+919876543210",
-            email: "aman@gmail.com",
-            address: "Patna",
-            userClass: "Class 5",
-            rollNumber: "12",
-            gender: "Male",
-            dob: "2015-05-10",
-            admissionNumber: "ADM512",
-            school: "Agarwal Knowledge Hub",
-            parentName: "Suresh Agarwal",
-            parentMobile: "+919876543220",
-            emergencyContact: "+919876543221",
-            profilePhotoUrl: "",
-            createdDate: DateTime.now(),
-            lastLogin: DateTime.now(),
-          ),
-          UserProfile(
-            uid: "std_2",
-            role: AppStrings.roleStudent,
-            name: "Divya Kumari",
-            phone: "+919876543212",
-            email: "divya@gmail.com",
-            address: "Patna",
-            userClass: "Class 4",
-            rollNumber: "08",
-            gender: "Female",
-            dob: "2016-03-12",
-            admissionNumber: "ADM408",
-            school: "Agarwal Knowledge Hub",
-            parentName: "Suresh Agarwal",
-            parentMobile: "+919876543220",
-            emergencyContact: "+919876543221",
-            profilePhotoUrl: "",
-            createdDate: DateTime.now(),
-            lastLogin: DateTime.now(),
-          )
-        ];
-      }
-
       if (teachersList.isEmpty) {
         teachersList = [
           UserProfile(
@@ -165,6 +138,55 @@ class WebPanelViewModel with ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  void _seedDefaultMockStudents() {
+    studentsList = [
+      UserProfile(
+        uid: "std_1",
+        role: AppStrings.roleStudent,
+        name: "Aman Agarwal",
+        phone: "+919876543210",
+        email: "aman@gmail.com",
+        address: "Patna",
+        userClass: "Class 5",
+        rollNumber: "12",
+        gender: "Male",
+        dob: "2015-05-10",
+        admissionNumber: "ADM512",
+        school: "Agarwal Knowledge Hub",
+        parentName: "Suresh Agarwal",
+        parentMobile: "+919876543220",
+        emergencyContact: "+919876543221",
+        profilePhotoUrl: "",
+        createdDate: DateTime.now(),
+        lastLogin: DateTime.now(),
+        isOnline: true,
+        lastActive: DateTime.now(),
+      ),
+      UserProfile(
+        uid: "std_2",
+        role: AppStrings.roleStudent,
+        name: "Divya Kumari",
+        phone: "+919876543212",
+        email: "divya@gmail.com",
+        address: "Patna",
+        userClass: "Class 4",
+        rollNumber: "08",
+        gender: "Female",
+        dob: "2016-03-12",
+        admissionNumber: "ADM408",
+        school: "Agarwal Knowledge Hub",
+        parentName: "Suresh Agarwal",
+        parentMobile: "+919876543220",
+        emergencyContact: "+919876543221",
+        profilePhotoUrl: "",
+        createdDate: DateTime.now(),
+        lastLogin: DateTime.now(),
+        isOnline: false,
+        lastActive: DateTime.now().subtract(const Duration(minutes: 45)),
+      )
+    ];
   }
 
   // Student CRUD Actions

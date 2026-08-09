@@ -11,6 +11,7 @@ abstract class FirestoreRepository {
 
   // User Management
   Future<List<UserProfile>> getUsers(String role);
+  Stream<List<UserProfile>> streamUsers(String role);
   Future<void> createUserProfile(UserProfile profile);
   Future<void> deleteUserProfile(String uid);
 

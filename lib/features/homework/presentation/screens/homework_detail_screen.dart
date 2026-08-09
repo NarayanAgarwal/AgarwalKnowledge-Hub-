@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -111,33 +113,49 @@ class _HomeworkDetailScreenState extends State<HomeworkDetailScreen> {
 
             if (widget.homework.fileUrl.isNotEmpty) ...[
               const Text(
-                'Attachments',
+                'Homework Attachments & Diagrams',
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
               ),
-              const SizedBox(height: 8),
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
-                  title: Text(widget.homework.fileName.isNotEmpty ? widget.homework.fileName : 'attachment.pdf'),
-                  subtitle: Text(isDownloaded ? 'Downloaded Offline' : 'Size: 1.2 MB'),
-                  trailing: isDownloaded
-                      ? const Icon(Icons.check_circle, color: AppColors.accentGreen)
-                      : IconButton(
-                          icon: const Icon(Icons.download, color: AppColors.primaryBlue),
-                          onPressed: () {
-                            downloadProvider.startDownload(
-                              widget.homework.id,
-                              widget.homework.fileName.isNotEmpty ? widget.homework.fileName : 'Homework PDF',
-                              widget.homework.fileUrl,
-                              'pdf',
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Downloading attachment... Check Download Manager')),
-                            );
-                          },
-                        ),
+              const SizedBox(height: 12),
+              if (widget.homework.fileUrl.startsWith('data:image/') ||
+                  widget.homework.fileName.toLowerCase().endsWith('.png') ||
+                  widget.homework.fileName.toLowerCase().endsWith('.jpg') ||
+                  widget.homework.fileName.toLowerCase().endsWith('.jpeg') ||
+                  widget.homework.fileUrl.contains('image'))
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.primaryBlue.withOpacity(0.15)),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: _buildAttachmentImage(widget.homework.fileUrl),
+                  ),
+                )
+              else
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
+                    title: Text(widget.homework.fileName.isNotEmpty ? widget.homework.fileName : 'attachment.pdf'),
+                    subtitle: Text(isDownloaded ? 'Downloaded Offline' : 'Size: 1.2 MB'),
+                    trailing: isDownloaded
+                        ? const Icon(Icons.check_circle, color: AppColors.accentGreen)
+                        : IconButton(
+                            icon: const Icon(Icons.download, color: AppColors.primaryBlue),
+                            onPressed: () {
+                              downloadProvider.startDownload(
+                                widget.homework.id,
+                                widget.homework.fileName.isNotEmpty ? widget.homework.fileName : 'Homework PDF',
+                                widget.homework.fileUrl,
+                                'pdf',
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Downloading attachment... Check Download Manager')),
+                              );
+                            },
+                          ),
+                  ),
                 ),
-              ),
               const SizedBox(height: 32),
             ],
 
@@ -236,6 +254,41 @@ class _HomeworkDetailScreenState extends State<HomeworkDetailScreen> {
       child: Text(
         status,
         style: TextStyle(color: text, fontWeight: FontWeight.bold, fontSize: 12),
+      ),
+    );
+  }
+
+  Widget _buildAttachmentImage(String url) {
+    if (url.startsWith('data:')) {
+      final parts = url.split(';base64,');
+      if (parts.length == 2) {
+        try {
+          return Image.memory(
+            base64Decode(parts[1]),
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: 250,
+            errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 64),
+          );
+        } catch (_) {}
+      }
+    }
+    return CachedNetworkImage(
+      imageUrl: url,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: 250,
+      placeholder: (context, url) => Container(
+        height: 250,
+        color: Colors.grey[200],
+        child: const Center(child: CircularProgressIndicator()),
+      ),
+      errorWidget: (context, url, error) => Image.network(
+        url,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: 250,
+        errorBuilder: (context, err, st) => const Icon(Icons.broken_image, size: 64),
       ),
     );
   }

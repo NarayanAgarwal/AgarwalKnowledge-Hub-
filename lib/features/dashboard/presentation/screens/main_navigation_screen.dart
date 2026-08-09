@@ -31,7 +31,7 @@ class MainNavigationScreen extends StatefulWidget {
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
 
-class _MainNavigationScreenState extends State<MainNavigationScreen> {
+class _MainNavigationScreenState extends State<MainNavigationScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
@@ -45,7 +45,34 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadInitialData();
+    _setOnlineStatus(true);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _setOnlineStatus(false);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _setOnlineStatus(true);
+    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+      _setOnlineStatus(false);
+    }
+  }
+
+  void _setOnlineStatus(bool isOnline) {
+    try {
+      final authVm = Provider.of<AuthViewModel>(context, listen: false);
+      if (authVm.userProfile != null && authVm.userProfile!.role == 'Student') {
+        authVm.updateOnlineStatus(isOnline);
+      }
+    } catch (_) {}
   }
 
   void _loadInitialData() {
