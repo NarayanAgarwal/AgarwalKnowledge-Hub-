@@ -507,6 +507,7 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
                 icon: const Icon(Icons.logout, color: Colors.red),
                 tooltip: 'Logout & Lock Security Access',
                 onPressed: () async {
+                  final authVm = Provider.of<AuthViewModel>(context, listen: false);
                   await authVm.logout();
                   if (context.mounted) {
                     Navigator.pushReplacement(
