@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:universal_html/js.dart' as js;
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/glass_container.dart';
 
@@ -32,14 +35,17 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
     ),
   ];
   final _controller = TextEditingController();
+  final _apiKeyController = TextEditingController();
   final _scrollController = ScrollController();
   bool _isTyping = false;
   String _selectedLanguage = 'English'; // 'English' or 'Hindi'
   String? _currentlySpeakingText;
+  String _geminiApiKey = '';
 
   @override
   void initState() {
     super.initState();
+    _loadApiKey();
     if (kIsWeb) {
       js.context['onSpeechEnd'] = () {
         if (mounted) {
@@ -55,8 +61,67 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
   void dispose() {
     _stopTextSpeech();
     _controller.dispose();
+    _apiKeyController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadApiKey() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        _geminiApiKey = prefs.getString('gemini_api_key') ?? '';
+        _apiKeyController.text = _geminiApiKey;
+      });
+    } catch (e) {
+      debugPrint("Error loading API key: $e");
+    }
+  }
+
+  Future<void> _saveApiKey(String key) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('gemini_api_key', key);
+      setState(() {
+        _geminiApiKey = key;
+      });
+    } catch (e) {
+      debugPrint("Error saving API key: $e");
+    }
+  }
+
+  Future<String?> _callGeminiApi(String query) async {
+    if (_geminiApiKey.isEmpty) return null;
+    
+    try {
+      final response = await http.post(
+        Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$_geminiApiKey'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'contents': [
+            {
+              'parts': [
+                {
+                  'text': "System Instruction: You are the AI Doubt Assistant at Agarwal Knowledge Hub for school children. Explain academic doubts in extremely simple language with concrete everyday examples. Do not use double asterisks (**) or backticks (`) in your response. Keep headings simple. If the query is in Hindi or roman Hindi (Hinglish), reply in simple Hindi. Make sure to cover the user's specific query fully. Here is the question: $query"
+                }
+              ]
+            }
+          ]
+        }),
+      ).timeout(const Duration(seconds: 15));
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final reply = data['candidates'][0]['content']['parts'][0]['text'] as String;
+        return reply;
+      } else {
+        debugPrint("Gemini API error: ${response.statusCode} - ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      debugPrint("Gemini API exception: $e");
+      return null;
+    }
   }
 
   String _cleanText(String text) {
@@ -144,11 +209,27 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
 
     _scrollToBottom();
 
-    // Simulate AI response delay
-    Future.delayed(const Duration(seconds: 2), () {
+    // Call live API or fallback to simulated delay
+    Future.delayed(const Duration(milliseconds: 500), () async {
       if (!mounted) return;
-      
+
       String aiResponse = "";
+      
+      // 1. Try Live Gemini AI if configured
+      if (_geminiApiKey.isNotEmpty) {
+        final liveReply = await _callGeminiApi(text);
+        if (liveReply != null && liveReply.trim().isNotEmpty) {
+          aiResponse = liveReply.trim();
+          setState(() {
+            _messages.add(MessageBubble(text: aiResponse, isUser: false, time: DateTime.now()));
+            _isTyping = false;
+          });
+          _scrollToBottom();
+          return;
+        }
+      }
+
+      // 2. Offline Database Fallback
       final query = text.toLowerCase();
       
       // Smart Language Request Detection
@@ -291,8 +372,8 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "• The Song Player App (like Spotify) is software (tells the speaker what sound to play).";
         }
       }
-      // 4. PRIMARY CONCEPT: Excel
-      else if (query.contains("vlookup") || query.contains("xlookup") || query.contains("pivot") || query.contains("excel") || query.contains("spreadsheet") || query.contains("formula")) {
+      // 4. PRIMARY CONCEPT: Excel (Only matches formula if it contains excel/vlookup/spreadsheet)
+      else if (query.contains("vlookup") || query.contains("xlookup") || query.contains("pivot") || (query.contains("excel") && query.contains("formula")) || query.contains("spreadsheet")) {
         if (isHindi) {
           aiResponse = "एक्सेल और स्प्रेडशीट फ़ॉर्मूला (Excel Formulas Made Easy) 📊:\n\n"
               "1️⃣ मूल फ़ॉर्मूले:\n"
@@ -377,7 +458,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
         if (isHindi) {
           aiResponse = "डेटाबेस और SQL (Databases Made Easy) 🗄️:\n\n"
               "डेटाबेस क्या है?:\n"
-              "डेटाबेस कंप्यूटर की एक डिजिटल तिजोरी या अलमारी है जहाँ सारी जानकारी (data) टेबल के रूप में सजाकर रखी जाती है। जैसे स्कूल का हाजिरी रजिस्टर जिसमें हर छात्र की हाजिरी दर्ज होती है।\n\n"
+              "डेटाबेस कंप्यूटर की एक digital तिजोरी या अलमारी है जहाँ सारी जानकारी (data) टेबल के रूप में सजाकर रखी जाती है। जैसे स्कूल का हाजिरी रजिस्टर जिसमें हर छात्र की हाजिरी दर्ज होती है।\n\n"
               "SQL (एस-क्यू-एल) - आसान भाषा में:\n"
               "SQL डेटाबेस से बात करने की भाषा है। यह ऐसा है जैसे आप डेटाबेस से कहें: \"छात्रों की लिस्ट में से केवल उन बच्चों के नाम दिखाओ जो कक्षा 5 में पढ़ते हैं।\"\n\n"
               "आसान SQL क्वेरी का उदाहरण:\n"
@@ -426,7 +507,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "2. मैं पढ़ाई करूँगा\n"
               "... (5 बार)\n\n"
               "मुख्य भाषाएँ:\n"
-              "• Python: सबसे आसान भाषा है, जिसका उपयोग एआई (AI) बनाने में होता है।\n"
+              "• Python: सबसे आसान भाषा है, जिसके साथ एआई (AI) बनाने में मदद मिलती है।\n"
               "• JavaScript: इससे वेबसाइटों के बटन और एनीमेशन काम करते हैं।";
         } else {
           aiResponse = "Computer Coding and Loops Made Easy 💻:\n\n"
@@ -586,33 +667,43 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "• Example: 2/5 + 1/5 = (2 + 1)/5 = 3/5.";
         }
       }
-      // 15. SUBJECT: Math
-      else if (query.contains("math") || query.contains("sum") || query.contains("add") || query.contains("multiply") || query.contains("divide") || query.contains("algebra") || query.contains("geometry")) {
+      // 15. SUBJECT: Math (Priority higher now, catches algebraic queries like "a+b", "square", "formula" or "+" symbols)
+      else if (query.contains("math") || query.contains("sum") || query.contains("add") || query.contains("multiply") || query.contains("divide") || query.contains("algebra") || query.contains("geometry") || query.contains("formula") || query.contains("square") || query.contains("equation") || query.contains("solve") || query.contains("+") || query.contains("-") || query.contains("*") || query.contains("/") || query.contains("a+b") || query.contains("a-b")) {
         if (isHindi) {
           aiResponse = "गणित गाइड (Mathematics Simple Guide) 📐:\n\n"
-              "1️⃣ अंकगणित (BODMAS नियम):\n"
+              "1️⃣ महत्वपूर्ण सूत्र (Math Algebraic Formulas):\n"
+              "   - (a + b) का होल स्क्वायर = a^2 + b^2 + 2ab\n"
+              "   - (a - b) का होल स्क्वायर = a^2 + b^2 - 2ab\n"
+              "   - (a + b)(a - b) = a^2 - b^2\n"
+              "   - आसान उदाहरण: यदि a = 3 और b = 2 है ➔ (3 + 2)^2 = 5^2 = 25। सूत्र से देखें: 3^2 + 2^2 + 2*3*2 = 9 + 4 + 12 = 25!\n\n"
+              "2️⃣ अंकगणित (BODMAS नियम):\n"
               "   - गणित का सवाल हल करने का सही क्रम: पहले कोष्ठक (Bracket) हल करें ➔ फिर भाग करें ➔ फिर गुणा करें ➔ फिर जोड़ें ➔ अंत में घटाएं।\n"
               "   - आसान उदाहरण: 20 - 2 * 5 + 3 को हल करें:\n"
               "     1. पहले गुणा करें: 2 * 5 = 10\n"
               "     2. अब सवाल बचा: 20 - 10 + 3\n"
               "     3. अब जोड़ें और घटाएं: 10 + 3 = 13।\n\n"
-              "2️⃣ ज्यामिति (आकृतियाँ):\n"
+              "3️⃣ ज्यामिति (आकृतियाँ):\n"
               "   - आयत (Rectangle) का क्षेत्रफल = लंबाई * चौड़ाई।\n"
-              "   - आसान उदाहरण: यदि किसी कमरे की लंबाई 5 मीटर and चौड़ाई 4 मीटर है, तो उसका क्षेत्रफल 5 * 4 = 20 वर्ग मीटर होगा।\n\n"
-              "3️⃣ बीजगणित (समीकरण):\n"
+              "   - आसान उदाहरण: यदि किसी कमरे की लंबाई 5 मीटर और चौड़ाई 4 मीटर है, तो उसका क्षेत्रफल 5 * 4 = 20 वर्ग मीटर होगा।\n\n"
+              "4️⃣ बीजगणित (समीकरण):\n"
               "   - आसान उदाहरण: x + 5 = 12 में x का मान निकालें। x को अकेला छोड़ें, 5 को दाईं ओर भेजें (तो वह माइनस हो जाएगा): x = 12 - 5 ➔ x = 7।";
         } else {
           aiResponse = "Mathematics Simple Academic Guide 📐:\n\n"
-              "1️⃣ BODMAS Rule (Order of Calculation):\n"
+              "1️⃣ Core Algebraic Formulas:\n"
+              "   - (a + b)^2 = a^2 + b^2 + 2ab\n"
+              "   - (a - b)^2 = a^2 + b^2 - 2ab\n"
+              "   - (a + b)(a - b) = a^2 - b^2\n"
+              "   - Easy Example: If a = 3 and b = 2 ➔ (3 + 2)^2 = 5^2 = 25. Using formula: 3^2 + 2^2 + 2*3*2 = 9 + 4 + 12 = 25!\n\n"
+              "2️⃣ BODMAS Rule (Order of Calculation):\n"
               "   - Solve in this order: Bracket ➔ Division ➔ Multiplication ➔ Addition ➔ Subtraction.\n"
               "   - Easy Example: Solve 20 - 2 * 5 + 3:\n"
               "     1. First perform multiplication: 2 * 5 = 10\n"
               "     2. The equation becomes: 20 - 10 + 3\n"
               "     3. Now add and subtract: 10 + 3 = 13.\n\n"
-              "2️⃣ Geometry (Area Formulas):\n"
+              "3️⃣ Geometry (Area Formulas):\n"
               "   - Rectangle Area = Length * Width.\n"
               "   - Easy Example: If a room is 5 meters long and 4 meters wide, the area is 5 * 4 = 20 square meters.\n\n"
-              "3️⃣ Algebra (Solving for X):\n"
+              "4️⃣ Algebra (Solving for X):\n"
               "   - Easy Example: Find x in: x + 5 = 12. Move 5 to the right side (it changes to minus): x = 12 - 5 ➔ x = 7.";
         }
       }
@@ -707,26 +798,26 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "💡 Easy Tip: Type a topic like 'gravity' or 'cell' to get simple definitions and examples!";
         }
       }
-      // 20. SUBJECT: Economics
-      else if (query.contains("economics") || query.contains("money") || query.contains("demand") || query.contains("supply") || query.contains("market")) {
+      // 20. SUBJECT: Economics & Social Science
+      else if (query.contains("economics") || query.contains("money") || query.contains("demand") || query.contains("supply") || query.contains("market") || query.contains("social science") || query.contains("political science") || query.contains("civics") || query.contains("constitution") || query.contains("government")) {
         if (isHindi) {
-          aiResponse = "अर्थशास्त्र क्या है? (Economics Made Easy) 📊:\n\n"
-              "1️⃣ मांग और आपूर्ति का नियम (Demand & Supply):\n"
-              "   - मांग (Demand): किसी चीज़ को खरीदने की इच्छा।\n"
-              "   - आपूर्ति (Supply): बाजार में उस चीज़ का स्टॉक उपलब्ध होना।\n"
-              "   - नियम: जब किसी चीज़ की मांग बढ़ जाती है लेकिन स्टॉक कम होता है, तो उसकी कीमत बढ़ जाती है।\n"
-              "   - आसान उदाहरण: यदि गर्मी के मौसम में अचानक आइसक्रीम की मांग बढ़ जाए और दुकान में केवल 5 आइसक्रीम बची हों, तो उसकी कीमत बढ़ सकती है।\n\n"
-              "2️⃣ पैसे का काम:\n"
-              "   - पैसा एक साधन है जिससे हम अपनी मनपसंद चीजें (जैसे खिलौने, खाना) खरीद या बेच सकते हैं। पहले के जमाने में लोग वस्तु के बदले वस्तु बदलते थे (बाटर सिस्टम)।";
+          aiResponse = "सामाजिक विज्ञान और नागरिक शास्त्र (Social & Political Science) 🏛️:\n\n"
+              "1️⃣ भारत का संविधान (Constitution):\n"
+              "   - यह हमारे देश को चलाने वाली नियमों की मुख्य पुस्तक है। इसे डॉ. भीमराव अंबेडकर जी के नेतृत्व में बनाया गया था।\n"
+              "   - यह हमें मौलिक अधिकार (Fundamental Rights) जैसे पढ़ाई करने का अधिकार और आज़ादी से जीने का अधिकार देता है।\n\n"
+              "2️⃣ लोकतंत्र (Democracy):\n"
+              "   - लोकतंत्र का मतलब है जनता का शासन। इसमें लोग वोट (vote) डालकर अपनी पसंद के नेता (जैसे मुख्यमंत्री, प्रधानमंत्री) को चुनते हैं जो देश या राज्य चलाते हैं।\n\n"
+              "3️⃣ मांग और आपूर्ति (Economics):\n"
+              "   - जब किसी चीज़ की मांग बढ़ जाती है लेकिन स्टॉक कम होता है, तो उसकी कीमत बढ़ जाती है। जैसे गर्मी में अचानक ठंडी आइसक्रीम की कीमत बढ़ जाना।";
         } else {
-          aiResponse = "Economics Concepts Made Super Easy 📊:\n\n"
-              "1️⃣ The Law of Demand and Supply:\n"
-              "   - Demand: How much people want to buy something.\n"
-              "   - Supply: How much of that item is available in the shop.\n"
-              "   - Rule: If demand is high but supply is low, the price goes up. If supply is high but demand is low, the price goes down!\n"
-              "   - Easy Example: If there is only 1 cake left in a shop, and 10 kids want to buy it (high demand, low supply), the shopkeeper might increase its price.\n\n"
-              "2️⃣ What is Money?:\n"
-              "   - Money is a tool that makes it easy to buy toys, books, or food. Long ago, people traded items like cows for wheat (Barter System) before money was invented.";
+          aiResponse = "Social and Political Science Made Super Easy 🏛️:\n\n"
+              "1️⃣ What is the Constitution?:\n"
+              "   - The Constitution is the supreme book of rules for running a country. India's constitution was guided by Dr. B. R. Ambedkar.\n"
+              "   - It gives us Fundamental Rights, like the right to go to school and study (Right to Education).\n\n"
+              "2️⃣ What is a Democracy?:\n"
+              "   - Democracy means a government chosen by the people. Citizens vote to choose leaders (like Prime Ministers or Presidents) who make laws for the country.\n\n"
+              "3️⃣ Economics (Demand & Supply):\n"
+              "   - E.g. if 10 kids want to buy the last single cupcake in the store (high demand, low supply), the shopkeeper might raise its price!";
         }
       }
       // 21. SUBJECT: History
@@ -776,34 +867,38 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
               "   - Sun heats river water ➔ Water turns to vapor and goes up (Evaporation) ➔ Forms clouds (Condensation) ➔ Falls back as rain (Precipitation).";
         }
       }
-      // 23. GRAMMAR: English
-      else if (query.contains("english") || query.contains("grammar") || query.contains("noun") || query.contains("verb") || query.contains("tense")) {
+      // 23. GRAMMAR: English & Basic Good English / Conversational Rules
+      else if (query.contains("english") || query.contains("grammar") || query.contains("noun") || query.contains("verb") || query.contains("tense") || query.contains("speaking") || query.contains("good english") || query.contains("talk")) {
         if (isHindi) {
-          aiResponse = "अंग्रेजी व्याकरण (English Grammar Made Easy) 📝:\n\n"
-              "1️⃣ संज्ञा (Noun): किसी भी नाम वाले शब्द को संज्ञा कहते हैं (व्यक्ति, वस्तु, स्थान)।\n"
-              "   - आसान उदाहरण: Aman (व्यक्ति), Patna (स्थान), Ball (वस्तु)।\n"
-              "   - वाक्य: Aman is playing with a ball in Patna.\n\n"
-              "2️⃣ क्रिया (Verb): काम दर्शाने वाले शब्द को क्रिया कहते हैं।\n"
-              "   - आसान उदाहरण: write (लिखना), run (दौड़ना), play (खेलना)।\n"
-              "   - वाक्य: Aman is running.\n\n"
-              "3️⃣ काल (Tenses - समय):\n"
-              "   - Present Tense (वर्तमान): जो काम अभी होता है। (जैसे: 'I eat food.')\n"
-              "   - Past Tense (भूतकाल): जो काम हो चुका है। (जैसे: 'I ate food yesterday.')\n"
-              "   - Future Tense (भविष्यकाल): जो काम आगे होगा। (जैसे: 'I will eat food tomorrow.')";
+          aiResponse = "अंग्रेजी बोलना और व्याकरण (Good English Speaking & Grammar) 📝:\n\n"
+              "1️⃣ बेसिक बातचीत के नियम (Daily Conversations):\n"
+              "   - किसी से पहली बार मिलने पर: 'Hello, how are you?' (नमस्ते, आप कैसे हैं?)\n"
+              "   - मदद के लिए पूछना: 'Could you please help me?' (क्या आप कृपया मेरी मदद करेंगे?)\n"
+              "   - धन्यवाद देना: 'Thank you so much!' (आपका बहुत-बहुत धन्यवाद!)\n\n"
+              "2️⃣ संज्ञा (Noun): किसी भी नाम वाले शब्द को संज्ञा कहते हैं (व्यक्ति, वस्तु, स्थान)।\n"
+              "   - वाक्य: Aman is playing with a ball in Patna. (Aman, ball और Patna संज्ञा हैं)।\n\n"
+              "3️⃣ क्रिया (Verb): काम दर्शाने वाले शब्द को क्रिया कहते हैं।\n"
+              "   - वाक्य: Aman is running. (running क्रिया है)।\n\n"
+              "4️⃣ काल (Tenses - समय):\n"
+              "   - Present: I study. (मैं पढ़ता हूँ।)\n"
+              "   - Past: I studied yesterday. (मैंने कल पढ़ाई की थी।)\n"
+              "   - Future: I will study tomorrow. (मैं कल पढ़ाई करूँगा।)";
         } else {
-          aiResponse = "English Grammar Made Super Easy 📝:\n\n"
-              "1️⃣ Noun (Naming Words):\n"
+          aiResponse = "English Grammar and Good Speaking Made Easy 📝:\n\n"
+              "1️⃣ Polite Conversation Rules:\n"
+              "   - Greeting: 'Hello! How are you today?'\n"
+              "   - Requesting: 'Excuse me, could you help me please?'\n"
+              "   - Expressing Gratitude: 'Thank you for your kind support.'\n\n"
+              "2️⃣ Noun (Naming Words):\n"
               "   - A noun is the name of any person, place, or thing.\n"
-              "   - Easy Examples: Aman (person), Patna (place), Apple (thing).\n"
-              "   - Sentence: Aman is eating an apple in Patna.\n\n"
-              "2️⃣ Verb (Doing Words):\n"
-              "   - A verb shows an action or what someone is doing.\n"
-              "   - Easy Examples: run, jump, play, write, read.\n"
-              "   - Sentence: The cat is jumping.\n\n"
-              "3️⃣ Tenses (Time of Action):\n"
-              "   - Present: Action happening now. (e.g. 'I study.')\n"
-              "   - Past: Action that already happened. (e.g. 'I studied yesterday.')\n"
-              "   - Future: Action that will happen later. (e.g. 'I will study tomorrow.')";
+              "   - Example: Aman is eating an apple in Patna. (Aman, apple, Patna are nouns).\n\n"
+              "3️⃣ Verb (Doing Words):\n"
+              "   - A verb shows an action.\n"
+              "   - Example: The cat is jumping. (jumping is the verb).\n\n"
+              "4️⃣ Tenses:\n"
+              "   - Present: I play soccer.\n"
+              "   - Past: I played soccer yesterday.\n"
+              "   - Future: I will play soccer tomorrow.";
         }
       }
       // 24. GRAMMAR: Hindi (Specific grammar search, no general 'hindi' word collision)
@@ -882,6 +977,95 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
     });
   }
 
+  void _showSettingsDialog() {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: isDark ? const Color(0xFF1E2638) : Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(
+            children: [
+              const Icon(Icons.psychology, color: AppColors.secondaryOrange),
+              const SizedBox(width: 10),
+              const Text('Live AI Configuration', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Enter your Google Gemini API Key to enable live ChatGPT-style answers for all subjects (Math, Science, Hindi, English, History, etc.):',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDark ? Colors.white70 : Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: _apiKeyController,
+                obscureText: true,
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                decoration: InputDecoration(
+                  labelText: 'Gemini API Key',
+                  labelStyle: TextStyle(color: isDark ? Colors.white70 : Colors.black54),
+                  hintText: 'AIzaSy...',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.primaryBlue, width: 2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              InkWell(
+                onTap: () {
+                  if (kIsWeb) {
+                    js.context.callMethod('open', ['https://aistudio.google.com/app/apikey']);
+                  }
+                },
+                child: const Text(
+                  '👉 Get a free Gemini API Key in 10 seconds (Click here)',
+                  style: TextStyle(
+                    color: Colors.blueAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text('Save Settings', style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                _saveApiKey(_apiKeyController.text.trim());
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('API Key saved successfully! Live AI Doubt Support is now active.'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildLanguageToggleItem(String lang, bool isSelected, bool isDark) {
     return GestureDetector(
       onTap: () {
@@ -936,8 +1120,40 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AI Doubt Support', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Row(
+          children: [
+            const Text('AI Doubt Support', style: TextStyle(fontWeight: FontWeight.bold)),
+            if (_geminiApiKey.isNotEmpty) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.green, width: 0.5),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.green, size: 10),
+                    SizedBox(width: 3),
+                    Text('Live AI', style: TextStyle(color: Colors.green, fontSize: 8, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+            ]
+          ],
+        ),
         actions: [
+          // Live AI Configuration Settings button
+          IconButton(
+            icon: Icon(
+              Icons.psychology_outlined,
+              color: _geminiApiKey.isNotEmpty ? Colors.greenAccent : (isDark ? Colors.white70 : Colors.black87),
+            ),
+            tooltip: 'Configure Live AI Settings',
+            onPressed: _showSettingsDialog,
+          ),
+          
           // 3D Segmented Language Toggle Switch (No flags, solves clipping/dropdown issues)
           Container(
             margin: const EdgeInsets.only(right: 16, top: 10, bottom: 10),
@@ -1103,7 +1319,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
                             ],
                           ),
                           child: Text(
-                            message.text.replaceAll('**', '').replaceAll('`', ''),
+                            _cleanText(message.text),
                             style: TextStyle(
                               color: message.isUser
                                   ? Colors.white
