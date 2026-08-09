@@ -3,7 +3,7 @@ set -e # Exit immediately if any command exits with a non-zero status
 
 # 1. Clone Flutter stable branch
 echo "Downloading Flutter SDK..."
-git clone https://github.com/flutter/flutter.git -b stable --depth 1
+git clone --single-branch --no-tags --depth 1 https://github.com/flutter/flutter.git -b stable
 
 # 2. Add Flutter to path
 export PATH="$PATH:`pwd`/flutter/bin"
