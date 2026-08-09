@@ -904,8 +904,9 @@ class SuperAdminDashboardPanel extends StatelessWidget {
           )
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildChartBar(String label, int heightPercent, Color color) {
     return Column(
@@ -1402,7 +1403,8 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
     _nameController.clear();
     _phoneController.clear();
     _subjectController.clear();
-    
+  }
+
   Widget _buildTeacherStat(String label, String value, IconData icon, Color color) {
     return Row(
       mainAxisSize: MainAxisSize.min,
