@@ -54,7 +54,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         return;
       }
 
-      // 2. Strict Permanent Security Password & Email Check for Super Admin
+      // 2. Strict Role Credential Checks
       if (_selectedRole == AppStrings.roleSuperAdmin || email == 'admin@agarwal.com') {
         if (email != 'admin@agarwal.com') {
           setState(() => _isLoading = false);
@@ -105,7 +105,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               createdDate: DateTime.now(),
               lastLogin: DateTime.now(),
             );
-          } else if (email == 'principal@agarwal.com' && password == '123456') {
+          } else if (email == 'principal@agarwal.com' && password == '123456' && _selectedRole == AppStrings.roleAdmin) {
             profile = UserProfile(
               uid: "web_principal_123",
               role: AppStrings.roleAdmin,
@@ -126,7 +126,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               createdDate: DateTime.now(),
               lastLogin: DateTime.now(),
             );
-          } else if (email == 'teacher@agarwal.com' && password == '123456') {
+          } else if (email == 'teacher@agarwal.com' && password == '123456' && _selectedRole == AppStrings.roleTeacher) {
             profile = UserProfile(
               uid: "web_teacher_123",
               role: AppStrings.roleTeacher,
@@ -147,6 +147,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               createdDate: DateTime.now(),
               lastLogin: DateTime.now(),
             );
+          } else {
+            // Unrecognized credentials in mock mode -> reject completely!
+            profile = null;
           }
         } else {
           // Live Firebase Mode: search in Firestore users collection for matching email & password
