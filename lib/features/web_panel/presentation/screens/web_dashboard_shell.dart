@@ -528,7 +528,19 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
     final title = item['title'];
     switch (title) {
       case 'Dashboard':
-        return SuperAdminDashboardPanel(isDark: isDark);
+        return SuperAdminDashboardPanel(
+          isDark: isDark,
+          onDoubtInquiriesTap: () {
+            final int doubtsIdx = _menuItems.indexWhere(
+              (item) => item['title'] == 'AI Learning' || item['title'] == 'AI Doubts'
+            );
+            if (doubtsIdx != -1) {
+              setState(() {
+                _selectedMenuIndex = doubtsIdx;
+              });
+            }
+          },
+        );
       case 'Student Management':
       case 'Students':
         return StudentManagementPanel(isDark: isDark);
@@ -583,8 +595,9 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
 // ==========================================
 class SuperAdminDashboardPanel extends StatelessWidget {
   final bool isDark;
+  final VoidCallback? onDoubtInquiriesTap;
 
-  const SuperAdminDashboardPanel({super.key, required this.isDark});
+  const SuperAdminDashboardPanel({super.key, required this.isDark, this.onDoubtInquiriesTap});
 
   void _showActiveStudentsDialog(BuildContext context, WebPanelViewModel webVm) {
     showDialog(
@@ -839,6 +852,7 @@ class SuperAdminDashboardPanel extends StatelessWidget {
                 '${webVm.doubtQueries.where((d) => d['status'] == 'Pending').length}', 
                 Icons.chat_bubble, 
                 Colors.purple,
+                onTap: onDoubtInquiriesTap,
               ),
             ],
           ),

@@ -55,22 +55,22 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       }
 
       // 2. Strict Role Credential Checks
-      if (_selectedRole == AppStrings.roleSuperAdmin || email == 'admin@agarwal.com') {
-        if (email != 'admin@agarwal.com') {
+      if (_selectedRole == AppStrings.roleSuperAdmin || email == 'abhayff754@gmail.com') {
+        if (email != 'abhayff754@gmail.com') {
           setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Access Denied: Super Admin login email must be admin@agarwal.com'),
+              content: Text('Access Denied: Super Admin login email must be abhayff754@gmail.com'),
               backgroundColor: Colors.red,
             ),
           );
           return;
         }
-        if (password != 'MoMDaD 754') {
+        if (password != 'MoMDaD754') {
           setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Access Denied: Incorrect Super Admin Password! Required: MoMDaD 754'),
+              content: Text('Access Denied: Incorrect Super Admin Password! Required: MoMDaD754'),
               backgroundColor: Colors.red,
             ),
           );
@@ -84,7 +84,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         if (authVm.isMockMode) {
           await Future.delayed(const Duration(milliseconds: 800));
           
-          if (email == 'admin@agarwal.com' && password == 'MoMDaD 754') {
+          if (email == 'abhayff754@gmail.com' && password == 'MoMDaD754') {
             profile = UserProfile(
               uid: "web_admin_123",
               role: AppStrings.roleSuperAdmin,
@@ -153,7 +153,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
           }
         } else {
           // Live Firebase Mode: search in Firestore users collection for matching email & password
-          if (email == 'admin@agarwal.com' && password == 'MoMDaD 754') {
+          if (email == 'abhayff754@gmail.com' && password == 'MoMDaD754') {
             profile = UserProfile(
               uid: "web_admin_123",
               role: AppStrings.roleSuperAdmin,
@@ -362,7 +362,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       CustomTextField(
                         controller: _emailController,
                         labelText: 'Email Address',
-                        hintText: 'admin@agarwal.com',
+                        hintText: 'abhayff754@gmail.com',
                         prefixIcon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
                         validator: (val) {
