@@ -890,7 +890,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
                         style: TextStyle(
                           fontSize: 12, 
                           fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white90 : Colors.black87,
+                          color: isDark ? Colors.white.withOpacity(0.9) : Colors.black87,
                         ),
                       ),
                     ),
@@ -1003,7 +1003,7 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
                             style: TextStyle(
                               color: message.isUser
                                   ? Colors.white
-                                  : (isDark ? Colors.white90 : Colors.black87),
+                                  : (isDark ? Colors.white.withOpacity(0.9) : Colors.black87),
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                               height: 1.45,
