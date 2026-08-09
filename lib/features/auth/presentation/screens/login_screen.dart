@@ -45,11 +45,27 @@ class _LoginScreenState extends State<LoginScreen> {
       final input = _phoneController.text.trim();
       final authVm = Provider.of<AuthViewModel>(context, listen: false);
       if (input.contains('@')) {
+        final emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+        if (!emailRegExp.hasMatch(input)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Access Denied: Please enter a REAL valid email address containing @ and domain (.com)'), backgroundColor: Colors.red),
+          );
+          return;
+        }
         authVm.setEmailOtpMode(true);
         authVm.sendEmailOtp(input);
       } else {
+        final cleanPhone = input.replaceAll('+91', '').replaceAll(' ', '').trim();
+        final phoneRegExp = RegExp(r'^[6-9]\d{9}$');
+        final isFakePhone = ['1234567890', '0000000000', '9999999999', '1111111111'].contains(cleanPhone);
+        if (!phoneRegExp.hasMatch(cleanPhone) || isFakePhone) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Access Denied: Please enter a REAL 10-digit mobile number starting with 6, 7, 8, or 9. Fake numbers rejected!'), backgroundColor: Colors.red),
+          );
+          return;
+        }
         authVm.setEmailOtpMode(false);
-        final formattedPhone = input.startsWith('+91') ? input : '+91$input';
+        final formattedPhone = '+91$cleanPhone';
         authVm.sendOtp(formattedPhone);
       }
     }

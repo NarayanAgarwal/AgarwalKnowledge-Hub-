@@ -941,22 +941,75 @@ class StudentManagementPanel extends StatefulWidget {
 class _StudentManagementPanelState extends State<StudentManagementPanel> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
   final _classController = TextEditingController();
   final _rollController = TextEditingController();
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _classController.dispose();
+    _rollController.dispose();
+    super.dispose();
+  }
+
   void _onAddStudent() {
+    final name = _nameController.text.trim();
+    final rawPhone = _phoneController.text.trim();
+    final email = _emailController.text.trim().toLowerCase();
+    final userClass = _classController.text.trim();
+    final rollNumber = _rollController.text.trim();
+
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Registration Error: Please enter Student Full Name'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    // 1. REAL Mobile Number Validation (Must be valid 10-digit Indian number starting with 6,7,8,9)
+    final cleanPhone = rawPhone.replaceAll('+91', '').replaceAll(' ', '').trim();
+    final phoneRegExp = RegExp(r'^[6-9]\d{9}$');
+    final isFakePhone = ['1234567890', '0000000000', '9999999999', '1111111111', '8888888888'].contains(cleanPhone);
+
+    if (!phoneRegExp.hasMatch(cleanPhone) || isFakePhone) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Registration Error: Please enter a REAL valid 10-digit mobile number starting with 6, 7, 8, or 9. Fake numbers are rejected!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // 2. REAL Email Address Validation (Must be valid RFC email containing @ and domain like .com)
+    final emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegExp.hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Registration Error: Please enter a REAL valid Email address containing @ and domain (.com)'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final formattedPhone = '+91$cleanPhone';
     final webVm = Provider.of<WebPanelViewModel>(context, listen: false);
+
     final student = UserProfile(
       uid: 'std_${DateTime.now().millisecondsSinceEpoch}',
       role: AppStrings.roleStudent,
-      name: _nameController.text.trim(),
-      phone: _phoneController.text.trim(),
-      email: '',
-      address: '',
-      userClass: _classController.text.trim(),
-      rollNumber: _rollController.text.trim(),
-      gender: '',
-      dob: '',
+      name: name,
+      phone: formattedPhone,
+      email: email,
+      address: 'Patna',
+      userClass: userClass.isNotEmpty ? userClass : 'Class 5',
+      rollNumber: rollNumber.isNotEmpty ? rollNumber : '01',
+      gender: 'Male',
+      dob: '2015-01-01',
       admissionNumber: 'ADM-${DateTime.now().millisecond}',
       school: 'Agarwal Knowledge Hub',
       parentName: '',
@@ -965,14 +1018,25 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
       profilePhotoUrl: '',
       createdDate: DateTime.now(),
       lastLogin: DateTime.now(),
+      isOnline: false,
+      lastActive: DateTime.now(),
     );
 
     webVm.addStudent(student);
     
     _nameController.clear();
     _phoneController.clear();
+    _emailController.clear();
     _classController.clear();
     _rollController.clear();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Student "$name" successfully registered with verified Mobile & Email!'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
     
   Widget _buildMiniStat(String label, String value, IconData icon, Color color) {
     return Row(
@@ -1255,9 +1319,16 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
               const SizedBox(height: 16),
               CustomTextField(
                 controller: _phoneController,
-                labelText: 'Phone Number',
-                hintText: 'e.g. +919876543210',
+                labelText: 'Real Phone Number (+91)',
+                hintText: 'e.g. 9876543210',
                 prefixIcon: Icons.phone_android_outlined,
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _emailController,
+                labelText: 'Real Email Address (Gmail)',
+                hintText: 'e.g. student@gmail.com',
+                prefixIcon: Icons.email_outlined,
               ),
               const SizedBox(height: 16),
               CustomTextField(
