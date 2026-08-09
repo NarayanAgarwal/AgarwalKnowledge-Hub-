@@ -234,29 +234,169 @@ class _DoubtSupportScreenState extends State<DoubtSupportScreen> {
         }
       } else if (query.contains("hindi") || query.contains("vyakaran") || query.contains("sangya") || query.contains("kriya")) {
         aiResponse = "हिंदी व्याकरण सहायक (कक्षा 1-10) ✍️:\n1. संज्ञा (Noun): किसी व्यक्ति, स्थान, या वस्तु के नाम को संज्ञा कहते हैं (जैसे - राम, पटना, किताब)।\n2. क्रिया (Verb): जिस शब्द से किसी काम का करना या होना पाया जाए, उसे क्रिया कहते हैं (जैसे - लिखना, दौड़ना)।\n3. सर्वनाम (Pronoun): संज्ञा के स्थान पर प्रयुक्त होने वाले शब्द (जैसे - वह, तुम, मैं)।";
-      } else if (query.contains("excel") || query.contains("spreadsheet") || query.contains("formula")) {
+      } else if (query.contains("vlookup") || query.contains("xlookup") || query.contains("pivot") || query.contains("excel") || query.contains("spreadsheet") || query.contains("formula")) {
         if (isHindi) {
-          aiResponse = "माइक्रोसॉफ्ट एक्सेल बेसिक्स 📊:\nएक्सेल एक स्प्रेडशीट टूल है जिसका उपयोग पंक्तियों और स्तंभों में डेटा व्यवस्थित करने के लिए किया जाता है।\n1. सेल का पता: कॉलम लेटर और रो नंबर का चौराहा (जैसे A1)।\n2. सम फॉर्मूला: `=SUM(A1:A5)` सेल A1 से A5 में नंबर जोड़ता है।\n3. औसत फॉर्मूला: `=AVERAGE(B1:B10)` औसत निकालता है।";
+          aiResponse = "एक्सेल और स्प्रेडशीट गाइड (Basic to Advanced) 📊:\n"
+              "1. बेसिक फॉर्मूले: `=SUM(A1:A10)` (योग), `=AVERAGE(B1:B10)` (औसत), `=COUNT(C1:C10)` (गिनती)।\n"
+              "2. VLOOKUP: लंबवत डेटा खोजने के लिए: `=VLOOKUP(lookup_val, table_range, col_index, FALSE)`।\n"
+              "3. XLOOKUP (Advanced): आधुनिक और सुरक्षित फॉर्मूला जो किसी भी दिशा में खोज सकता है: `=XLOOKUP(lookup_val, lookup_range, return_range)`।\n"
+              "4. Pivot Tables (पिवट टेबल): बड़े डेटा सेट को तुरंत समेटने (summarize) और वर्गीकृत करने के लिए 'Insert > PivotTable' का उपयोग करें।\n"
+              "5. सेल संदर्भ: \$A\$1 (Absolute reference) जो फॉर्मूला ड्रैग करने पर बदलता नहीं है।";
         } else {
-          aiResponse = "Microsoft Excel Basics 📊:\nExcel is a spreadsheet tool used to organize data in rows and columns.\n1. Cell Address: Intersection of column letter and row number (e.g. A1).\n2. Sum Formula: `=SUM(A1:A5)` adds numbers in cells A1 to A5.\n3. Average Formula: `=AVERAGE(B1:B10)` calculates average.";
+          aiResponse = "MS Excel & Spreadsheet Guide (Basic to Advanced) 📊:\n"
+              "1. Basic Formulas: `=SUM(A1:A10)` (adds numbers), `=AVERAGE(B1:B10)` (average), `=COUNT(C1:C10)` (counts entries).\n"
+              "2. VLOOKUP: Searches vertically: `=VLOOKUP(lookup_value, table_array, col_index, FALSE)`.\n"
+              "3. XLOOKUP (Advanced): Modern lookup that works in any direction: `=XLOOKUP(lookup_val, lookup_range, return_range)`.\n"
+              "4. Pivot Tables: An interactive feature to instantly summarize, filter, and analyze massive volumes of raw data via 'Insert > PivotTable'.\n"
+              "5. Cell Referencing: \$A\$1 represents an Absolute reference that remains locked when dragging formulas.";
         }
-      } else if (query.contains("word") || query.contains("typing") || query.contains("format")) {
+      } else if (query.contains("mail merge") || query.contains("macro") || query.contains("word") || query.contains("typing") || query.contains("document") || query.contains("format")) {
         if (isHindi) {
-          aiResponse = "माइक्रोसॉफ्ट वर्ड बेसिक्स 📄:\nवर्ड एक वर्ड प्रोसेसिंग सॉफ्टवेयर है जिसका उपयोग डॉक्यूमेंट, पत्र और रिपोर्ट टाइप करने के लिए किया जाता है।\n1. शॉर्टकट: Ctrl+C (कॉपी), Ctrl+V (पेस्ट), Ctrl+B (बोल्ड), Ctrl+I (इटैलिक)।\n2. अलाइनमेंट: लेफ्ट, सेंटर, राइट और जस्टिफाइड।";
+          aiResponse = "एमएस वर्ड गाइड (Basic to Advanced) 📄:\n"
+              "1. शॉर्टकट: Ctrl+C (कॉपी), Ctrl+V (पेस्ट), Ctrl+B (बोल्ड), Ctrl+I (इटैलिक), Ctrl+U (अंडरलाइन), Ctrl+Z (Undo)।\n"
+              "2. मेल मर्ज (Mail Merge): एक ही पत्र को डेटाबेस (जैसे एक्सेल लिस्ट) से जोड़कर सैकड़ों लोगों के लिए निजीकृत (personalized) करने की तकनीक।\n"
+              "3. मैक्रोज़ (Macros): बार-बार होने वाले फ़ॉर्मेटिंग कार्यों को रिकॉर्ड करके एक सिंगल शॉर्टकट की से स्वचालित (automate) करना।\n"
+              "4. पेज सेटअप: 'Layout > Breaks' से Section Break लगाकर एक ही दस्तावेज़ में पोर्ट्रेट और लैंडस्केप लेआउट मिश्रित कर सकते हैं।";
         } else {
-          aiResponse = "Microsoft Word Basics 📄:\nWord is a word processing software used to type documents, letters, and reports.\n1. Shortcuts: Ctrl+C (Copy), Ctrl+V (Paste), Ctrl+B (Bold), Ctrl+I (Italic), Ctrl+U (Underline).\n2. Alignment: Left, Center, Right, and Justified.";
+          aiResponse = "MS Word & Typing Guide (Basic to Advanced) 📄:\n"
+              "1. Shortcuts: Ctrl+C (Copy), Ctrl+V (Paste), Ctrl+B (Bold), Ctrl+I (Italic), Ctrl+U (Underline), Ctrl+Z (Undo).\n"
+              "2. Mail Merge: A powerful feature to merge a template document with a data source (e.g. Excel) to print/email personalized sheets en-masse.\n"
+              "3. Macros: Automated task sequences recorded in VBA that run with a single hotkey to eliminate repetitive tasks.\n"
+              "4. Page Formatting: Use 'Layout > Breaks' to split sections and mix portrait/landscape orientation in the same file.";
         }
-      } else if (query.contains("powerpoint") || query.contains("slide") || query.contains("presentation")) {
+      } else if (query.contains("slide master") || query.contains("transition") || query.contains("animation") || query.contains("powerpoint") || query.contains("slide") || query.contains("presentation")) {
         if (isHindi) {
-          aiResponse = "माइक्रोसॉफ्ट पावरपॉइंट बेसिक्स 📉:\nपावरपॉइंट का उपयोग प्रस्तुतियों के लिए स्लाइड बनाने के लिए किया जाता है।\n1. स्लाइड: प्रेजेंटेशन का एक सिंगल पेज।\n2. ट्रांजिशन: स्लाइड बदलते समय दिखने वाले एनिमेशन प्रभाव।\n3. स्लाइड शो: फुल स्क्रीन में स्लाइड चलाने के लिए F5 दबाएं।";
+          aiResponse = "पावरपॉइंट गाइड (Basic to Advanced) 📉:\n"
+              "1. स्लाइड मास्टर (Slide Master): 'View > Slide Master' से एक ही जगह से पूरी प्रेजेंटेशन के फॉन्ट, लोगो और बैकग्राउंड को डिजाइन करें।\n"
+              "2. ट्रांजिशन बनाम एनिमेशन: ट्रांजिशन (Transition) स्लाइडों के बदलने पर लगता है (उदा: Morph), जबकि एनिमेशन (Animation) तत्वों (जैसे टेक्स्ट/इमेज) पर लागू होता है।\n"
+              "3. स्मार्टआर्ट (SmartArt): बुलेट पॉइंट टेक्स्ट को आकर्षक फ्लोचार्ट या संगठन चार्ट में बदलने की सुविधा।\n"
+              "4. शॉर्टकट: प्रेजेंटेशन शुरू करने के लिए F5 दबाएं; वर्तमान स्लाइड से शुरू करने के लिए Shift+F5 दबाएं।";
         } else {
-          aiResponse = "Microsoft PowerPoint Basics 📉:\nPowerPoint is used to build slides for presentations.\n1. Slide: A single page of a presentation.\n2. Transitions: Animation effects that play when moving from one slide to another.\n3. Slide Show: Press F5 shortcut to play slides full screen.";
+          aiResponse = "MS PowerPoint & Slides Guide (Basic to Advanced) 📉:\n"
+              "1. Slide Master: Go to 'View > Slide Master' to set a unified theme, font styles, and logo layout across all slides at once.\n"
+              "2. Transitions vs Animations: Transitions are movement effects when changing slides (e.g., Morph, Fade). Animations are motion paths applied to items on a slide.\n"
+              "3. SmartArt: Instantly converts plain text lists into professional diagrams and custom process flowcharts.\n"
+              "4. Shortcuts: Press F5 to start slideshow from slide 1, or Shift+F5 to play from the current active slide.";
+        }
+      } else if (query.contains("computer") || query.contains("what is computer") || query.contains("generation")) {
+        if (isHindi) {
+          aiResponse = "कंप्यूटर बेसिक्स और इतिहास 💻:\n"
+              "1. परिभाषा: कंप्यूटर एक इलेक्ट्रॉनिक उपकरण है जो कच्चे डेटा को इनपुट के रूप में लेता है, उसे प्रोसेस करता है, और अर्थपूर्ण आउटपुट देता है।\n"
+              "2. पीढ़ियाँ (Generations):\n"
+              "   - पहली पीढ़ी: वैक्यूम ट्यूब (Vacuum Tubes) (1940-1956)\n"
+              "   - दूसरी पीढ़ी: ट्रांजिस्टर (Transistors) (1956-1963)\n"
+              "   - तीसरी पीढ़ी: इंटीग्रेटेड सर्किट (IC) (1963-1971)\n"
+              "   - चौथी पीढ़ी: माइक्रोप्रोसेसर (Microprocessors - VLSI)\n"
+              "   - पांचवीं पीढ़ी: आर्टिफिशियल इंटेलिजेंस (AI) और क्वांटम कंप्यूटिंग।\n"
+              "3. वॉन न्यूमैन आर्किटेक्चर: इसमें CPU (ALU + Control Unit), मेमोरी यूनिट (RAM), इनपुट और आउटपुट डिवाइस शामिल होते हैं।";
+        } else {
+          aiResponse = "Computer Basics & Generations 💻:\n"
+              "1. Definition: A computer is an electronic device that accepts raw data as input, processes it using programmed instructions, and produces structured output.\n"
+              "2. Generations of Computers:\n"
+              "   - 1st Gen: Vacuum Tubes (1940-1956) - bulky, high heat generation.\n"
+              "   - 2nd Gen: Transistors (1956-1963) - smaller, faster, more energy-efficient.\n"
+              "   - 3rd Gen: Integrated Circuits (ICs) (1963-1971) - semiconductor breakthrough.\n"
+              "   - 4th Gen: Microprocessors (1971-Present) - CPU on a single silicon chip (VLSI).\n"
+              "   - 5th Gen: Artificial Intelligence (AI), quantum computing, and parallel processing.\n"
+              "3. Von Neumann Architecture: The blueprint of modern systems, linking a CPU (Control Unit + ALU), Memory (RAM), and Input/Output paths.";
+        }
+      } else if (query.contains("hardware") || query.contains("ram") || query.contains("rom") || query.contains("cpu") || query.contains("processor") || query.contains("storage") || query.contains("motherboard")) {
+        if (isHindi) {
+          aiResponse = "कंप्यूटर हार्डवेयर और घटक (Hardware & Components) 🔌:\n"
+              "1. CPU (केंद्रीय प्रसंस्करण इकाई): कंप्यूटर का मस्तिष्क। इसमें Arithmetic Logic Unit (गणितीय गणनाओं के लिए) और Control Unit (सिग्नल समन्वय के लिए) होते हैं।\n"
+              "2. RAM (रैंडम एक्सेस मेमोरी): यह एक अस्थायी (volatile) प्राथमिक मेमोरी है जो वर्तमान में चल रहे ऐप्स का डेटा रखती है। बंद करने पर यह मिट जाती है।\n"
+              "3. ROM (रीड ओनली मेमोरी): स्थायी (non-volatile) मेमोरी जिसमें सिस्टम को बूट करने के लिए 'BIOS' फर्मवेयर होता है।\n"
+              "4. स्टोरेज: SSD (Solid State Drive) फ्लैश मेमोरी का उपयोग करती है और HDD (Hard Disk Drive) की तुलना में 10 गुना अधिक तेज़ होती है।\n"
+              "5. मदरबोर्ड (Motherboard): मुख्य सर्किट बोर्ड जो CPU, मेमोरी, और अन्य सभी अंगों को आपस में जोड़ता है।";
+        } else {
+          aiResponse = "Computer Hardware & Internal Components 🔌:\n"
+              "1. CPU (Central Processing Unit): The brain. Contains the ALU (Arithmetic Logic Unit for math) and CU (Control Unit for signaling and coordination).\n"
+              "2. RAM (Random Access Memory): High-speed, volatile primary memory holding active data for the CPU. Wiped on shutdown.\n"
+              "3. ROM (Read-Only Memory): Non-volatile permanent memory hosting 'BIOS' or UEFI startup firmware.\n"
+              "4. SSD vs HDD: Solid State Drives (SSDs) use microchips for instant read/write, outperforming magnetic platter Hard Disk Drives (HDDs) by 10x speed.\n"
+              "5. Motherboard: The central printed circuit board (PCB) that acts as the backbone, connecting CPU, RAM, GPU, and storage drives.";
+        }
+      } else if (query.contains("software") || query.contains("operating system") || query.contains("windows") || query.contains("linux") || query.contains("os")) {
+        if (isHindi) {
+          aiResponse = "सॉफ्टवेयर और ऑपरेटिंग सिस्टम 💿:\n"
+              "1. प्रकार: सिस्टम सॉफ्टवेयर (हार्डवेयर को चलाने के लिए, जैसे OS, कंपाइलर) और एप्लीकेशन सॉफ्टवेयर (विशिष्ट कार्य के लिए, जैसे MS Office, Chrome)।\n"
+              "2. ऑपरेटिंग सिस्टम (OS): यूजर और हार्डवेयर के बीच की मुख्य कड़ी। मुख्य काम: प्रोसेस शेड्यूलिंग, मेमोरी एलोकेशन, फाइल सिस्टम प्रबंधन और सुरक्षा।\n"
+              "3. प्रमुख OS:\n"
+              "   - Windows: उपयोगकर्ता-अनुकूल GUI (ग्राफिकल यूजर इंटरफेस)।\n"
+              "   - Linux: ओपन-सोर्स, अत्यधिक सुरक्षित और सर्वरों के लिए सबसे पसंदीदा।\n"
+              "   - macOS: एप्पल उपकरणों के लिए मालिकाना सुरक्षित ऑपरेटिंग सिस्टम।";
+        } else {
+          aiResponse = "Software & Operating Systems (OS) 💿:\n"
+              "1. Classification: System Software (drives hardware, e.g. OS, device drivers) and Application Software (performs end-user tasks, e.g. MS Office, browser).\n"
+              "2. Operating System: The primary interface bridging hardware and the user. Core tasks include memory management, process scheduling, I/O handling, and file systems.\n"
+              "3. Key OS Platforms:\n"
+              "   - Windows: Proprietary, massive software compatibility, user-friendly GUI.\n"
+              "   - Linux: Open-source, highly secure, command-line powerful, powers most global web servers.\n"
+              "   - macOS: Apple Unix-based operating system known for tight integration and security.";
+        }
+      } else if (query.contains("network") || query.contains("internet") || query.contains("ip address") || query.contains("dns") || query.contains("protocol") || query.contains("wifi") || query.contains("router")) {
+        if (isHindi) {
+          aiResponse = "नेटवर्किंग और इंटरनेट (Basic to Advanced) 🌐:\n"
+              "1. IP Address: नेटवर्क पर डिवाइस की पहचान। IPv4 (32-बिट, उदा: 192.168.0.1) और IPv6 (128-बिट, असीमित पतों के लिए)।\n"
+              "2. DNS (Domain Name System): इंटरनेट की डायरेक्टरी। यह नाम (google.com) को संख्यात्मक IP पते (142.250.190.46) में बदलता है।\n"
+              "3. प्रोटोकॉल: HTTP/HTTPS (वेब डेटा), TCP (सुरक्षित डेटा ट्रांसफर), IP (राउटिंग), SMTP (ईमेल ट्रांसफर)।\n"
+              "4. नेटवर्क प्रकार: LAN (स्थानीय क्षेत्र), WAN (वैश्विक इंटरनेट), VPN (सुरक्षित एन्क्रिप्टेड टनल)।";
+        } else {
+          aiResponse = "Computer Networking & The Internet 🌐:\n"
+              "1. IP Address: Unique device address. IPv4 (32-bit decimal notation, e.g., 192.168.0.1) and IPv6 (128-bit hexadecimal, resolving IP exhaustion).\n"
+              "2. DNS (Domain Name System): The phonebook of the web. Resolves human domains (e.g. google.com) into server IP addresses.\n"
+              "3. Core Protocols: HTTP/HTTPS (hypertext requests), TCP (connection-oriented reliable packet delivery), IP (packet addressing), SMTP (mail exchange).\n"
+              "4. Layouts: LAN (Local Area Network), WAN (Wide Area Network), VPN (Virtual Private Network encrypting network packets).";
+        }
+      } else if (query.contains("database") || query.contains("sql") || query.contains("dbms") || query.contains("nosql")) {
+        if (isHindi) {
+          aiResponse = "डेटाबेस मैनेजमेंट सिस्टम (DBMS) 🗄️:\n"
+              "1. RDBMS: डेटा को परस्पर संबंधित पंक्तियों और स्तंभों की तालिकाओं में रखता है (उदा: MySQL, PostgreSQL, SQLite)।\n"
+              "2. SQL (Structured Query Language): डेटाबेस से पूछताछ करने की भाषा। उदा: `SELECT name FROM students WHERE marks > 90;`।\n"
+              "3. NoSQL: बिना तालिका वाली लचीली डेटाबेस संरचना (उदा: MongoDB, Firebase Firestore जो JSON दस्तावेज़ों का उपयोग करती है)।\n"
+              "4. कुंजी (Keys): Primary Key (तालिका में हर रिकॉर्ड को विशिष्ट पहचान देती है) और Foreign Key (दो तालिकाओं को जोड़ती है)।";
+        } else {
+          aiResponse = "Database Management Systems (DBMS) 🗄️:\n"
+              "1. Relational Database (RDBMS): Stores data in structured tables linked by relationships (e.g., PostgreSQL, MySQL, SQLite).\n"
+              "2. SQL: Structured Query Language. Syntax example: `SELECT name FROM students WHERE marks > 90;`.\n"
+              "3. NoSQL: Non-relational databases storing data in documents or key-value pairs (e.g., MongoDB, or Firebase Firestore using hierarchical JSON collections).\n"
+              "4. DB Keys: Primary Key (uniquely identifies a row) and Foreign Key (links rows across tables).";
+        }
+      } else if (query.contains("coding") || query.contains("programming") || query.contains("python") || query.contains("java") || query.contains("c++") || query.contains("javascript") || query.contains("compiler") || query.contains("loop") || query.contains("algorithm")) {
+        if (isHindi) {
+          aiResponse = "प्रोग्रामिंग, कोडिंग और एल्गोरिदम 💻:\n"
+              "1. भाषाएँ:\n"
+              "   - Python: पढ़ने में आसान, AI, मशीन लर्निंग और डेटा साइंस के लिए नंबर 1 भाषा।\n"
+              "   - Java: ऑब्जेक्ट-ओरिएंटेड, प्लेटफार्म इंडिपेंडेंट (JVM पर चलती है), बड़ी कंपनियों और एंड्रॉइड में लोकप्रिय।\n"
+              "   - C++: सुपर-फास्ट, गेम डेवलपमेंट और ऑपरेटिंग सिस्टम लिखने के लिए उपयुक्त।\n"
+              "   - JavaScript: वेब ब्राउज़र में इंटरैक्टिव यूआई बनाने वाली मुख्य भाषा।\n"
+              "2. कंपाइलर बनाम इंटरप्रेटर: कंपाइलर पूरे कोड को पहले मशीन कोड में बदलता है (उदा: C++), जबकि इंटरप्रेटर लाइन-बाय-लाइन चलाता है (उदा: Python)।\n"
+              "3. एल्गोरिदम (Algorithm): किसी समस्या को हल करने के लिए क्रमबद्ध लॉजिकल स्टेप्स (जैसे Sorting, Searching)।";
+        } else {
+          aiResponse = "Programming, Coding & Software Logic 💻:\n"
+              "1. Core Languages:\n"
+              "   - Python: High readability, standard for AI, machine learning, and automation scripting.\n"
+              "   - Java: Strictly object-oriented, compiles to bytecode running on any JVM (Platform Independent).\n"
+              "   - C++: Compiled language offering low-level memory access, popular for speed in game engines and OS core layers.\n"
+              "   - JavaScript: The script language of the web, powering frontend UI animations and backend runtime (Node.js).\n"
+              "2. Compilation vs Interpretation: Compilers translate source code to binaries beforehand (e.g., C++), whereas Interpreters translate and execute lines dynamically during run (e.g., Python).\n"
+              "3. Concepts: Variables (storage), Loops (for/while loops), Functions (modular blocks), and Algorithms (logical step-by-step problem-solving).";
         }
       } else if (query.contains("office") || query.contains("ms office") || query.contains("computer science")) {
         if (isHindi) {
-          aiResponse = "कंप्यूटर विज्ञान और एमएस ऑफिस ट्यूटर 💻:\nहम सिखाते हैं:\n1. एमएस वर्ड: टाइपिंग और फॉर्मेटिंग।\n2. एमएस एक्सेल: फॉर्मूले `=SUM()` और चार्ट।\n3. एमएस पावरपॉइंट: स्लाइड्स बनाना।\nआप आज इनमें से कौन सा प्रोग्राम पढ़ रहे हैं?";
+          aiResponse = "एमएस ऑफिस और कंप्यूटर शिक्षा 💻:\n"
+              "1. एमएस वर्ड (MS Word): पत्र, दस्तावेज, और रिपोर्ट तैयार करने का वर्ड प्रोसेसर।\n"
+              "2. एमएस एक्सेल (MS Excel): स्प्रेडशीट जिसमें उन्नत फॉर्मूले, चार्ट, और पिवट टेबल होते हैं।\n"
+              "3. एमएस पावरपॉइंट (MS PowerPoint): आकर्षक स्लाइड्स और स्लाइड मास्टर प्रस्तुतियाँ बनाने का टूल।\n"
+              "4. एमएस आउटलुक (MS Outlook): ईमेल, कैलेंडर, और टास्क मैनेजर टूल।\n"
+              "आपको वर्ड, एक्सेल या पावरपॉइंट में से किसके बारे में गहरी जानकारी चाहिए? उसका नाम लिखें!";
         } else {
-          aiResponse = "Computer Science & MS Office Tutor 💻:\nWe teach:\n1. MS Word: Typing and formatting text.\n2. MS Excel: Spreadsheet formulas `=SUM()` and charts.\n3. MS PowerPoint: Interactive slide decks.\nWhich of these programs are you studying today?";
+          aiResponse = "Microsoft Office Suite & Computer Science 💻:\n"
+              "1. MS Word: Advanced word processing for documents, reports, and templates.\n"
+              "2. MS Excel: Grid spreadsheets with formulas, data pivot tables, and lookup functions.\n"
+              "3. MS PowerPoint: Visual slide decks incorporating Slide Masters, Transitions, and Morph templates.\n"
+              "4. MS Outlook: Professional email management, calendar, and task planner.\n"
+              "Tell me which program (Word, Excel, PowerPoint) you want to learn in depth!";
         }
       } else if (query.contains("admission") || query.contains("join") || query.contains("fee") || query.contains("class") || query.contains("register")) {
         if (isHindi) {
