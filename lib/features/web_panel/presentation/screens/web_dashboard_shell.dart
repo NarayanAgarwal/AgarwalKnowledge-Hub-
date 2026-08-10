@@ -1770,6 +1770,125 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
     );
   }
 
+  void _showEditTeacherDialog(BuildContext context, UserProfile teacher) {
+    final nameCtrl = TextEditingController(text: teacher.name);
+    final phoneCtrl = TextEditingController(text: teacher.phone);
+    final emailCtrl = TextEditingController(text: teacher.email);
+    final addressCtrl = TextEditingController(text: teacher.address);
+    final idCtrl = TextEditingController(text: teacher.admissionNumber);
+    final classCtrl = TextEditingController(text: teacher.userClass);
+    final genderCtrl = TextEditingController(text: teacher.gender);
+    final dobCtrl = TextEditingController(text: teacher.dob);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.edit_outlined, color: AppColors.primaryBlue),
+            const SizedBox(width: 10),
+            const Text('Edit Teacher Details'),
+          ],
+        ),
+        content: SizedBox(
+          width: 460,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomTextField(
+                  controller: nameCtrl,
+                  labelText: 'Teacher Name',
+                  hintText: 'e.g. Ms. Anjali Verma',
+                  prefixIcon: Icons.person_outline,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: phoneCtrl,
+                  labelText: 'Mobile Number',
+                  hintText: 'e.g. +919876543222',
+                  prefixIcon: Icons.phone_android_outlined,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: emailCtrl,
+                  labelText: 'Email Address',
+                  hintText: 'e.g. teacher@gmail.com',
+                  prefixIcon: Icons.email_outlined,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: addressCtrl,
+                  labelText: 'Address',
+                  hintText: 'e.g. Patna',
+                  prefixIcon: Icons.location_on_outlined,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: idCtrl,
+                  labelText: 'Teacher ID / Code',
+                  hintText: 'e.g. TCH04',
+                  prefixIcon: Icons.badge_outlined,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: classCtrl,
+                  labelText: 'Class Assignment / Subjects',
+                  hintText: 'e.g. Mathematics, Science',
+                  prefixIcon: Icons.subject_outlined,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: genderCtrl,
+                  labelText: 'Gender',
+                  hintText: 'e.g. Female / Male',
+                  prefixIcon: Icons.people_outline,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: dobCtrl,
+                  labelText: 'Date of Birth',
+                  hintText: 'e.g. 1994-04-12',
+                  prefixIcon: Icons.calendar_today_outlined,
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryBlue,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              final updated = teacher.copyWith(
+                name: nameCtrl.text.trim(),
+                phone: phoneCtrl.text.trim(),
+                email: emailCtrl.text.trim(),
+                address: addressCtrl.text.trim(),
+                admissionNumber: idCtrl.text.trim(),
+                userClass: classCtrl.text.trim(),
+                gender: genderCtrl.text.trim(),
+                dob: dobCtrl.text.trim(),
+              );
+              Provider.of<WebPanelViewModel>(context, listen: false).updateTeacher(updated);
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Details of ${teacher.name} updated successfully! 🔄')),
+              );
+            },
+            child: const Text('Save Changes'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final webVm = Provider.of<WebPanelViewModel>(context);
@@ -1912,6 +2031,11 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
                               icon: const Icon(Icons.visibility_outlined, color: AppColors.primaryBlue),
                               tooltip: 'View Online History & Logs',
                               onPressed: () => _showTeacherActivityDialog(context, teacher),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+                              tooltip: 'Edit Teacher Details',
+                              onPressed: () => _showEditTeacherDialog(context, teacher),
                             ),
                             if (isSuperAdmin) ...[
                               const SizedBox(width: 4),
