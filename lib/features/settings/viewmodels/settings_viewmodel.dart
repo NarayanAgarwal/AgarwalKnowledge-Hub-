@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -109,6 +110,16 @@ class SettingsViewModel with ChangeNotifier {
     notifyListeners();
 
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedJson = prefs.getString("system_settings_json");
+      if (cachedJson != null) {
+        try {
+          _settings = SystemSettings.fromMap(jsonDecode(cachedJson));
+        } catch (e) {
+          print("Error parsing cached settings: $e");
+        }
+      }
+
       if (_isFirebaseAvailable()) {
         final doc = await FirebaseFirestore.instance
             .collection('system_settings')
@@ -117,17 +128,16 @@ class SettingsViewModel with ChangeNotifier {
 
         if (doc.exists && doc.data() != null) {
           _settings = SystemSettings.fromMap(doc.data()!);
+          await prefs.setString("system_settings_json", jsonEncode(_settings.toMap()));
         } else {
-          // Document does not exist yet, seed default settings in Firestore
           _settings = SystemSettings.defaultSettings();
           await FirebaseFirestore.instance
               .collection('system_settings')
               .doc('global_config')
               .set(_settings.toMap());
+          await prefs.setString("system_settings_json", jsonEncode(_settings.toMap()));
         }
       } else {
-        // Fallback: load language and notifications from SharedPreferences
-        final prefs = await SharedPreferences.getInstance();
         final lang = prefs.getString("app_language") ?? "English";
         final notify = prefs.getBool("app_notifications_enabled") ?? true;
 
@@ -137,8 +147,8 @@ class SettingsViewModel with ChangeNotifier {
         );
       }
     } catch (e) {
+      print("System settings load error: $e");
       _errorMessage = e.toString();
-      _settings = SystemSettings.defaultSettings();
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -152,18 +162,19 @@ class SettingsViewModel with ChangeNotifier {
 
     try {
       _settings = newSettings;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("system_settings_json", jsonEncode(_settings.toMap()));
+      await prefs.setString("app_language", _settings.defaultLanguage);
+      await prefs.setBool("app_notifications_enabled", _settings.pushNotificationsEnabled);
+
       if (_isFirebaseAvailable()) {
         await FirebaseFirestore.instance
             .collection('system_settings')
             .doc('global_config')
             .set(_settings.toMap());
-      } else {
-        // Save localized fields to SharedPreferences
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString("app_language", _settings.defaultLanguage);
-        await prefs.setBool("app_notifications_enabled", _settings.pushNotificationsEnabled);
       }
     } catch (e) {
+      print("System settings update error: $e");
       _errorMessage = e.toString();
       throw Exception("Failed to save settings: $e");
     } finally {

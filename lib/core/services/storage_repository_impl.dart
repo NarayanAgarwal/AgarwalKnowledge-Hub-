@@ -52,9 +52,10 @@ class StorageRepositoryImpl implements StorageRepository {
         Uint8List.fromList(bytes),
         SettableMetadata(contentType: mimeType),
       );
-      final TaskSnapshot snap = await task;
+      final TaskSnapshot snap = await task.timeout(const Duration(seconds: 5));
       return await snap.ref.getDownloadURL();
     } catch (e) {
+      print("Firebase storage upload error/timeout: $e");
       // Fallback base64 to ensure it works even if Firebase fails
       final base64String = base64Encode(bytes);
       return "data:$mimeType;base64,$base64String";
