@@ -4944,7 +4944,7 @@ void _showDeleteHistoryDialog(BuildContext context, String role, WebPanelViewMod
                   ? Center(
                       child: Text(
                         'No deleted records found for $role.',
-                        style: const TextStyle(color: Colors.grey, style: FontStyle.italic),
+                        style: const TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
                       ),
                     )
                   : ListView.builder(
