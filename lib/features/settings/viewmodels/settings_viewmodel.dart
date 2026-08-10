@@ -13,6 +13,19 @@ class SettingsViewModel with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
+  String get language => _settings.defaultLanguage;
+  bool get notificationsEnabled => _settings.pushNotificationsEnabled;
+
+  Future<void> changeLanguage(String newLang) async {
+    final updated = _settings.copyWith(defaultLanguage: newLang);
+    await updateSettings(updated);
+  }
+
+  Future<void> toggleNotifications(bool enabled) async {
+    final updated = _settings.copyWith(pushNotificationsEnabled: enabled);
+    await updateSettings(updated);
+  }
+
   // Active Sessions
   final List<Map<String, dynamic>> _activeSessions = [
     {

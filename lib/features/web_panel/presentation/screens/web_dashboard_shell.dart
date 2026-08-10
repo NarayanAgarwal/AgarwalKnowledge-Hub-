@@ -4333,19 +4333,24 @@ class _WebSettingsPanelState extends State<WebSettingsPanel> {
         if (voices.isNotEmpty) {
           final isFemale = gender == 'Female';
           final matched = voices.firstWhere(
-            (v) => isFemale 
-                ? v.name.toLowerCase().contains('female') || v.name.toLowerCase().contains('zira') || v.name.toLowerCase().contains('google uk english female')
-                : v.name.toLowerCase().contains('male') || v.name.toLowerCase().contains('david') || v.name.toLowerCase().contains('google uk english male'),
+            (v) {
+              final name = (v.name ?? '').toLowerCase();
+              return isFemale 
+                  ? name.contains('female') || name.contains('zira') || name.contains('google uk english female')
+                  : name.contains('male') || name.contains('david') || name.contains('google uk english male');
+            },
             orElse: () => voices.first,
           );
           utterance.voice = matched;
         }
 
-        utterance.onEnd = (event) {
-          setState(() {
-            _isTtsSpeaking = false;
-          });
-        };
+        Future.delayed(Duration(milliseconds: (text.length * 80).clamp(1500, 8000)), () {
+          if (mounted) {
+            setState(() {
+              _isTtsSpeaking = false;
+            });
+          }
+        });
         synth.speak(utterance);
       }
     } catch (e) {
@@ -5446,7 +5451,7 @@ class _WebSettingsPanelState extends State<WebSettingsPanel> {
                       controller: _freeLimitCtrl,
                       labelText: 'Free Daily AI Queries Limit',
                       hintText: '5',
-                      prefixIcon: Icons.limit_style_outlined,
+                      prefixIcon: Icons.data_usage,
                     ),
                   ),
                   const SizedBox(width: 16),
