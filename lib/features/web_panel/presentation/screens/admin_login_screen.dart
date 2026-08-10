@@ -55,22 +55,13 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       }
 
       // 2. Strict Role Credential Checks
-      if (_selectedRole == AppStrings.roleSuperAdmin || email == 'abhayff754@gmail.com') {
-        if (email != 'abhayff754@gmail.com') {
+      // 2. Strict Role Credential Checks
+      if (_selectedRole == AppStrings.roleSuperAdmin) {
+        if (email != 'abhayff754@gmail.com' || password != 'MoMDaD754') {
           setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Access Denied: Super Admin login email must be abhayff754@gmail.com'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-        if (password != 'MoMDaD754') {
-          setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Access Denied: Incorrect Super Admin Password! Required: MoMDaD754'),
+              content: Text('Access Denied: Invalid Email or Password for Super Admin.'),
               backgroundColor: Colors.red,
             ),
           );
@@ -83,7 +74,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
           setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Access Denied: Incorrect Teacher Password! Required: AgarwalHub@'),
+              content: Text('Access Denied: Incorrect password. Access code is invalid.'),
               backgroundColor: Colors.red,
             ),
           );
