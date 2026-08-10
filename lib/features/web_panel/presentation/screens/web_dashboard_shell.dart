@@ -2684,25 +2684,33 @@ class _HomeworkManagementPanelState extends State<HomeworkManagementPanel> {
     }
   }
 
-  void _pickImage(Map<String, dynamic> row) async {
-    final picker = ImagePicker();
+  void _pickImage(Map<String, dynamic> row) {
     try {
-      final XFile? image = await picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 85,
-      );
-      if (image != null) {
-        final bytes = await image.readAsBytes();
-        setState(() {
-          row['imageBytes'] = bytes;
-          row['imageName'] = image.name;
-          row['mimeType'] = image.mimeType ?? 'image/jpeg';
-        });
-      }
+      final input = html.FileUploadInputElement()..accept = 'image/*';
+      input.click();
+      input.onChange.listen((event) {
+        final files = input.files;
+        if (files != null && files.isNotEmpty) {
+          final file = files[0];
+          final reader = html.FileReader();
+          reader.readAsArrayBuffer(file);
+          reader.onLoadEnd.listen((e) {
+            final result = reader.result;
+            if (result is Uint8List) {
+              setState(() {
+                row['imageBytes'] = result;
+                row['imageName'] = file.name;
+                row['mimeType'] = file.type.isNotEmpty ? file.type : 'image/jpeg';
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Attached image: ${file.name}'), backgroundColor: Colors.green),
+              );
+            }
+          });
+        }
+      });
     } catch (e) {
-      debugPrint("Error picking image: $e");
+      debugPrint("Web homework picker error: $e");
     }
   }
 
@@ -4102,41 +4110,46 @@ class _WebSettingsPanelState extends State<WebSettingsPanel> {
     _backupSchedule = settings.backupSchedule;
   }
 
-  void _pickGeneralImage(String type) async {
-    final picker = ImagePicker();
+  void _pickGeneralImage(String type) {
     try {
-      final XFile? image = await picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 512,
-        maxHeight: 512,
-        imageQuality: 80,
-      );
-      if (image != null) {
-        final bytes = await image.readAsBytes();
-        setState(() {
-          if (type == 'logo') {
-            _logoBytes = bytes;
-            _logoName = image.name;
-          } else if (type == 'icon') {
-            _iconBytes = bytes;
-            _iconName = image.name;
-          } else if (type == 'favicon') {
-            _faviconBytes = bytes;
-            _faviconName = image.name;
-          } else if (type == 'loginBg') {
-            _loginBgBytes = bytes;
-            _loginBgName = image.name;
-          } else if (type == 'loginLogo') {
-            _loginLogoBytes = bytes;
-            _loginLogoName = image.name;
-          }
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Picked $type image: ${image.name}')),
-        );
-      }
+      final input = html.FileUploadInputElement()..accept = 'image/*';
+      input.click();
+      input.onChange.listen((event) {
+        final files = input.files;
+        if (files != null && files.isNotEmpty) {
+          final file = files[0];
+          final reader = html.FileReader();
+          reader.readAsArrayBuffer(file);
+          reader.onLoadEnd.listen((e) {
+            final result = reader.result;
+            if (result is Uint8List) {
+              setState(() {
+                if (type == 'logo') {
+                  _logoBytes = result;
+                  _logoName = file.name;
+                } else if (type == 'icon') {
+                  _iconBytes = result;
+                  _iconName = file.name;
+                } else if (type == 'favicon') {
+                  _faviconBytes = result;
+                  _faviconName = file.name;
+                } else if (type == 'loginBg') {
+                  _loginBgBytes = result;
+                  _loginBgName = file.name;
+                } else if (type == 'loginLogo') {
+                  _loginLogoBytes = result;
+                  _loginLogoName = file.name;
+                }
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Picked $type image: ${file.name}'), backgroundColor: Colors.green),
+              );
+            }
+          });
+        }
+      });
     } catch (e) {
-      debugPrint("Error picking image: $e");
+      debugPrint("Web general image picker error: $e");
     }
   }
 
@@ -4778,17 +4791,20 @@ class _WebSettingsPanelState extends State<WebSettingsPanel> {
       children: [
         Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
-        Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.withOpacity(0.3)),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(11),
-            child: imageWidget ?? const Center(child: Icon(Icons.image, color: Colors.grey)),
+        GestureDetector(
+          onTap: () => _pickGeneralImage(type),
+          child: Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.grey.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.withOpacity(0.3)),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(11),
+              child: imageWidget ?? const Center(child: Icon(Icons.add_photo_alternate_outlined, color: Colors.grey)),
+            ),
           ),
         ),
         const SizedBox(height: 8),
