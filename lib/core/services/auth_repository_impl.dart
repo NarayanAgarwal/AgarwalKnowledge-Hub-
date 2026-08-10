@@ -719,4 +719,29 @@ class AuthRepositoryImpl implements AuthRepository {
       return false;
     }
   }
+
+  @override
+  Future<bool> isEmailRegistered(String email) async {
+    if (_useMock) {
+      final prefs = await SharedPreferences.getInstance();
+      final usersJson = prefs.getString('mock_registered_users');
+      if (usersJson != null) {
+        final List<dynamic> usersList = jsonDecode(usersJson);
+        return usersList.any((u) => u['email']?.toString().toLowerCase() == email.trim().toLowerCase());
+      }
+      return email.trim().toLowerCase() == "test@gmail.com";
+    }
+
+    try {
+      final cleanEmail = email.trim().toLowerCase();
+      final query = await _firestore
+          .collection(AppStrings.colUsers)
+          .where('email', isEqualTo: cleanEmail)
+          .limit(1)
+          .get();
+      return query.docs.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
+  }
 }

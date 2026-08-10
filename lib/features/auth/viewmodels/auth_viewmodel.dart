@@ -204,6 +204,33 @@ class AuthViewModel with ChangeNotifier {
     return false;
   }
 
+  Future<bool> isEmailRegistered(String email) async {
+    return await _authRepository.isEmailRegistered(email);
+  }
+
+  Future<bool> sendPasswordResetEmail(String email) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final success = await _authRepository.resetPassword(email);
+      if (success) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        throw Exception("Failed to send password reset email. Please verify if the email is registered.");
+      }
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll("Exception: ", "");
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return false;
+  }
+
   void clearError() {
     _errorMessage = null;
     notifyListeners();
