@@ -665,6 +665,25 @@ class SuperAdminDashboardPanel extends StatelessWidget {
                             },
                             child: Text(s.isBlocked ? 'Unblock' : 'Block', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
                           ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange.shade700,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              final updated = s.copyWith(
+                                forceLogout: true,
+                                isOnline: false,
+                              );
+                              webVm.updateStudent(updated);
+                              setDialogState(() {});
+                            },
+                            child: const Text('Logout', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                          ),
                         ],
                       ),
                     );
@@ -1479,30 +1498,55 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
                               onPressed: () => _showEditStudentDialog(context, student),
                             ),
 
-                            // Super Admin Block/Unblock Control Button
-                            if (isSuperAdmin)
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: student.isBlocked ? Colors.green : Colors.red,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                  minimumSize: Size.zero,
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                onPressed: () {
-                                  final updated = student.copyWith(
-                                    isBlocked: !student.isBlocked,
-                                    isOnline: !student.isBlocked ? false : student.isOnline,
-                                  );
-                                  webVm.updateStudent(updated);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(student.isBlocked ? '${student.name} Unblocked!' : '${student.name} Blocked!'),
-                                    ),
-                                  );
-                                },
-                                child: Text(student.isBlocked ? 'Unblock' : 'Block', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                              ),
+                             // Super Admin Block/Unblock Control Button
+                             if (isSuperAdmin) ...[
+                               ElevatedButton(
+                                 style: ElevatedButton.styleFrom(
+                                   backgroundColor: student.isBlocked ? Colors.green : Colors.red,
+                                   foregroundColor: Colors.white,
+                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                   minimumSize: Size.zero,
+                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                 ),
+                                 onPressed: () {
+                                   final updated = student.copyWith(
+                                     isBlocked: !student.isBlocked,
+                                     isOnline: !student.isBlocked ? false : student.isOnline,
+                                   );
+                                   webVm.updateStudent(updated);
+                                   ScaffoldMessenger.of(context).showSnackBar(
+                                     SnackBar(
+                                       content: Text(student.isBlocked ? '${student.name} Unblocked!' : '${student.name} Blocked!'),
+                                     ),
+                                   );
+                                 },
+                                 child: Text(student.isBlocked ? 'Unblock' : 'Block', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                               ),
+                               const SizedBox(width: 8),
+                               ElevatedButton(
+                                 style: ElevatedButton.styleFrom(
+                                   backgroundColor: Colors.orange.shade700,
+                                   foregroundColor: Colors.white,
+                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                   minimumSize: Size.zero,
+                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                 ),
+                                 onPressed: () {
+                                   final updated = student.copyWith(
+                                     forceLogout: true,
+                                     isOnline: false,
+                                   );
+                                   webVm.updateStudent(updated);
+                                   ScaffoldMessenger.of(context).showSnackBar(
+                                     SnackBar(
+                                       content: Text('Force Logout command sent to ${student.name}\'s active sessions!'),
+                                       backgroundColor: Colors.orange.shade700,
+                                     ),
+                                   );
+                                 },
+                                 child: const Text('Force Logout', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                               ),
+                             ],
                             
                             IconButton(
                               icon: const Icon(Icons.delete_outline, color: AppColors.error),

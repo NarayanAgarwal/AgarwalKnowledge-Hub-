@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/services/auth_repository.dart';
@@ -141,12 +143,24 @@ class AuthViewModel with ChangeNotifier {
         if (profile.isBlocked) {
           throw Exception("Your account has been suspended/blocked by Super Admin. Please contact administration.");
         }
-        _userProfile = profile;
+        
+        UserProfile updatedProfile = profile;
+        if (profile.forceLogout) {
+          updatedProfile = profile.copyWith(forceLogout: false);
+          try {
+            await _authRepository.saveUserProfile(updatedProfile);
+          } catch (e) {
+            debugPrint("Failed to reset forceLogout: $e");
+          }
+        }
+        
+        _userProfile = updatedProfile;
+        _listenToProfileChanges(updatedProfile.uid);
         
         final prefs = await SharedPreferences.getInstance();
         if (_rememberMe) {
           await prefs.setBool('auto_login', true);
-          await prefs.setString('saved_uid', profile.uid);
+          await prefs.setString('saved_uid', updatedProfile.uid);
         } else {
           await prefs.setBool('auto_login', false);
           await prefs.remove('saved_uid');
@@ -203,7 +217,7 @@ class AuthViewModel with ChangeNotifier {
     if (cachedJson != null) {
       try {
         final profile = UserProfile.fromJson(jsonDecode(cachedJson));
-        if (profile.isBlocked) {
+        if (profile.isBlocked || profile.forceLogout) {
           await prefs.remove('cached_profile');
           await prefs.remove('auto_login');
           await prefs.remove('saved_uid');
@@ -212,6 +226,7 @@ class AuthViewModel with ChangeNotifier {
           return;
         }
         _userProfile = profile;
+        _listenToProfileChanges(profile.uid);
         notifyListeners();
       } catch (e) {
         debugPrint("Error loading cached user profile: $e");
@@ -226,16 +241,18 @@ class AuthViewModel with ChangeNotifier {
       try {
         final freshProfile = await _authRepository.getUserProfile(savedUid).timeout(const Duration(seconds: 4));
         if (freshProfile != null) {
-          if (freshProfile.isBlocked) {
+          if (freshProfile.isBlocked || freshProfile.forceLogout) {
             await prefs.remove('cached_profile');
             await prefs.remove('auto_login');
             await prefs.remove('saved_uid');
             _userProfile = null;
+            _cancelProfileSubscription();
             notifyListeners();
             return;
           }
           _userProfile = freshProfile;
           await prefs.setString('cached_profile', jsonEncode(freshProfile.toJson()));
+          _listenToProfileChanges(freshProfile.uid);
           notifyListeners();
         }
       } catch (e) {
@@ -290,12 +307,23 @@ class AuthViewModel with ChangeNotifier {
           notifyListeners();
           return false;
         }
-        _userProfile = profile;
+        UserProfile updatedProfile = profile;
+        if (profile.forceLogout) {
+          updatedProfile = profile.copyWith(forceLogout: false);
+          try {
+            await _authRepository.saveUserProfile(updatedProfile);
+          } catch (e) {
+            debugPrint("Failed to reset forceLogout: $e");
+          }
+        }
+        _userProfile = updatedProfile;
+        _listenToProfileChanges(updatedProfile.uid);
+        
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('cached_profile', jsonEncode(profile.toJson()));
+        await prefs.setString('cached_profile', jsonEncode(updatedProfile.toJson()));
         if (_rememberMe) {
           await prefs.setBool('auto_login', true);
-          await prefs.setString('saved_uid', profile.uid);
+          await prefs.setString('saved_uid', updatedProfile.uid);
         } else {
           await prefs.remove('auto_login');
           await prefs.remove('saved_uid');
@@ -367,14 +395,25 @@ class AuthViewModel with ChangeNotifier {
         return false;
       }
 
-      _userProfile = profile;
+      UserProfile updatedProfile = profile;
+      if (profile.forceLogout) {
+        updatedProfile = profile.copyWith(forceLogout: false);
+        try {
+          await _authRepository.saveUserProfile(updatedProfile);
+        } catch (e) {
+          debugPrint("Failed to reset forceLogout: $e");
+        }
+      }
+      
+      _userProfile = updatedProfile;
+      _listenToProfileChanges(updatedProfile.uid);
       _isLoading = false;
       
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('cached_profile', jsonEncode(profile.toJson()));
+      await prefs.setString('cached_profile', jsonEncode(updatedProfile.toJson()));
       if (_rememberMe) {
         await prefs.setBool('auto_login', true);
-        await prefs.setString('saved_uid', profile.uid);
+        await prefs.setString('saved_uid', updatedProfile.uid);
       } else {
         await prefs.remove('auto_login');
         await prefs.remove('saved_uid');
@@ -406,6 +445,7 @@ class AuthViewModel with ChangeNotifier {
   }
 
   Future<void> logout() async {
+    _cancelProfileSubscription();
     _isLoading = true;
     notifyListeners();
     try {
@@ -440,5 +480,61 @@ class AuthViewModel with ChangeNotifier {
     _userProfile = updated;
     notifyListeners();
     await _authRepository.saveUserProfile(updated);
+  }
+
+  StreamSubscription? _profileSubscription;
+
+  void _listenToProfileChanges(String uid) {
+    _profileSubscription?.cancel();
+    if (isMockMode) return;
+    
+    try {
+      _profileSubscription = FirebaseFirestore.instance
+          .collection(AppStrings.colUsers)
+          .doc(uid)
+          .snapshots()
+          .listen((snapshot) async {
+        if (!snapshot.exists) return;
+        final data = snapshot.data();
+        if (data == null) return;
+        final profile = UserProfile.fromFirestore(data, snapshot.id);
+        
+        // Force logout if blocked or remotely requested!
+        if (profile.isBlocked || profile.forceLogout) {
+          _profileSubscription?.cancel();
+          _profileSubscription = null;
+          
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.remove('cached_profile');
+          await prefs.remove('auto_login');
+          await prefs.remove('saved_uid');
+          
+          _userProfile = null;
+          _errorMessage = profile.isBlocked
+              ? "Your account has been blocked/suspended by Super Admin."
+              : "Your session has been terminated by Super Admin.";
+          notifyListeners();
+          return;
+        }
+        
+        _userProfile = profile;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('cached_profile', jsonEncode(profile.toJson()));
+        notifyListeners();
+      });
+    } catch (e) {
+      debugPrint("Failed to listen to profile changes: $e");
+    }
+  }
+
+  void _cancelProfileSubscription() {
+    _profileSubscription?.cancel();
+    _profileSubscription = null;
+  }
+
+  @override
+  void dispose() {
+    _cancelProfileSubscription();
+    super.dispose();
   }
 }

@@ -23,6 +23,7 @@ class UserProfile {
   final DateTime lastActive;
   final bool isBlocked;
   final String statusNote; // 'Active', 'On Leave', 'Teaching', 'Suspended'
+  final bool forceLogout;
 
   UserProfile({
     required this.uid,
@@ -47,6 +48,7 @@ class UserProfile {
     DateTime? lastActive,
     this.isBlocked = false,
     this.statusNote = 'Active',
+    this.forceLogout = false,
   }) : lastActive = lastActive ?? createdDate;
 
   factory UserProfile.fromFirestore(Map<String, dynamic> data, String id) {
@@ -73,6 +75,7 @@ class UserProfile {
       lastActive: (data['lastActive'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isBlocked: data['isBlocked'] ?? false,
       statusNote: data['statusNote'] ?? 'Active',
+      forceLogout: data['forceLogout'] ?? false,
     );
   }
 
@@ -100,6 +103,7 @@ class UserProfile {
       'lastActive': lastActive.toIso8601String(),
       'isBlocked': isBlocked,
       'statusNote': statusNote,
+      'forceLogout': forceLogout,
     };
   }
 
@@ -127,6 +131,7 @@ class UserProfile {
       lastActive: json['lastActive'] != null ? DateTime.parse(json['lastActive']) : DateTime.now(),
       isBlocked: json['isBlocked'] ?? false,
       statusNote: json['statusNote'] ?? 'Active',
+      forceLogout: json['forceLogout'] ?? false,
     );
   }
 
@@ -153,6 +158,7 @@ class UserProfile {
       'lastActive': Timestamp.fromDate(lastActive),
       'isBlocked': isBlocked,
       'statusNote': statusNote,
+      'forceLogout': forceLogout,
     };
   }
 
@@ -178,6 +184,7 @@ class UserProfile {
     DateTime? lastActive,
     bool? isBlocked,
     String? statusNote,
+    bool? forceLogout,
   }) {
     return UserProfile(
       uid: uid,
@@ -202,6 +209,7 @@ class UserProfile {
       lastActive: lastActive ?? this.lastActive,
       isBlocked: isBlocked ?? this.isBlocked,
       statusNote: statusNote ?? this.statusNote,
+      forceLogout: forceLogout ?? this.forceLogout,
     );
   }
 }
