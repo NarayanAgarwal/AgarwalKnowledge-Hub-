@@ -4542,48 +4542,60 @@ class _WebSettingsPanelState extends State<WebSettingsPanel> {
         );
 
         final contentPane = Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Top control status bar
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      _tabs[_activeSectionIndex]['title'],
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
-                    ),
-                    Row(
-                      children: [
-                        if (_activeSectionIndex != 10) ...[ // Don't show save for logs
-                          OutlinedButton.icon(
-                            icon: const Icon(Icons.restart_alt),
-                            label: const Text('Reset Unsaved'),
-                            onPressed: () => _resetUnsaved(settings),
-                          ),
-                          const SizedBox(width: 12),
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryBlue,
-                              foregroundColor: Colors.white,
-                            ),
-                            icon: const Icon(Icons.save),
-                            label: const Text('Save Changes'),
-                            onPressed: () => _saveAllChanges(settings, settingsVm, user, entProvider),
-                          ),
-                        ]
-                      ],
-                    )
-                  ],
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _tabs[_activeSectionIndex]['title'],
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+                      ),
+                      const Divider(height: 32),
+                      
+                      // Load Active Section Form
+                      _buildActiveTabContent(_activeSectionIndex, settings, settingsVm, user, entProvider),
+                    ],
+                  ),
                 ),
-                const Divider(height: 32),
-                
-                // Load Active Section Form
-                _buildActiveTabContent(_activeSectionIndex, settings, settingsVm, user, entProvider),
-              ],
-            ),
+              ),
+              if (_activeSectionIndex != 10)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: widget.isDark ? Colors.black.withOpacity(0.3) : Colors.white.withOpacity(0.7),
+                    border: Border(
+                      top: BorderSide(
+                        color: widget.isDark ? Colors.white12 : Colors.black12,
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.restart_alt),
+                        label: const Text('Reset Unsaved'),
+                        onPressed: () => _resetUnsaved(settings),
+                      ),
+                      const SizedBox(width: 16),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryBlue,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        ),
+                        icon: const Icon(Icons.save),
+                        label: const Text('Save System Changes', style: TextStyle(fontWeight: FontWeight.bold)),
+                        onPressed: () => _saveAllChanges(settings, settingsVm, user, entProvider),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
           ),
         );
 
