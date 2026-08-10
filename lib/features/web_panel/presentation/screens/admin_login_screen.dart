@@ -78,6 +78,19 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         }
       }
 
+      if (_selectedRole == AppStrings.roleTeacher) {
+        if (password != 'AgarwalHub@') {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Access Denied: Incorrect Teacher Password! Required: AgarwalHub@'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+      }
+
       UserProfile? profile;
 
       try {
@@ -126,11 +139,11 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               createdDate: DateTime.now(),
               lastLogin: DateTime.now(),
             );
-          } else if (email == 'teacher@agarwal.com' && password == '123456' && _selectedRole == AppStrings.roleTeacher) {
+          } else if (_selectedRole == AppStrings.roleTeacher && password == 'AgarwalHub@') {
             profile = UserProfile(
-              uid: "web_teacher_123",
+              uid: "web_teacher_${email.hashCode.abs()}",
               role: AppStrings.roleTeacher,
-              name: "Ms. Anjali Verma",
+              name: "Teacher (${email.split('@').first})",
               phone: "+919876543222",
               email: email,
               address: "Patna",
@@ -138,7 +151,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               rollNumber: "",
               gender: "Female",
               dob: "1994-04-12",
-              admissionNumber: "TCH04",
+              admissionNumber: "TCH-${email.hashCode.abs().toString().substring(0, 4)}",
               school: "Agarwal Knowledge Hub",
               parentName: "",
               parentMobile: "",
@@ -182,6 +195,18 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                   .set(profile.toFirestore());
             } catch (e) {
               debugPrint("Warning: could not write admin profile: $e");
+            }
+          } else if (_selectedRole == AppStrings.roleTeacher && password == 'AgarwalHub@') {
+            final query = await FirebaseFirestore.instance
+                .collection(AppStrings.colUsers)
+                .where('email', isEqualTo: email)
+                .where('role', isEqualTo: AppStrings.roleTeacher)
+                .limit(1)
+                .get();
+
+            if (query.docs.isNotEmpty) {
+              final doc = query.docs.first;
+              profile = UserProfile.fromFirestore(doc.data(), doc.id);
             }
           } else {
             final query = await FirebaseFirestore.instance
