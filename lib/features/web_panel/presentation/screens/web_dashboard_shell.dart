@@ -1063,6 +1063,7 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
   final _emailController = TextEditingController();
   final _classController = TextEditingController();
   final _rollController = TextEditingController();
+  final Set<String> _selectedUids = {};
 
   @override
   void dispose() {
@@ -1392,18 +1393,94 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Student Roster & Activity Surveillance', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                    if (isSuperAdmin)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red.withOpacity(0.3)),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: webVm.studentsList.isNotEmpty && _selectedUids.length == webVm.studentsList.length,
+                          onChanged: (val) {
+                            setState(() {
+                              if (val == true) {
+                                _selectedUids.addAll(webVm.studentsList.map((s) => s.uid));
+                              } else {
+                                _selectedUids.clear();
+                              }
+                            });
+                          },
                         ),
-                        child: const Text('Super Admin Surveillance Controls Active 🛡️', 
-                            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 11)),
-                      ),
+                        const Text('Select All', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        const SizedBox(width: 16),
+                        const Text('Student Roster & Activity Surveillance', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        if (_selectedUids.isNotEmpty) ...[
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                            ),
+                            icon: const Icon(Icons.delete_sweep, size: 18),
+                            label: Text('Delete Selected (${_selectedUids.length})'),
+                            onPressed: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (confirmCtx) => AlertDialog(
+                                  title: const Text('Confirm Bulk Deletion'),
+                                  content: Text('Are you sure you want to delete ${_selectedUids.length} selected students? They will be moved to Delete History.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(confirmCtx, false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(confirmCtx, true),
+                                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                                      child: const Text('Move to History'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (confirm == true) {
+                                final selectedStudents = webVm.studentsList.where((s) => _selectedUids.contains(s.uid)).toList();
+                                for (final student in selectedStudents) {
+                                  await webVm.moveToTrash(student);
+                                }
+                                setState(() {
+                                  _selectedUids.clear();
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Selected students moved to Delete History! 🗑️')),
+                                );
+                              }
+                            },
+                          ),
+                          const SizedBox(width: 12),
+                        ],
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey.shade800,
+                            foregroundColor: Colors.white,
+                          ),
+                          icon: const Icon(Icons.history, size: 18),
+                          label: const Text('Delete History'),
+                          onPressed: () => _showDeleteHistoryDialog(context, AppStrings.roleStudent, webVm),
+                        ),
+                        if (isSuperAdmin) ...[
+                          const SizedBox(width: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.red.withOpacity(0.3)),
+                            ),
+                            child: const Text('Super Admin Active 🛡️', 
+                                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 11)),
+                          ),
+                        ],
+                      ],
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -1415,25 +1492,44 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
                     separatorBuilder: (context, index) => const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final student = webVm.studentsList[index];
+                      final isSelected = _selectedUids.contains(student.uid);
                       return ListTile(
-                        leading: Stack(
+                        leading: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            CircleAvatar(
-                              backgroundColor: student.isBlocked ? Colors.red.withOpacity(0.2) : null,
-                              child: Icon(student.isBlocked ? Icons.block : Icons.person, color: student.isBlocked ? Colors.red : null),
+                            Checkbox(
+                              value: isSelected,
+                              onChanged: (val) {
+                                setState(() {
+                                  if (val == true) {
+                                    _selectedUids.add(student.uid);
+                                  } else {
+                                    _selectedUids.remove(student.uid);
+                                  }
+                                });
+                              },
                             ),
-                            Positioned(
-                              right: 0,
-                              bottom: 0,
-                              child: Container(
-                                width: 12,
-                                height: 12,
-                                decoration: BoxDecoration(
-                                  color: student.isBlocked ? Colors.red : (student.isOnline ? Colors.green : Colors.grey),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 1.5),
+                            const SizedBox(width: 4),
+                            Stack(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: student.isBlocked ? Colors.red.withOpacity(0.2) : null,
+                                  child: Icon(student.isBlocked ? Icons.block : Icons.person, color: student.isBlocked ? Colors.red : null),
                                 ),
-                              ),
+                                Positioned(
+                                  right: 0,
+                                  bottom: 0,
+                                  child: Container(
+                                    width: 12,
+                                    height: 12,
+                                    decoration: BoxDecoration(
+                                      color: student.isBlocked ? Colors.red : (student.isOnline ? Colors.green : Colors.grey),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: Colors.white, width: 1.5),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -1553,7 +1649,32 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
                             
                             IconButton(
                               icon: const Icon(Icons.delete_outline, color: AppColors.error),
-                              onPressed: () => webVm.deleteStudent(student.uid),
+                              onPressed: () async {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (confirmCtx) => AlertDialog(
+                                    title: const Text('Confirm Deletion'),
+                                    content: Text('Are you sure you want to delete ${student.name}? They will be moved to Delete History.'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(confirmCtx, false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(confirmCtx, true),
+                                        style: TextButton.styleFrom(foregroundColor: Colors.red),
+                                        child: const Text('Move to History'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (confirm == true) {
+                                  await webVm.moveToTrash(student);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('${student.name} moved to Delete History! 🗑️')),
+                                  );
+                                }
+                              },
                             ),
                           ],
                         ),
@@ -1643,18 +1764,41 @@ class TeacherManagementPanel extends StatefulWidget {
 class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
   final _subjectController = TextEditingController();
+  final Set<String> _selectedUids = {};
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _subjectController.dispose();
+    super.dispose();
+  }
 
   void _onAddTeacher() {
     final webVm = Provider.of<WebPanelViewModel>(context, listen: false);
+    final emailVal = _emailController.text.trim().toLowerCase();
+    
+    if (emailVal.isEmpty || !emailVal.contains('@') || !emailVal.contains('.com')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Access Denied: Please enter a valid Email address for the teacher'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final teacher = UserProfile(
       uid: 'tch_${DateTime.now().millisecondsSinceEpoch}',
       role: AppStrings.roleTeacher,
       name: _nameController.text.trim(),
       phone: _phoneController.text.trim(),
-      email: '',
+      email: emailVal,
       address: '',
-      userClass: '',
+      userClass: _subjectController.text.trim(),
       rollNumber: '',
       gender: '',
       dob: '',
@@ -1672,6 +1816,7 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
     
     _nameController.clear();
     _phoneController.clear();
+    _emailController.clear();
     _subjectController.clear();
   }
 
@@ -1934,18 +2079,94 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Teachers Roster & Active Class Surveillance', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                    if (isSuperAdmin)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.secondaryOrange.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppColors.secondaryOrange.withOpacity(0.3)),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: webVm.teachersList.isNotEmpty && _selectedUids.length == webVm.teachersList.length,
+                          onChanged: (val) {
+                            setState(() {
+                              if (val == true) {
+                                _selectedUids.addAll(webVm.teachersList.map((t) => t.uid));
+                              } else {
+                                _selectedUids.clear();
+                              }
+                            });
+                          },
                         ),
-                        child: const Text('Super Admin Teacher Controls Active 🛡️', 
-                            style: TextStyle(color: AppColors.secondaryOrange, fontWeight: FontWeight.bold, fontSize: 11)),
-                      ),
+                        const Text('Select All', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        const SizedBox(width: 16),
+                        const Text('Teachers Roster & Active Class Surveillance', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        if (_selectedUids.isNotEmpty) ...[
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                            ),
+                            icon: const Icon(Icons.delete_sweep, size: 18),
+                            label: Text('Delete Selected (${_selectedUids.length})'),
+                            onPressed: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (confirmCtx) => AlertDialog(
+                                  title: const Text('Confirm Bulk Deletion'),
+                                  content: Text('Are you sure you want to delete ${_selectedUids.length} selected teachers? They will be moved to Delete History.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(confirmCtx, false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(confirmCtx, true),
+                                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                                      child: const Text('Move to History'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (confirm == true) {
+                                final selectedTeachers = webVm.teachersList.where((t) => _selectedUids.contains(t.uid)).toList();
+                                for (final t in selectedTeachers) {
+                                  await webVm.moveToTrash(t);
+                                }
+                                setState(() {
+                                  _selectedUids.clear();
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Selected teachers moved to Delete History! 🗑️')),
+                                );
+                              }
+                            },
+                          ),
+                          const SizedBox(width: 12),
+                        ],
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey.shade800,
+                            foregroundColor: Colors.white,
+                          ),
+                          icon: const Icon(Icons.history, size: 18),
+                          label: const Text('Delete History'),
+                          onPressed: () => _showDeleteHistoryDialog(context, AppStrings.roleTeacher, webVm),
+                        ),
+                        if (isSuperAdmin) ...[
+                          const SizedBox(width: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.secondaryOrange.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: AppColors.secondaryOrange.withOpacity(0.3)),
+                            ),
+                            child: const Text('Super Admin Teacher Controls Active 🛡️', 
+                                style: TextStyle(color: AppColors.secondaryOrange, fontWeight: FontWeight.bold, fontSize: 11)),
+                          ),
+                        ],
+                      ],
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -1959,25 +2180,44 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
                       final teacher = webVm.teachersList[index];
                       final bool isOnLeave = teacher.statusNote == 'On Leave';
 
+                      final isSelected = _selectedUids.contains(teacher.uid);
                       return ListTile(
-                        leading: Stack(
+                        leading: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            CircleAvatar(
-                              backgroundColor: isOnLeave ? Colors.amber.withOpacity(0.2) : null,
-                              child: Icon(isOnLeave ? Icons.beach_access : Icons.school, color: isOnLeave ? Colors.amber.shade800 : null),
+                            Checkbox(
+                              value: isSelected,
+                              onChanged: (val) {
+                                setState(() {
+                                  if (val == true) {
+                                    _selectedUids.add(teacher.uid);
+                                  } else {
+                                    _selectedUids.remove(teacher.uid);
+                                  }
+                                });
+                              },
                             ),
-                            Positioned(
-                              right: 0,
-                              bottom: 0,
-                              child: Container(
-                                width: 12,
-                                height: 12,
-                                decoration: BoxDecoration(
-                                  color: isOnLeave ? Colors.amber : (teacher.isOnline ? Colors.green : Colors.grey),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 1.5),
+                            const SizedBox(width: 4),
+                            Stack(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: isOnLeave ? Colors.amber.withOpacity(0.2) : null,
+                                  child: Icon(isOnLeave ? Icons.beach_access : Icons.school, color: isOnLeave ? Colors.amber.shade800 : null),
                                 ),
-                              ),
+                                Positioned(
+                                  right: 0,
+                                  bottom: 0,
+                                  child: Container(
+                                    width: 12,
+                                    height: 12,
+                                    decoration: BoxDecoration(
+                                      color: isOnLeave ? Colors.amber : (teacher.isOnline ? Colors.green : Colors.grey),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: Colors.white, width: 1.5),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -2086,7 +2326,32 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
                               ),
                               IconButton(
                                 icon: const Icon(Icons.delete_outline, color: AppColors.error),
-                                onPressed: () => webVm.deleteTeacher(teacher.uid),
+                                onPressed: () async {
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (confirmCtx) => AlertDialog(
+                                      title: const Text('Confirm Deletion'),
+                                      content: Text('Are you sure you want to delete ${teacher.name}? They will be moved to Delete History.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(confirmCtx, false),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(confirmCtx, true),
+                                          style: TextButton.styleFrom(foregroundColor: Colors.red),
+                                          child: const Text('Move to History'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  if (confirm == true) {
+                                    await webVm.moveToTrash(teacher);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('${teacher.name} moved to Delete History! 🗑️')),
+                                    );
+                                  }
+                                },
                               ),
                             ],
                           ],
@@ -2128,6 +2393,13 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
                 labelText: 'Phone Number',
                 hintText: 'e.g. +919876543222',
                 prefixIcon: Icons.phone_android_outlined,
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _emailController,
+                labelText: 'Email Address',
+                hintText: 'e.g. teacher@gmail.com',
+                prefixIcon: Icons.email_outlined,
               ),
               const SizedBox(height: 16),
               CustomTextField(
@@ -4033,6 +4305,7 @@ class ParentManagementPanel extends StatefulWidget {
 class _ParentManagementPanelState extends State<ParentManagementPanel> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  final Set<String> _selectedUids = {};
 
   Widget _buildMiniStat(String label, String value, IconData icon, Color color) {
     return Column(
@@ -4310,20 +4583,96 @@ class _ParentManagementPanelState extends State<ParentManagementPanel> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Parent Roster & Activity Surveillance', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                    if (isSuperAdmin)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red.withOpacity(0.3)),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: filteredParents.isNotEmpty && _selectedUids.length == filteredParents.length,
+                          onChanged: (val) {
+                            setState(() {
+                              if (val == true) {
+                                _selectedUids.addAll(filteredParents.map((p) => p.uid));
+                              } else {
+                                _selectedUids.clear();
+                              }
+                            });
+                          },
                         ),
-                        child: const Text(
-                          'Super Admin Surveillance Controls Active 🛠️',
-                          style: TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold),
+                        const Text('Select All', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        const SizedBox(width: 16),
+                        const Text('Parent Roster & Activity Surveillance', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        if (_selectedUids.isNotEmpty) ...[
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                            ),
+                            icon: const Icon(Icons.delete_sweep, size: 18),
+                            label: Text('Delete Selected (${_selectedUids.length})'),
+                            onPressed: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (confirmCtx) => AlertDialog(
+                                  title: const Text('Confirm Bulk Deletion'),
+                                  content: Text('Are you sure you want to delete ${_selectedUids.length} selected parents? They will be moved to Delete History.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(confirmCtx, false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(confirmCtx, true),
+                                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                                      child: const Text('Move to History'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (confirm == true) {
+                                final selectedParents = filteredParents.where((p) => _selectedUids.contains(p.uid)).toList();
+                                for (final p in selectedParents) {
+                                  await webVm.moveToTrash(p);
+                                }
+                                setState(() {
+                                  _selectedUids.clear();
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Selected parents moved to Delete History! 🗑️')),
+                                );
+                              }
+                            },
+                          ),
+                          const SizedBox(width: 12),
+                        ],
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey.shade800,
+                            foregroundColor: Colors.white,
+                          ),
+                          icon: const Icon(Icons.history, size: 18),
+                          label: const Text('Delete History'),
+                          onPressed: () => _showDeleteHistoryDialog(context, AppStrings.roleParent, webVm),
                         ),
-                      ),
+                        if (isSuperAdmin) ...[
+                          const SizedBox(width: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.red.withOpacity(0.3)),
+                            ),
+                            child: const Text(
+                              'Super Admin Active 🛡️',
+                              style: TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -4396,10 +4745,28 @@ class _ParentManagementPanelState extends State<ParentManagementPanel> {
                         ),
                         child: ListTile(
                           contentPadding: EdgeInsets.zero,
-                          leading: CircleAvatar(
-                            backgroundColor: parent.isOnline ? Colors.green : Colors.grey,
-                            foregroundColor: Colors.white,
-                            child: const Icon(Icons.family_restroom),
+                          leading: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Checkbox(
+                                value: _selectedUids.contains(parent.uid),
+                                onChanged: (val) {
+                                  setState(() {
+                                    if (val == true) {
+                                      _selectedUids.add(parent.uid);
+                                    } else {
+                                      _selectedUids.remove(parent.uid);
+                                    }
+                                  });
+                                },
+                              ),
+                              const SizedBox(width: 4),
+                              CircleAvatar(
+                                backgroundColor: parent.isOnline ? Colors.green : Colors.grey,
+                                foregroundColor: Colors.white,
+                                child: const Icon(Icons.family_restroom),
+                              ),
+                            ],
                           ),
                           title: Row(
                             children: [
@@ -4509,7 +4876,32 @@ class _ParentManagementPanelState extends State<ParentManagementPanel> {
 
                               IconButton(
                                 icon: const Icon(Icons.delete_outline, color: AppColors.error),
-                                onPressed: () => webVm.deleteStudent(parent.uid),
+                                onPressed: () async {
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (confirmCtx) => AlertDialog(
+                                      title: const Text('Confirm Deletion'),
+                                      content: Text('Are you sure you want to delete ${parent.name}? They will be moved to Delete History.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(confirmCtx, false),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(confirmCtx, true),
+                                          style: TextButton.styleFrom(foregroundColor: Colors.red),
+                                          child: const Text('Move to History'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  if (confirm == true) {
+                                    await webVm.moveToTrash(parent);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('${parent.name} moved to Delete History! 🗑️')),
+                                    );
+                                  }
+                                },
                               ),
                             ],
                           ),
@@ -4524,4 +4916,104 @@ class _ParentManagementPanelState extends State<ParentManagementPanel> {
       ],
     );
   }
+}
+
+void _showDeleteHistoryDialog(BuildContext context, String role, WebPanelViewModel webVm) {
+  // Load latest trash list from Firestore
+  webVm.loadTrash();
+
+  showDialog(
+    context: context,
+    builder: (ctx) {
+      return StatefulBuilder(
+        builder: (context, setDialogState) {
+          final roleTrashList = webVm.trashList.where((u) => u.role == role).toList();
+
+          return AlertDialog(
+            title: Row(
+              children: [
+                const Icon(Icons.delete_outline, color: Colors.red),
+                const SizedBox(width: 8),
+                Text('Delete History & Archive ($role)'),
+              ],
+            ),
+            content: SizedBox(
+              width: 500,
+              height: 400,
+              child: roleTrashList.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No deleted records found for $role.',
+                        style: const TextStyle(color: Colors.grey, style: FontStyle.italic),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: roleTrashList.length,
+                      itemBuilder: (c, idx) {
+                        final item = roleTrashList[idx];
+                        return ListTile(
+                          title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          subtitle: Text('Email: ${item.email} | Phone: ${item.phone}'),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.settings_backup_restore, color: Colors.green),
+                                tooltip: 'Restore Record',
+                                onPressed: () async {
+                                  await webVm.restoreFromTrash(item);
+                                  setDialogState(() {});
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('${item.name} restored successfully! 🟢')),
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_forever, color: Colors.red),
+                                tooltip: 'Delete Permanently',
+                                onPressed: () async {
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (confirmCtx) => AlertDialog(
+                                      title: const Text('Confirm Permanent Deletion'),
+                                      content: Text('Are you sure you want to permanently delete ${item.name}? This cannot be undone.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(confirmCtx, false),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(confirmCtx, true),
+                                          style: TextButton.styleFrom(foregroundColor: Colors.red),
+                                          child: const Text('Delete Forever'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  if (confirm == true) {
+                                    await webVm.permanentlyDelete(item.uid);
+                                    setDialogState(() {});
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('${item.name} permanently deleted! ⛔')),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
 }

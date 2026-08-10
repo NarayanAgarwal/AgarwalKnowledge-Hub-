@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/services/firestore_repository.dart';
 import '../../../../core/services/storage_repository.dart';
@@ -68,6 +69,7 @@ class WebPanelViewModel with ChangeNotifier {
 
   WebPanelViewModel(this._repository, this._storageRepository) {
     _loadAllLists();
+    loadTrash();
   }
 
   Future<String> uploadHomeworkFile(List<int> bytes, String fileName, String mimeType) async {
@@ -427,5 +429,83 @@ class WebPanelViewModel with ChangeNotifier {
     String? targetValue,
   }) {
     print("FCM notification dispatched! Target: $targetType ($targetValue), Title: $title");
+  }
+
+  // Trash & Delete History Management
+  List<UserProfile> trashList = [];
+
+  Future<void> loadTrash() async {
+    if (isMockEnabled) return;
+    try {
+      final snap = await FirebaseFirestore.instance.collection('deleted_users').get();
+      trashList = snap.docs.map((doc) => UserProfile.fromFirestore(doc.data(), doc.id)).toList();
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error loading trash: $e");
+    }
+  }
+
+  Future<void> moveToTrash(UserProfile profile) async {
+    // 1. Save to trashList locally
+    trashList.removeWhere((p) => p.uid == profile.uid);
+    trashList.add(profile);
+    
+    // 2. Remove from active rosters locally
+    studentsList.removeWhere((s) => s.uid == profile.uid);
+    teachersList.removeWhere((t) => t.uid == profile.uid);
+    parentsList.removeWhere((p) => p.uid == profile.uid);
+    notifyListeners();
+
+    // 3. Firestore Sync
+    if (!isMockEnabled) {
+      try {
+        final data = profile.toFirestore();
+        data['deletedAt'] = Timestamp.now();
+        await FirebaseFirestore.instance.collection('deleted_users').doc(profile.uid).set(data);
+        await FirebaseFirestore.instance.collection(AppStrings.colUsers).doc(profile.uid).delete();
+      } catch (e) {
+        debugPrint("Error moving to trash: $e");
+      }
+    }
+  }
+
+  Future<void> restoreFromTrash(UserProfile profile) async {
+    // 1. Remove from trashList locally
+    trashList.removeWhere((p) => p.uid == profile.uid);
+    
+    // 2. Put back to active rosters locally
+    if (profile.role == AppStrings.roleStudent) {
+      studentsList.add(profile);
+    } else if (profile.role == AppStrings.roleTeacher) {
+      teachersList.add(profile);
+    } else if (profile.role == AppStrings.roleParent) {
+      parentsList.add(profile);
+    }
+    notifyListeners();
+
+    // 3. Firestore Sync
+    if (!isMockEnabled) {
+      try {
+        await FirebaseFirestore.instance.collection(AppStrings.colUsers).doc(profile.uid).set(profile.toFirestore());
+        await FirebaseFirestore.instance.collection('deleted_users').doc(profile.uid).delete();
+      } catch (e) {
+        debugPrint("Error restoring from trash: $e");
+      }
+    }
+  }
+
+  Future<void> permanentlyDelete(String uid) async {
+    // 1. Remove from trashList locally
+    trashList.removeWhere((p) => p.uid == uid);
+    notifyListeners();
+
+    // 2. Firestore Sync
+    if (!isMockEnabled) {
+      try {
+        await FirebaseFirestore.instance.collection('deleted_users').doc(uid).delete();
+      } catch (e) {
+        debugPrint("Error permanently deleting: $e");
+      }
+    }
   }
 }
