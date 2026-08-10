@@ -202,7 +202,16 @@ class AuthViewModel with ChangeNotifier {
     final String? cachedJson = prefs.getString('cached_profile');
     if (cachedJson != null) {
       try {
-        _userProfile = UserProfile.fromJson(jsonDecode(cachedJson));
+        final profile = UserProfile.fromJson(jsonDecode(cachedJson));
+        if (profile.isBlocked) {
+          await prefs.remove('cached_profile');
+          await prefs.remove('auto_login');
+          await prefs.remove('saved_uid');
+          _userProfile = null;
+          notifyListeners();
+          return;
+        }
+        _userProfile = profile;
         notifyListeners();
       } catch (e) {
         debugPrint("Error loading cached user profile: $e");
@@ -217,6 +226,14 @@ class AuthViewModel with ChangeNotifier {
       try {
         final freshProfile = await _authRepository.getUserProfile(savedUid).timeout(const Duration(seconds: 4));
         if (freshProfile != null) {
+          if (freshProfile.isBlocked) {
+            await prefs.remove('cached_profile');
+            await prefs.remove('auto_login');
+            await prefs.remove('saved_uid');
+            _userProfile = null;
+            notifyListeners();
+            return;
+          }
           _userProfile = freshProfile;
           await prefs.setString('cached_profile', jsonEncode(freshProfile.toJson()));
           notifyListeners();
@@ -267,6 +284,12 @@ class AuthViewModel with ChangeNotifier {
       );
 
       if (profile != null) {
+        if (profile.isBlocked) {
+          _errorMessage = "Your account has been suspended/blocked by Super Admin. Please contact administration.";
+          _isLoading = false;
+          notifyListeners();
+          return false;
+        }
         _userProfile = profile;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('cached_profile', jsonEncode(profile.toJson()));
@@ -386,6 +409,13 @@ class AuthViewModel with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
+      if (_userProfile != null) {
+        try {
+          await updateOnlineStatus(false);
+        } catch (e) {
+          debugPrint("Failed to update online status on logout: $e");
+        }
+      }
       await _authRepository.logout();
       _userProfile = null;
       _codeSent = false;

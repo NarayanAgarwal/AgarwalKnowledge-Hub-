@@ -656,7 +656,10 @@ class SuperAdminDashboardPanel extends StatelessWidget {
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             onPressed: () {
-                              final updated = s.copyWith(isBlocked: !s.isBlocked);
+                              final updated = s.copyWith(
+                                isBlocked: !s.isBlocked,
+                                isOnline: !s.isBlocked ? false : s.isOnline,
+                              );
                               webVm.updateStudent(updated);
                               setDialogState(() {});
                             },
@@ -749,8 +752,11 @@ class SuperAdminDashboardPanel extends StatelessWidget {
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             onPressed: () {
-                              final updated = t.copyWith(isBlocked: !t.isBlocked);
-                              webVm.updateTeacher(updated);
+                               final updated = t.copyWith(
+                                 isBlocked: !t.isBlocked,
+                                 isOnline: !t.isBlocked ? false : t.isOnline,
+                               );
+                               webVm.updateTeacher(updated);
                               setDialogState(() {});
                             },
                             child: Text(t.isBlocked ? 'Unblock' : 'Block', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
@@ -1484,7 +1490,10 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 onPressed: () {
-                                  final updated = student.copyWith(isBlocked: !student.isBlocked);
+                                  final updated = student.copyWith(
+                                    isBlocked: !student.isBlocked,
+                                    isOnline: !student.isBlocked ? false : student.isOnline,
+                                  );
                                   webVm.updateStudent(updated);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -1891,7 +1900,10 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 onPressed: () {
-                                  final updated = teacher.copyWith(isBlocked: !teacher.isBlocked);
+                                  final updated = teacher.copyWith(
+                                    isBlocked: !teacher.isBlocked,
+                                    isOnline: !teacher.isBlocked ? false : teacher.isOnline,
+                                  );
                                   webVm.updateTeacher(updated);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
