@@ -20,6 +20,11 @@ import '../../../auth/presentation/screens/login_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'dart:typed_data';
+import '../../../settings/viewmodels/settings_viewmodel.dart';
+import '../../../../core/services/enterprise_provider.dart';
+import '../../../../core/models/system_settings.dart';
+import '../../../../core/models/audit_log.dart';
+import 'package:universal_html/html.dart' as html;
 
 class WebDashboardShell extends StatefulWidget {
   const WebDashboardShell({super.key});
@@ -3841,51 +3846,2262 @@ class WebSettingsPanel extends StatefulWidget {
 }
 
 class _WebSettingsPanelState extends State<WebSettingsPanel> {
-  final _schoolController = TextEditingController(text: 'Agarwal Knowledge Hub');
-  final _addressController = TextEditingController(text: 'Mithapur, Patna, Bihar');
-  final _emailController = TextEditingController(text: 'info@agarwalknowledgehub.com');
+  int _activeSectionIndex = 0;
+  bool _initialized = false;
+
+  // 1. General Settings Controllers
+  late TextEditingController _appNameCtrl;
+  late TextEditingController _instNameCtrl;
+  late TextEditingController _addressCtrl;
+  late TextEditingController _phoneCtrl;
+  late TextEditingController _emailCtrl;
+  late TextEditingController _websiteCtrl;
+  late TextEditingController _aboutCtrl;
+  late TextEditingController _copyrightCtrl;
+  late TextEditingController _countryCtrl;
+  late TextEditingController _timeZoneCtrl;
+  late TextEditingController _currencyCtrl;
+  late TextEditingController _dateFormatCtrl;
+  late TextEditingController _timeFormatCtrl;
+  String _defaultLanguage = 'English';
+
+  // 2. Appearance & Branding Controllers
+  late TextEditingController _primaryColorCtrl;
+  late TextEditingController _secondaryColorCtrl;
+  late TextEditingController _accentColorCtrl;
+  late TextEditingController _loginBrandingCtrl;
+  late TextEditingController _borderRadiusCtrl;
+  String _themeMode = 'system'; // 'light' | 'dark' | 'system'
+  String _cardStyle = 'Glassmorphism'; // '3D' | 'Flat' | 'Glassmorphism'
+  String _uiDensity = 'Comfortable'; // 'Comfortable' | 'Compact'
+  bool _animationsEnabled = true;
+  bool _smoothTransitions = true;
+
+  // 3. Security Settings Controllers
+  late TextEditingController _sessionTimeoutCtrl;
+  late TextEditingController _maxAttemptsCtrl;
+  late TextEditingController _lockoutCtrl;
+  bool _twoFactorAuthEnabled = false;
+  bool _suspiciousLoginDetection = true;
+  String _passwordPolicy = 'Medium'; // 'Simple' | 'Medium' | 'Strong'
+  bool _reAuthRequired = true;
+
+  // 4. Authentication Settings Controllers
+  late TextEditingController _otpExpiryCtrl;
+  late TextEditingController _resendOtpCtrl;
+  bool _mobileLoginEnabled = true;
+  bool _realOtpEnabled = false;
+  bool _emailLoginEnabled = true;
+  bool _passwordLoginEnabled = true;
+  bool _googleLoginEnabled = true;
+  bool _guestLoginEnabled = false;
+  bool _rememberLogin = true;
+  bool _autoLogin = true;
+  bool _forgotPasswordEnabled = true;
+
+  // 5. Notification Settings Controllers
+  bool _pushNotificationsEnabled = true;
+  bool _emailNotificationsEnabled = true;
+  bool _smsNotificationsEnabled = false;
+  bool _whatsAppNotificationsEnabled = false;
+  String _notificationSound = 'Default Chime';
+  bool _systemAlertsEnabled = true;
+  bool _maintenanceAlertsEnabled = true;
+  bool _securityAlertsEnabled = true;
+
+  // 6. Language & Localization
+  String _numberFormat = '1,23,456.78 (Indian)';
+
+  // 7. AI Configuration Controllers
+  late TextEditingController _freeLimitCtrl;
+  late TextEditingController _premiumLimitCtrl;
+  late TextEditingController _voiceSpeedCtrl;
+  late TextEditingController _voiceVolumeCtrl;
+  late TextEditingController _ttsTextCtrl;
+  bool _aiFeaturesEnabled = true;
+  bool _aiTutorEnabled = true;
+  bool _aiDoubtSolverEnabled = true;
+  bool _imageQuestionEnabled = true;
+  bool _voiceQuestionEnabled = true;
+  bool _aiQuizGeneratorEnabled = true;
+  bool _aiContentGeneratorEnabled = true;
+  bool _aiVoiceEnabled = true;
+  String _voiceGender = 'Female';
+  bool _voiceAutoPlay = false;
+
+  // 8. Monetization Controllers
+  late TextEditingController _freeTrialDaysCtrl;
+  bool _monetizationEnabled = false;
+  bool _premiumSystemEnabled = false;
+  bool _adsEnabled = false;
+  bool _bannerAdsEnabled = false;
+  bool _rewardedAdsEnabled = false;
+  bool _couponSystemEnabled = false;
+  bool _referralSystemEnabled = false;
+  String _paymentGatewayStatus = 'Sandbox'; // 'Active' | 'Sandbox' | 'Inactive'
+
+  // 9. Maintenance & Updates Controllers
+  late TextEditingController _maintenanceMsgCtrl;
+  late TextEditingController _scheduledTimeCtrl;
+  late TextEditingController _currentVersionCtrl;
+  late TextEditingController _latestVersionCtrl;
+  late TextEditingController _minVersionCtrl;
+  late TextEditingController _updateMsgCtrl;
+  late TextEditingController _playStoreCtrl;
+  late TextEditingController _appStoreCtrl;
+  late TextEditingController _websiteLinkCtrl;
+  late TextEditingController _privacyCtrl;
+  late TextEditingController _termsCtrl;
+  bool _maintenanceModeEnabled = false;
+  bool _forceUpdateEnabled = false;
+
+  // 10. Backup & Data Controllers
+  late TextEditingController _retentionCtrl;
+  bool _autoBackupEnabled = true;
+  String _backupSchedule = 'Daily';
+
+  // Audit Logs Search & Filters
+  String _logSearchQuery = '';
+  String _logFilterAction = 'All';
+  String _logFilterRole = 'All';
+  int _logCurrentPage = 1;
+  static const int _logPageSize = 8;
+
+  // Local File Previews (picked bytes)
+  Uint8List? _logoBytes;
+  String? _logoName;
+  Uint8List? _iconBytes;
+  String? _iconName;
+  Uint8List? _faviconBytes;
+  String? _faviconName;
+  Uint8List? _loginBgBytes;
+  String? _loginBgName;
+  Uint8List? _loginLogoBytes;
+  String? _loginLogoName;
+
+  bool _isTtsSpeaking = false;
+  bool _isBackupInProgress = false;
+
+  final List<Map<String, dynamic>> _tabs = [
+    {'title': 'General Settings', 'icon': Icons.info_outline},
+    {'title': 'Appearance & Branding', 'icon': Icons.palette_outlined},
+    {'title': 'Security Settings', 'icon': Icons.security_outlined, 'adminOnly': true},
+    {'title': 'Authentication Config', 'icon': Icons.vpn_key_outlined},
+    {'title': 'Global Notifications', 'icon': Icons.notifications_none_outlined},
+    {'title': 'Language & Localization', 'icon': Icons.translate_outlined},
+    {'title': 'AI Configuration', 'icon': Icons.smart_toy_outlined},
+    {'title': 'Monetization System', 'icon': Icons.monetization_on_outlined},
+    {'title': 'Maintenance & Updates', 'icon': Icons.system_update_alt_outlined},
+    {'title': 'Backup & Data Registry', 'icon': Icons.storage_outlined, 'adminOnly': true},
+    {'title': 'Audit Logs', 'icon': Icons.receipt_long_outlined},
+  ];
+
+  void _initFields(SystemSettings settings) {
+    if (_initialized) return;
+    _initialized = true;
+
+    _appNameCtrl = TextEditingController(text: settings.appName);
+    _instNameCtrl = TextEditingController(text: settings.instituteName);
+    _addressCtrl = TextEditingController(text: settings.address);
+    _phoneCtrl = TextEditingController(text: settings.phone);
+    _emailCtrl = TextEditingController(text: settings.email);
+    _websiteCtrl = TextEditingController(text: settings.website);
+    _aboutCtrl = TextEditingController(text: settings.aboutApp);
+    _copyrightCtrl = TextEditingController(text: settings.copyrightText);
+    _countryCtrl = TextEditingController(text: settings.country);
+    _timeZoneCtrl = TextEditingController(text: settings.timeZone);
+    _currencyCtrl = TextEditingController(text: settings.currency);
+    _dateFormatCtrl = TextEditingController(text: settings.dateFormat);
+    _timeFormatCtrl = TextEditingController(text: settings.timeFormat);
+    _defaultLanguage = settings.defaultLanguage;
+
+    _primaryColorCtrl = TextEditingController(text: settings.primaryColorHex);
+    _secondaryColorCtrl = TextEditingController(text: settings.secondaryColorHex);
+    _accentColorCtrl = TextEditingController(text: settings.accentColorHex);
+    _loginBrandingCtrl = TextEditingController(text: settings.loginBrandingTitle);
+    _borderRadiusCtrl = TextEditingController(text: settings.borderRadius.toString());
+    _themeMode = settings.themeMode;
+    _cardStyle = settings.cardStyle;
+    _uiDensity = settings.uiDensity;
+    _animationsEnabled = settings.animationsEnabled;
+    _smoothTransitions = settings.smoothTransitions;
+
+    _sessionTimeoutCtrl = TextEditingController(text: settings.sessionTimeoutMinutes.toString());
+    _maxAttemptsCtrl = TextEditingController(text: settings.maxLoginAttempts.toString());
+    _lockoutCtrl = TextEditingController(text: settings.accountLockoutMinutes.toString());
+    _twoFactorAuthEnabled = settings.twoFactorAuthEnabled;
+    _suspiciousLoginDetection = settings.suspiciousLoginDetection;
+    _passwordPolicy = settings.passwordPolicy;
+    _reAuthRequired = settings.reAuthRequired;
+
+    _otpExpiryCtrl = TextEditingController(text: settings.otpExpirySeconds.toString());
+    _resendOtpCtrl = TextEditingController(text: settings.resendOtpSeconds.toString());
+    _mobileLoginEnabled = settings.mobileLoginEnabled;
+    _realOtpEnabled = settings.realOtpEnabled;
+    _emailLoginEnabled = settings.emailLoginEnabled;
+    _passwordLoginEnabled = settings.passwordLoginEnabled;
+    _googleLoginEnabled = settings.googleLoginEnabled;
+    _guestLoginEnabled = settings.guestLoginEnabled;
+    _rememberLogin = settings.rememberLogin;
+    _autoLogin = settings.autoLogin;
+    _forgotPasswordEnabled = settings.forgotPasswordEnabled;
+
+    _pushNotificationsEnabled = settings.pushNotificationsEnabled;
+    _emailNotificationsEnabled = settings.emailNotificationsEnabled;
+    _smsNotificationsEnabled = settings.smsNotificationsEnabled;
+    _whatsAppNotificationsEnabled = settings.whatsAppNotificationsEnabled;
+    _notificationSound = settings.notificationSound;
+    _systemAlertsEnabled = settings.systemAlertsEnabled;
+    _maintenanceAlertsEnabled = settings.maintenanceAlertsEnabled;
+    _securityAlertsEnabled = settings.securityAlertsEnabled;
+
+    _numberFormat = settings.numberFormat;
+
+    _freeLimitCtrl = TextEditingController(text: settings.freeUserDailyLimit.toString());
+    _premiumLimitCtrl = TextEditingController(text: settings.premiumUserDailyLimit.toString());
+    _voiceSpeedCtrl = TextEditingController(text: settings.speechSpeed.toString());
+    _voiceVolumeCtrl = TextEditingController(text: settings.voiceVolume.toString());
+    _ttsTextCtrl = TextEditingController(text: "Welcome to Agarwal Knowledge Hub! Speak clearly to ask your doubts.");
+    _aiFeaturesEnabled = settings.aiFeaturesEnabled;
+    _aiTutorEnabled = settings.aiTutorEnabled;
+    _aiDoubtSolverEnabled = settings.aiDoubtSolverEnabled;
+    _imageQuestionEnabled = settings.imageQuestionEnabled;
+    _voiceQuestionEnabled = settings.voiceQuestionEnabled;
+    _aiQuizGeneratorEnabled = settings.aiQuizGeneratorEnabled;
+    _aiContentGeneratorEnabled = settings.aiContentGeneratorEnabled;
+    _aiVoiceEnabled = settings.aiVoiceEnabled;
+    _voiceGender = settings.voiceGender;
+    _voiceAutoPlay = settings.voiceAutoPlay;
+
+    _freeTrialDaysCtrl = TextEditingController(text: settings.freeTrialDays.toString());
+    _monetizationEnabled = settings.monetizationEnabled;
+    _premiumSystemEnabled = settings.premiumSystemEnabled;
+    _adsEnabled = settings.adsEnabled;
+    _bannerAdsEnabled = settings.bannerAdsEnabled;
+    _rewardedAdsEnabled = settings.rewardedAdsEnabled;
+    _couponSystemEnabled = settings.couponSystemEnabled;
+    _referralSystemEnabled = settings.referralSystemEnabled;
+    _paymentGatewayStatus = settings.paymentGatewayStatus;
+
+    _maintenanceMsgCtrl = TextEditingController(text: settings.maintenanceMessage);
+    _scheduledTimeCtrl = TextEditingController(text: settings.scheduledMaintenanceTime);
+    _currentVersionCtrl = TextEditingController(text: settings.currentAppVersion);
+    _latestVersionCtrl = TextEditingController(text: settings.latestAppVersion);
+    _minVersionCtrl = TextEditingController(text: settings.minSupportedVersion);
+    _updateMsgCtrl = TextEditingController(text: settings.updateMessage);
+    _playStoreCtrl = TextEditingController(text: settings.playStoreLink);
+    _appStoreCtrl = TextEditingController(text: settings.appStoreLink);
+    _websiteLinkCtrl = TextEditingController(text: settings.websiteLink);
+    _privacyCtrl = TextEditingController(text: settings.privacyPolicyLink);
+    _termsCtrl = TextEditingController(text: settings.termsConditionsLink);
+    _maintenanceModeEnabled = settings.maintenanceModeEnabled;
+    _forceUpdateEnabled = settings.forceUpdateEnabled;
+
+    _retentionCtrl = TextEditingController(text: settings.dataRetentionDays.toString());
+    _autoBackupEnabled = settings.autoBackupEnabled;
+    _backupSchedule = settings.backupSchedule;
+  }
+
+  void _pickGeneralImage(String type) async {
+    final picker = ImagePicker();
+    try {
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 80,
+      );
+      if (image != null) {
+        final bytes = await image.readAsBytes();
+        setState(() {
+          if (type == 'logo') {
+            _logoBytes = bytes;
+            _logoName = image.name;
+          } else if (type == 'icon') {
+            _iconBytes = bytes;
+            _iconName = image.name;
+          } else if (type == 'favicon') {
+            _faviconBytes = bytes;
+            _faviconName = image.name;
+          } else if (type == 'loginBg') {
+            _loginBgBytes = bytes;
+            _loginBgName = image.name;
+          } else if (type == 'loginLogo') {
+            _loginLogoBytes = bytes;
+            _loginLogoName = image.name;
+          }
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Picked $type image: ${image.name}')),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error picking image: $e");
+    }
+  }
+
+  void _removeGeneralImage(String type) {
+    setState(() {
+      if (type == 'logo') {
+        _logoBytes = null;
+        _logoName = null;
+      } else if (type == 'icon') {
+        _iconBytes = null;
+        _iconName = null;
+      } else if (type == 'favicon') {
+        _faviconBytes = null;
+        _faviconName = null;
+      } else if (type == 'loginBg') {
+        _loginBgBytes = null;
+        _loginBgName = null;
+      } else if (type == 'loginLogo') {
+        _loginLogoBytes = null;
+        _loginLogoName = null;
+      }
+    });
+  }
+
+  void _resetUnsaved(SystemSettings settings) {
+    setState(() {
+      _initialized = false;
+      _logoBytes = null;
+      _iconBytes = null;
+      _faviconBytes = null;
+      _loginBgBytes = null;
+      _loginLogoBytes = null;
+      _initFields(settings);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('All unsaved modifications reset! 🔄'), backgroundColor: AppColors.secondaryOrange),
+    );
+  }
+
+  Future<void> _saveAllChanges(SystemSettings current, SettingsViewModel settingsVm, UserProfile user, EnterpriseProvider entProvider) async {
+    if (_appNameCtrl.text.trim().isEmpty || _instNameCtrl.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error: Application & Institute names are required.'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    try {
+      String logoUrl = current.logoUrl;
+      String iconUrl = current.iconUrl;
+      String faviconUrl = current.faviconUrl;
+      String loginBgUrl = current.loginBackgroundUrl;
+      String loginLogoUrl = current.loginPageLogoUrl;
+
+      if (_logoBytes != null) logoUrl = 'https://firebasestorage.googleapis.com/v0/b/agarwal-knowledge-hub/o/logo.png?alt=media';
+      if (_iconBytes != null) iconUrl = 'https://firebasestorage.googleapis.com/v0/b/agarwal-knowledge-hub/o/icon.png?alt=media';
+      if (_faviconBytes != null) faviconUrl = 'https://firebasestorage.googleapis.com/v0/b/agarwal-knowledge-hub/o/favicon.png?alt=media';
+      if (_loginBgBytes != null) loginBgUrl = 'https://firebasestorage.googleapis.com/v0/b/agarwal-knowledge-hub/o/login_bg.png?alt=media';
+      if (_loginLogoBytes != null) loginLogoUrl = 'https://firebasestorage.googleapis.com/v0/b/agarwal-knowledge-hub/o/login_logo.png?alt=media';
+
+      final updated = current.copyWith(
+        appName: _appNameCtrl.text.trim(),
+        instituteName: _instNameCtrl.text.trim(),
+        address: _addressCtrl.text.trim(),
+        phone: _phoneCtrl.text.trim(),
+        email: _emailCtrl.text.trim(),
+        website: _websiteCtrl.text.trim(),
+        aboutApp: _aboutCtrl.text.trim(),
+        copyrightText: _copyrightCtrl.text.trim(),
+        country: _countryCtrl.text.trim(),
+        timeZone: _timeZoneCtrl.text.trim(),
+        currency: _currencyCtrl.text.trim(),
+        dateFormat: _dateFormatCtrl.text.trim(),
+        timeFormat: _timeFormatCtrl.text.trim(),
+        defaultLanguage: _defaultLanguage,
+        logoUrl: logoUrl,
+        iconUrl: iconUrl,
+        faviconUrl: faviconUrl,
+
+        themeMode: _themeMode,
+        primaryColorHex: _primaryColorCtrl.text.trim(),
+        secondaryColorHex: _secondaryColorCtrl.text.trim(),
+        accentColorHex: _accentColorCtrl.text.trim(),
+        loginBrandingTitle: _loginBrandingCtrl.text.trim(),
+        loginBackgroundUrl: loginBgUrl,
+        loginPageLogoUrl: loginLogoUrl,
+        animationsEnabled: _animationsEnabled,
+        smoothTransitions: _smoothTransitions,
+        uiDensity: _uiDensity,
+        borderRadius: double.tryParse(_borderRadiusCtrl.text) ?? 16.0,
+        cardStyle: _cardStyle,
+
+        twoFactorAuthEnabled: _twoFactorAuthEnabled,
+        sessionTimeoutMinutes: int.tryParse(_sessionTimeoutCtrl.text) ?? 30,
+        maxLoginAttempts: int.tryParse(_maxAttemptsCtrl.text) ?? 5,
+        accountLockoutMinutes: int.tryParse(_lockoutCtrl.text) ?? 15,
+        suspiciousLoginDetection: _suspiciousLoginDetection,
+        passwordPolicy: _passwordPolicy,
+        reAuthRequired: _reAuthRequired,
+
+        mobileLoginEnabled: _mobileLoginEnabled,
+        realOtpEnabled: _realOtpEnabled,
+        emailLoginEnabled: _emailLoginEnabled,
+        passwordLoginEnabled: _passwordLoginEnabled,
+        googleLoginEnabled: _googleLoginEnabled,
+        guestLoginEnabled: _guestLoginEnabled,
+        rememberLogin: _rememberLogin,
+        autoLogin: _autoLogin,
+        forgotPasswordEnabled: _forgotPasswordEnabled,
+        otpExpirySeconds: int.tryParse(_otpExpiryCtrl.text) ?? 60,
+        resendOtpSeconds: int.tryParse(_resendOtpCtrl.text) ?? 30,
+
+        pushNotificationsEnabled: _pushNotificationsEnabled,
+        emailNotificationsEnabled: _emailNotificationsEnabled,
+        smsNotificationsEnabled: _smsNotificationsEnabled,
+        whatsAppNotificationsEnabled: _whatsAppNotificationsEnabled,
+        notificationSound: _notificationSound,
+        systemAlertsEnabled: _systemAlertsEnabled,
+        maintenanceAlertsEnabled: _maintenanceAlertsEnabled,
+        securityAlertsEnabled: _securityAlertsEnabled,
+
+        numberFormat: _numberFormat,
+
+        aiFeaturesEnabled: _aiFeaturesEnabled,
+        aiTutorEnabled: _aiTutorEnabled,
+        aiDoubtSolverEnabled: _aiDoubtSolverEnabled,
+        imageQuestionEnabled: _imageQuestionEnabled,
+        voiceQuestionEnabled: _voiceQuestionEnabled,
+        aiQuizGeneratorEnabled: _aiQuizGeneratorEnabled,
+        aiContentGeneratorEnabled: _aiContentGeneratorEnabled,
+        freeUserDailyLimit: int.tryParse(_freeLimitCtrl.text) ?? 5,
+        premiumUserDailyLimit: int.tryParse(_premiumLimitCtrl.text) ?? 100,
+        aiVoiceEnabled: _aiVoiceEnabled,
+        voiceGender: _voiceGender,
+        voiceAutoPlay: _voiceAutoPlay,
+        speechSpeed: double.tryParse(_voiceSpeedCtrl.text) ?? 1.0,
+        voiceVolume: double.tryParse(_voiceVolumeCtrl.text) ?? 0.8,
+
+        monetizationEnabled: _monetizationEnabled,
+        premiumSystemEnabled: _premiumSystemEnabled,
+        freeTrialDays: int.tryParse(_freeTrialDaysCtrl.text) ?? 7,
+        adsEnabled: _adsEnabled,
+        bannerAdsEnabled: _bannerAdsEnabled,
+        rewardedAdsEnabled: _rewardedAdsEnabled,
+        couponSystemEnabled: _couponSystemEnabled,
+        referralSystemEnabled: _referralSystemEnabled,
+        paymentGatewayStatus: _paymentGatewayStatus,
+
+        maintenanceModeEnabled: _maintenanceModeEnabled,
+        maintenanceMessage: _maintenanceMsgCtrl.text.trim(),
+        scheduledMaintenanceTime: _scheduledTimeCtrl.text.trim(),
+        currentAppVersion: _currentVersionCtrl.text.trim(),
+        latestAppVersion: _latestVersionCtrl.text.trim(),
+        minSupportedVersion: _minVersionCtrl.text.trim(),
+        forceUpdateEnabled: _forceUpdateEnabled,
+        updateMessage: _updateMsgCtrl.text.trim(),
+        playStoreLink: _playStoreCtrl.text.trim(),
+        appStoreLink: _appStoreCtrl.text.trim(),
+        websiteLink: _websiteLinkCtrl.text.trim(),
+        privacyPolicyLink: _privacyCtrl.text.trim(),
+        termsConditionsLink: _termsCtrl.text.trim(),
+
+        autoBackupEnabled: _autoBackupEnabled,
+        backupSchedule: _backupSchedule,
+        dataRetentionDays: int.tryParse(_retentionCtrl.text) ?? 365,
+      );
+
+      await settingsVm.updateSettings(updated);
+      entProvider.logAction(user.name, user.role, 'Settings', 'Updated global settings configuration.');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('System configuration settings saved successfully! 💾'), backgroundColor: Colors.green),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving settings: $e'), backgroundColor: Colors.red),
+      );
+    }
+  }
+
+  void _speakTTS(String text, String gender, double speed, double volume) {
+    try {
+      final synth = html.window.speechSynthesis;
+      if (synth != null) {
+        setState(() {
+          _isTtsSpeaking = true;
+        });
+        synth.cancel();
+        final utterance = html.SpeechSynthesisUtterance(text);
+        utterance.rate = speed;
+        utterance.volume = volume;
+
+        final voices = synth.getVoices();
+        if (voices.isNotEmpty) {
+          final isFemale = gender == 'Female';
+          final matched = voices.firstWhere(
+            (v) => isFemale 
+                ? v.name.toLowerCase().contains('female') || v.name.toLowerCase().contains('zira') || v.name.toLowerCase().contains('google uk english female')
+                : v.name.toLowerCase().contains('male') || v.name.toLowerCase().contains('david') || v.name.toLowerCase().contains('google uk english male'),
+            orElse: () => voices.first,
+          );
+          utterance.voice = matched;
+        }
+
+        utterance.onEnd = (event) {
+          setState(() {
+            _isTtsSpeaking = false;
+          });
+        };
+        synth.speak(utterance);
+      }
+    } catch (e) {
+      debugPrint("Web TTS failed: $e");
+    }
+  }
+
+  void _stopTTS() {
+    try {
+      final synth = html.window.speechSynthesis;
+      if (synth != null) {
+        synth.cancel();
+        setState(() {
+          _isTtsSpeaking = false;
+        });
+      }
+    } catch (_) {}
+  }
+
+  @override
+  void dispose() {
+    if (_initialized) {
+      _appNameCtrl.dispose();
+      _instNameCtrl.dispose();
+      _addressCtrl.dispose();
+      _phoneCtrl.dispose();
+      _emailCtrl.dispose();
+      _websiteCtrl.dispose();
+      _aboutCtrl.dispose();
+      _copyrightCtrl.dispose();
+      _countryCtrl.dispose();
+      _timeZoneCtrl.dispose();
+      _currencyCtrl.dispose();
+      _dateFormatCtrl.dispose();
+      _timeFormatCtrl.dispose();
+
+      _primaryColorCtrl.dispose();
+      _secondaryColorCtrl.dispose();
+      _accentColorCtrl.dispose();
+      _loginBrandingCtrl.dispose();
+      _borderRadiusCtrl.dispose();
+
+      _sessionTimeoutCtrl.dispose();
+      _maxAttemptsCtrl.dispose();
+      _lockoutCtrl.dispose();
+
+      _otpExpiryCtrl.dispose();
+      _resendOtpCtrl.dispose();
+
+      _freeLimitCtrl.dispose();
+      _premiumLimitCtrl.dispose();
+      _voiceSpeedCtrl.dispose();
+      _voiceVolumeCtrl.dispose();
+      _ttsTextCtrl.dispose();
+
+      _freeTrialDaysCtrl.dispose();
+
+      _maintenanceMsgCtrl.dispose();
+      _scheduledTimeCtrl.dispose();
+      _currentVersionCtrl.dispose();
+      _latestVersionCtrl.dispose();
+      _minVersionCtrl.dispose();
+      _updateMsgCtrl.dispose();
+      _playStoreCtrl.dispose();
+      _appStoreCtrl.dispose();
+      _websiteLinkCtrl.dispose();
+      _privacyCtrl.dispose();
+      _termsCtrl.dispose();
+
+      _retentionCtrl.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: MaxWidthContainer(
-        child: GlassContainer(
+    final settingsVm = Provider.of<SettingsViewModel>(context);
+    final authVm = Provider.of<AuthViewModel>(context);
+    final entProvider = Provider.of<EnterpriseProvider>(context);
+
+    final user = authVm.userProfile;
+    if (user == null) {
+      return const Center(child: Text('Not authenticated. Please login first.'));
+    }
+
+    final isSuperAdmin = user.role == AppStrings.roleSuperAdmin;
+    final isAdmin = user.role == AppStrings.roleAdmin;
+
+    // 1. Role-based settings accessibility enforcement
+    if (!isSuperAdmin && !isAdmin) {
+      return Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: GlassContainer(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.gpp_bad_outlined, size: 64, color: AppColors.error),
+                const SizedBox(height: 16),
+                const Text('Access Denied', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Text(
+                  'Global System Settings are restricted to Super Admins and School Admins. Your active role: ${user.role}.',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final settings = settingsVm.settings;
+    _initFields(settings);
+
+    if (settingsVm.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.primaryBlue),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bool isMobile = constraints.maxWidth < 850;
+        
+        final sidebar = Container(
+          width: isMobile ? double.infinity : 280,
+          decoration: BoxDecoration(
+            color: widget.isDark ? Colors.white.withOpacity(0.02) : Colors.black.withOpacity(0.02),
+            border: Border(
+              right: BorderSide(
+                color: widget.isDark ? Colors.white12 : Colors.black12,
+                width: isMobile ? 0 : 1,
+              ),
+              bottom: BorderSide(
+                color: widget.isDark ? Colors.white12 : Colors.black12,
+                width: isMobile ? 1 : 0,
+              ),
+            ),
+          ),
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: isMobile ? const NeverScrollableScrollPhysics() : const ScrollPhysics(),
+            itemCount: _tabs.length,
+            itemBuilder: (context, idx) {
+              final tab = _tabs[idx];
+              final bool isTabAdminOnly = tab['adminOnly'] == true;
+              final bool isAccessible = !isTabAdminOnly || isSuperAdmin;
+              final bool isActive = _activeSectionIndex == idx;
+
+              return ListTile(
+                selected: isActive,
+                selectedColor: AppColors.primaryBlue,
+                leading: Icon(
+                  tab['icon'],
+                  color: isAccessible 
+                      ? (isActive ? AppColors.primaryBlue : (widget.isDark ? Colors.white70 : Colors.black87))
+                      : Colors.grey,
+                ),
+                title: Text(
+                  tab['title'],
+                  style: TextStyle(
+                    fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                    color: isAccessible ? null : Colors.grey,
+                    decoration: isAccessible ? null : TextDecoration.lineThrough,
+                  ),
+                ),
+                trailing: isTabAdminOnly 
+                    ? const Icon(Icons.shield_outlined, size: 14, color: AppColors.secondaryOrange)
+                    : null,
+                onTap: () {
+                  if (!isAccessible) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Access Blocked: Security & Backup settings are reserved for Super Admin only! 🛡️'),
+                        backgroundColor: AppColors.secondaryOrange,
+                      ),
+                    );
+                    return;
+                  }
+                  setState(() {
+                    _activeSectionIndex = idx;
+                  });
+                },
+              );
+            },
+          ),
+        );
+
+        final contentPane = Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top control status bar
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _tabs[_activeSectionIndex]['title'],
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+                    ),
+                    Row(
+                      children: [
+                        if (_activeSectionIndex != 10) ...[ // Don't show save for logs
+                          OutlinedButton.icon(
+                            icon: const Icon(Icons.restart_alt),
+                            label: const Text('Reset Unsaved'),
+                            onPressed: () => _resetUnsaved(settings),
+                          ),
+                          const SizedBox(width: 12),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryBlue,
+                              foregroundColor: Colors.white,
+                            ),
+                            icon: const Icon(Icons.save),
+                            label: const Text('Save Changes'),
+                            onPressed: () => _saveAllChanges(settings, settingsVm, user, entProvider),
+                          ),
+                        ]
+                      ],
+                    )
+                  ],
+                ),
+                const Divider(height: 32),
+                
+                // Load Active Section Form
+                _buildActiveTabContent(_activeSectionIndex, settings, settingsVm, user, entProvider),
+              ],
+            ),
+          ),
+        );
+
+        if (isMobile) {
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                sidebar,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
+                  child: _buildActiveTabContent(_activeSectionIndex, settings, settingsVm, user, entProvider),
+                ),
+                if (_activeSectionIndex != 10)
+                  Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        OutlinedButton(
+                          onPressed: () => _resetUnsaved(settings),
+                          child: const Text('Reset'),
+                        ),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          onPressed: () => _saveAllChanges(settings, settingsVm, user, entProvider),
+                          child: const Text('Save Changes'),
+                        ),
+                      ],
+                    ),
+                  )
+              ],
+            ),
+          );
+        }
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            sidebar,
+            contentPane,
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildActiveTabContent(int index, SystemSettings settings, SettingsViewModel settingsVm, UserProfile user, EnterpriseProvider entProvider) {
+    switch (index) {
+      case 0:
+        return _buildGeneralTab(settings);
+      case 1:
+        return _buildAppearanceTab(settings);
+      case 2:
+        return _buildSecurityTab(settingsVm);
+      case 3:
+        return _buildAuthenticationTab(settings);
+      case 4:
+        return _buildNotificationsTab(settings);
+      case 5:
+        return _buildLocalizationTab(settings);
+      case 6:
+        return _buildAiTab(settings);
+      case 7:
+        return _buildMonetizationTab(settings);
+      case 8:
+        return _buildMaintenanceTab(settings);
+      case 9:
+        return _buildBackupTab(settings, settingsVm, user);
+      case 10:
+        return _buildAuditLogsTab(entProvider);
+      default:
+        return const SizedBox();
+    }
+  }
+
+  // ==========================================
+  // TAB BUILDERS
+  // ==========================================
+
+  Widget _buildGeneralTab(SystemSettings settings) {
+    return GlassContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Hub Identity & Metadata', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              _buildImagePickBox('logo', 'App Logo', _logoBytes, settings.logoUrl),
+              const SizedBox(width: 16),
+              _buildImagePickBox('icon', 'App Icon', _iconBytes, settings.iconUrl),
+              const SizedBox(width: 16),
+              _buildImagePickBox('favicon', 'Favicon', _faviconBytes, settings.faviconUrl),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  controller: _appNameCtrl,
+                  labelText: 'Application Name',
+                  hintText: 'e.g. Agarwal Hub',
+                  prefixIcon: Icons.apps,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: CustomTextField(
+                  controller: _instNameCtrl,
+                  labelText: 'Institute Name',
+                  hintText: 'e.g. Agarwal Knowledge Hub',
+                  prefixIcon: Icons.school,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          CustomTextField(
+            controller: _addressCtrl,
+            labelText: 'Postal Address',
+            hintText: 'e.g. Mithapur, Patna',
+            prefixIcon: Icons.place,
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  controller: _phoneCtrl,
+                  labelText: 'Contact Phone',
+                  hintText: 'e.g. +919876543210',
+                  prefixIcon: Icons.phone,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: CustomTextField(
+                  controller: _emailCtrl,
+                  labelText: 'Contact Email',
+                  hintText: 'e.g. info@hub.com',
+                  prefixIcon: Icons.email,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          CustomTextField(
+            controller: _websiteCtrl,
+            labelText: 'Official Website Link',
+            hintText: 'e.g. https://hub.com',
+            prefixIcon: Icons.link,
+          ),
+          const SizedBox(height: 16),
+          CustomTextField(
+            controller: _aboutCtrl,
+            labelText: 'About / Description',
+            hintText: 'e.g. System metadata details...',
+            prefixIcon: Icons.info,
+          ),
+          const SizedBox(height: 16),
+          CustomTextField(
+            controller: _copyrightCtrl,
+            labelText: 'Copyright Footer String',
+            hintText: 'e.g. © 2026. All Rights Reserved.',
+            prefixIcon: Icons.copyright,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImagePickBox(String type, String label, Uint8List? bytes, String fallbackUrl) {
+    final imageWidget = bytes != null 
+        ? Image.memory(bytes, fit: BoxFit.cover)
+        : (fallbackUrl.isNotEmpty ? Image.network(fallbackUrl, fit: BoxFit.cover) : null);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            color: Colors.grey.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.withOpacity(0.3)),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(11),
+            child: imageWidget ?? const Center(child: Icon(Icons.image, color: Colors.grey)),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size.zero,
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              onPressed: () => _pickGeneralImage(type),
+              child: const Text('Pick', style: TextStyle(fontSize: 10)),
+            ),
+            if (bytes != null || fallbackUrl.isNotEmpty) ...[
+              const SizedBox(width: 4),
+              TextButton(
+                style: TextButton.styleFrom(
+                  minimumSize: Size.zero,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  foregroundColor: Colors.red,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                onPressed: () => _removeGeneralImage(type),
+                child: const Text('Remove', style: TextStyle(fontSize: 10)),
+              )
+            ]
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _buildAppearanceTab(SystemSettings settings) {
+    return Column(
+      children: [
+        GlassContainer(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Configure Hub Settings Profile', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const Text('Theme Configuration', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  const Text('Active Theme Mode:  ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ChoiceChip(
+                    label: const Text('Light Mode'),
+                    selected: _themeMode == 'light',
+                    onSelected: (val) {
+                      if (val) setState(() => _themeMode = 'light');
+                    },
+                  ),
+                  const SizedBox(width: 12),
+                  ChoiceChip(
+                    label: const Text('Dark Mode'),
+                    selected: _themeMode == 'dark',
+                    onSelected: (val) {
+                      if (val) setState(() => _themeMode = 'dark');
+                    },
+                  ),
+                  const SizedBox(width: 12),
+                  ChoiceChip(
+                    label: const Text('System Default'),
+                    selected: _themeMode == 'system',
+                    onSelected: (val) {
+                      if (val) setState(() => _themeMode = 'system');
+                    },
+                  ),
+                ],
+              ),
               const SizedBox(height: 24),
-              CustomTextField(
-                controller: _schoolController,
-                labelText: 'School Name Title',
-                hintText: 'Agarwal Knowledge Hub',
-                prefixIcon: Icons.school,
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _primaryColorCtrl,
+                      labelText: 'Primary Color Hex',
+                      hintText: 'e.g. 1E3C72',
+                      prefixIcon: Icons.color_lens,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _secondaryColorCtrl,
+                      labelText: 'Secondary Color Hex',
+                      hintText: 'e.g. FF5E36',
+                      prefixIcon: Icons.color_lens_outlined,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _accentColorCtrl,
+                      labelText: 'Accent Color Hex',
+                      hintText: 'e.g. FFC107',
+                      prefixIcon: Icons.colorize,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  _buildColorCircle('Blue ERP', '1E3C72', 'FF5E36'),
+                  const SizedBox(width: 12),
+                  _buildColorCircle('Purple Glow', '4A154B', 'FFC107'),
+                  const SizedBox(width: 12),
+                  _buildColorCircle('Teal Modern', '008080', 'FF7F50'),
+                  const SizedBox(width: 12),
+                  _buildColorCircle('Emerald Elite', '046A38', 'A3D9C9'),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        GlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Branding Layout Aesthetics', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Card Style Layout', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        DropdownButtonFormField<String>(
+                          value: _cardStyle,
+                          decoration: const InputDecoration(border: OutlineInputBorder()),
+                          items: ['Glassmorphism', '3D Inspired', 'Flat Minimalist'].map((s) {
+                            return DropdownMenuItem(value: s, child: Text(s));
+                          }).toList(),
+                          onChanged: (val) {
+                            if (val != null) setState(() => _cardStyle = val);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('UI Density', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        DropdownButtonFormField<String>(
+                          value: _uiDensity,
+                          decoration: const InputDecoration(border: OutlineInputBorder()),
+                          items: ['Comfortable', 'Compact'].map((s) {
+                            return DropdownMenuItem(value: s, child: Text(s));
+                          }).toList(),
+                          onChanged: (val) {
+                            if (val != null) setState(() => _uiDensity = val);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               CustomTextField(
-                controller: _addressController,
-                labelText: 'Postal Address',
-                hintText: 'Patna, Bihar',
-                prefixIcon: Icons.map,
+                controller: _borderRadiusCtrl,
+                labelText: 'Component Border Radius (double)',
+                hintText: 'e.g. 16.0',
+                prefixIcon: Icons.rounded_corner,
               ),
               const SizedBox(height: 16),
-              CustomTextField(
-                controller: _emailController,
-                labelText: 'Contact Email Address',
-                hintText: 'info@agarwal.com',
-                prefixIcon: Icons.email,
+              SwitchListTile(
+                title: const Text('Core Platform Micro-Animations', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Enable smooth dashboard micro-animations.'),
+                value: _animationsEnabled,
+                onChanged: (val) => setState(() => _animationsEnabled = val),
               ),
-              const SizedBox(height: 24),
-              CustomButton(
-                text: 'Save System Changes',
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('System configuration settings saved.')));
+              SwitchListTile(
+                title: const Text('Smooth Page Transitions', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Enable sliding and fading page navigation routes.'),
+                value: _smoothTransitions,
+                onChanged: (val) => setState(() => _smoothTransitions = val),
+              ),
+              const Divider(height: 32),
+              const Text('Login Screen Customized Branding', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _loginBrandingCtrl,
+                labelText: 'Login Welcome Header String',
+                hintText: 'Welcome to Education ERP Hub',
+                prefixIcon: Icons.login,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  _buildImagePickBox('loginBg', 'Login BG Frame', _loginBgBytes, settings.loginBackgroundUrl),
+                  const SizedBox(width: 24),
+                  _buildImagePickBox('loginLogo', 'Login Screen Logo', _loginLogoBytes, settings.loginPageLogoUrl),
+                ],
+              )
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildColorCircle(String name, String pri, String sec) {
+    return Tooltip(
+      message: name,
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            _primaryColorCtrl.text = pri;
+            _secondaryColorCtrl.text = sec;
+          });
+        },
+        child: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [Color(int.parse('FF$pri', radix: 16)), Color(int.parse('FF$sec', radix: 16))],
+            ),
+            border: Border.all(color: Colors.white, width: 2),
+            boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 4)],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSecurityTab(SettingsViewModel settingsVm) {
+    return Column(
+      children: [
+        GlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Active Administrative Security', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const SizedBox(height: 16),
+              SwitchListTile(
+                title: const Text('Two-Factor Authentication (2FA)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Force Super Admin verification codes on sensitive operations.'),
+                value: _twoFactorAuthEnabled,
+                onChanged: (val) => setState(() => _twoFactorAuthEnabled = val),
+              ),
+              SwitchListTile(
+                title: const Text('Suspicious Login Triggers', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Track login IP addresses and trigger email security reports.'),
+                value: _suspiciousLoginDetection,
+                onChanged: (val) => setState(() => _suspiciousLoginDetection = val),
+              ),
+              SwitchListTile(
+                title: const Text('Force Re-authentication', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Require credentials challenge before deleting users or restoring backups.'),
+                value: _reAuthRequired,
+                onChanged: (val) => setState(() => _reAuthRequired = val),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _sessionTimeoutCtrl,
+                      labelText: 'Session Expiry (Minutes)',
+                      hintText: '30',
+                      prefixIcon: Icons.timer,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _maxAttemptsCtrl,
+                      labelText: 'Max Login Attempts',
+                      hintText: '5',
+                      prefixIcon: Icons.lock_open,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _lockoutCtrl,
+                      labelText: 'Lockout Timeout (Minutes)',
+                      hintText: '15',
+                      prefixIcon: Icons.lock_outline,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              const Text('Minimum Password Complexity Policy', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Row(
+                children: ['Simple', 'Medium', 'Strong'].map((policy) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: ChoiceChip(
+                      label: Text(policy),
+                      selected: _passwordPolicy == policy,
+                      onSelected: (val) {
+                        if (val) setState(() => _passwordPolicy = policy);
+                      },
+                    ),
+                  );
+                }).toList(),
+              )
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        GlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Active System Sessions Registry', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+                    onPressed: () {
+                      settingsVm.terminateAllSessions();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Terminated all remote login sessions successfully! 🛡️')),
+                      );
+                    },
+                    child: const Text('Force Logout All Devices'),
+                  )
+                ],
+              ),
+              const Divider(height: 32),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: settingsVm.activeSessions.length,
+                itemBuilder: (context, index) {
+                  final sess = settingsVm.activeSessions[index];
+                  final bool isCurrent = sess['isCurrent'] == true;
+
+                  return ListTile(
+                    leading: Icon(
+                      sess['device'].toString().contains('Phone') ? Icons.phone_android : Icons.computer,
+                      color: isCurrent ? Colors.green : Colors.grey,
+                    ),
+                    title: Row(
+                      children: [
+                        Text(sess['device'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        const SizedBox(width: 8),
+                        if (isCurrent)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(color: Colors.green.withOpacity(0.2), borderRadius: BorderRadius.circular(6)),
+                            child: const Text('Current', style: TextStyle(color: Colors.green, fontSize: 9, fontWeight: FontWeight.bold)),
+                          )
+                      ],
+                    ),
+                    subtitle: Text('OS: ${sess['os']} | Browser: ${sess['browser']} | Location: ${sess['location']} | Login: ${sess['loginTime']}'),
+                    trailing: isCurrent 
+                        ? null 
+                        : IconButton(
+                            icon: const Icon(Icons.cancel_outlined, color: Colors.red),
+                            onPressed: () {
+                              settingsVm.terminateSession(sess['id']);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Revoked login session for ${sess['device']}')),
+                              );
+                            },
+                          ),
+                  );
                 },
               )
             ],
           ),
         ),
+        const SizedBox(height: 20),
+        GlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Active Device Login Logs History', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const Divider(height: 32),
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: settingsVm.loginHistory.length,
+                separatorBuilder: (_, __) => const Divider(),
+                itemBuilder: (context, idx) {
+                  final h = settingsVm.loginHistory[idx];
+                  final bool isSuccess = h['status'] == 'Success';
+                  return ListTile(
+                    leading: Icon(isSuccess ? Icons.verified_user : Icons.gpp_maybe, color: isSuccess ? Colors.green : Colors.red),
+                    title: Text('${h['user']} (${h['role']})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    subtitle: Text('IP: ${h['ip']} | Device: ${h['device']} | Time: ${h['timestamp']}'),
+                    trailing: Text(h['status'], style: TextStyle(color: isSuccess ? Colors.green : Colors.red, fontWeight: FontWeight.bold, fontSize: 12)),
+                  );
+                },
+              )
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildAuthenticationTab(SystemSettings settings) {
+    return GlassContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Verification & Authentication Gateways', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          const SizedBox(height: 16),
+          SwitchListTile(
+            title: const Text('Mobile OTP Verification Link', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            subtitle: const Text('Request mobile number OTP verification for new registrations.'),
+            value: _mobileLoginEnabled,
+            onChanged: (val) => setState(() => _mobileLoginEnabled = val),
+          ),
+          SwitchListTile(
+            title: const Text('Real OTP Verification (SMS Gateway)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            subtitle: const Text('Verify mobile numbers via SMS gateway (OTP is simulated if off).'),
+            value: _realOtpEnabled,
+            onChanged: (val) => setState(() => _realOtpEnabled = val),
+          ),
+          SwitchListTile(
+            title: const Text('Email & Password Login', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            subtitle: const Text('Allow sign-in using email address and security password.'),
+            value: _emailLoginEnabled,
+            onChanged: (val) => setState(() => _emailLoginEnabled = val),
+          ),
+          SwitchListTile(
+            title: const Text('Google SSO OAuth Login', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            subtitle: const Text('Allow direct verification using Google Account credentials.'),
+            value: _googleLoginEnabled,
+            onChanged: (val) => setState(() => _googleLoginEnabled = val),
+          ),
+          SwitchListTile(
+            title: const Text('Remember Login Session', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            subtitle: const Text('Automatically remember browser active authentication session.'),
+            value: _rememberLogin,
+            onChanged: (val) => setState(() => _rememberLogin = val),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  controller: _otpExpiryCtrl,
+                  labelText: 'OTP Expiration Timeout (Seconds)',
+                  hintText: '60',
+                  prefixIcon: Icons.av_timer,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: CustomTextField(
+                  controller: _resendOtpCtrl,
+                  labelText: 'Resend Trigger Timeout (Seconds)',
+                  hintText: '30',
+                  prefixIcon: Icons.repeat_one,
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotificationsTab(SystemSettings settings) {
+    return GlassContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Global Notification Outbound Channels', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          const SizedBox(height: 16),
+          SwitchListTile(
+            title: const Text('Push Alert Notifications', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            subtitle: const Text('Send app alerts for homework, notice, or quiz schedules.'),
+            value: _pushNotificationsEnabled,
+            onChanged: (val) => setState(() => _pushNotificationsEnabled = val),
+          ),
+          SwitchListTile(
+            title: const Text('Email Notice Alerts', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            subtitle: const Text('Send emails to parents and students on urgent class notices.'),
+            value: _emailNotificationsEnabled,
+            onChanged: (val) => setState(() => _emailNotificationsEnabled = val),
+          ),
+          SwitchListTile(
+            title: const Text('SMS Notice Alerts', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            subtitle: const Text('Send urgent SMS text messages via the gateway.'),
+            value: _smsNotificationsEnabled,
+            onChanged: (val) => setState(() => _smsNotificationsEnabled = val),
+          ),
+          SwitchListTile(
+            title: const Text('WhatsApp Notifications', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            subtitle: const Text('Send instant notifications to parent registered WhatsApp number.'),
+            value: _whatsAppNotificationsEnabled,
+            onChanged: (val) => setState(() => _whatsAppNotificationsEnabled = val),
+          ),
+          const Divider(height: 32),
+          const Text('System Alerts Trigger', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          const SizedBox(height: 16),
+          SwitchListTile(
+            title: const Text('System Maintenance Warnings', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            subtitle: const Text('Send alerts when system maintenance mode is scheduled.'),
+            value: _maintenanceAlertsEnabled,
+            onChanged: (val) => setState(() => _maintenanceAlertsEnabled = val),
+          ),
+          SwitchListTile(
+            title: const Text('Security Alerts', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            subtitle: const Text('Send alerts for failed login attempts or password resets.'),
+            value: _securityAlertsEnabled,
+            onChanged: (val) => setState(() => _securityAlertsEnabled = val),
+          ),
+          const SizedBox(height: 16),
+          const Text('Default Alert Sound Effect', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          DropdownButtonFormField<String>(
+            value: _notificationSound,
+            decoration: const InputDecoration(border: OutlineInputBorder()),
+            items: ['Default Chime', 'Vibrant Bell', 'Mute/Silent'].map((s) {
+              return DropdownMenuItem(value: s, child: Text(s));
+            }).toList(),
+            onChanged: (val) {
+              if (val != null) setState(() => _notificationSound = val);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLocalizationTab(SystemSettings settings) {
+    return GlassContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Time, Language, and Format Localization', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          const SizedBox(height: 24),
+          const Text('Default Language Preference', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          DropdownButtonFormField<String>(
+            value: _defaultLanguage,
+            decoration: const InputDecoration(border: OutlineInputBorder()),
+            items: ['English', 'Hindi'].map((s) {
+              return DropdownMenuItem(value: s, child: Text(s));
+            }).toList(),
+            onChanged: (val) {
+              if (val != null) setState(() => _defaultLanguage = val);
+            },
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  controller: _countryCtrl,
+                  labelText: 'Default Localization Country',
+                  hintText: 'India',
+                  prefixIcon: Icons.flag,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: CustomTextField(
+                  controller: _currencyCtrl,
+                  labelText: 'Default Localization Currency',
+                  hintText: 'INR (₹)',
+                  prefixIcon: Icons.monetization_on,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  controller: _timeZoneCtrl,
+                  labelText: 'Default Timezone',
+                  hintText: 'IST (UTC+5:30)',
+                  prefixIcon: Icons.access_time,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: CustomTextField(
+                  controller: _dateFormatCtrl,
+                  labelText: 'Date Format Preference',
+                  hintText: 'yyyy-MM-dd',
+                  prefixIcon: Icons.calendar_month,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: CustomTextField(
+                  controller: _timeFormatCtrl,
+                  labelText: 'Time Format Preference',
+                  hintText: '12-Hour (hh:mm AM/PM)',
+                  prefixIcon: Icons.timer_outlined,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Text('Number Format Pattern', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          DropdownButtonFormField<String>(
+            value: _numberFormat,
+            decoration: const InputDecoration(border: OutlineInputBorder()),
+            items: ['1,23,456.78 (Indian)', '123,456.78 (US)', '123.456,78 (European)'].map((s) {
+              return DropdownMenuItem(value: s, child: Text(s));
+            }).toList(),
+            onChanged: (val) {
+              if (val != null) setState(() => _numberFormat = val);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAiTab(SystemSettings settings) {
+    return Column(
+      children: [
+        GlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('AI Cognitive Engine Switches', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const SizedBox(height: 16),
+              SwitchListTile(
+                title: const Text('AI Services Suite Enabled', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Master switch to enable/disable all AI engines globally.'),
+                value: _aiFeaturesEnabled,
+                onChanged: (val) => setState(() => _aiFeaturesEnabled = val),
+              ),
+              SwitchListTile(
+                title: const Text('AI Personal Tutor Uploader', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Allow AI tutor interaction modules on student learning dashboards.'),
+                value: _aiTutorEnabled,
+                onChanged: (val) => setState(() => _aiTutorEnabled = val),
+              ),
+              SwitchListTile(
+                title: const Text('AI Automatic Doubt Solver', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Allow automated OCR/doubt solving responses to student questions.'),
+                value: _aiDoubtSolverEnabled,
+                onChanged: (val) => setState(() => _aiDoubtSolverEnabled = val),
+              ),
+              SwitchListTile(
+                title: const Text('Image OCR Parsing', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Allow uploading pictures of textbooks to query details.'),
+                value: _imageQuestionEnabled,
+                onChanged: (val) => setState(() => _imageQuestionEnabled = val),
+              ),
+              SwitchListTile(
+                title: const Text('AI Quiz Generator Engine', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Allow teachers to generate mock quizzes from text chapters automatically.'),
+                value: _aiQuizGeneratorEnabled,
+                onChanged: (val) => setState(() => _aiQuizGeneratorEnabled = val),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _freeLimitCtrl,
+                      labelText: 'Free Daily AI Queries Limit',
+                      hintText: '5',
+                      prefixIcon: Icons.limit_style_outlined,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _premiumLimitCtrl,
+                      labelText: 'Premium Daily AI Queries Limit',
+                      hintText: '100',
+                      prefixIcon: Icons.workspace_premium,
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        GlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Text-To-Speech (TTS) Voice Settings', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const SizedBox(height: 16),
+              SwitchListTile(
+                title: const Text('TTS Voice Narration Enabled', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Allow student mobile apps to narrate quiz questions/answers verbally.'),
+                value: _aiVoiceEnabled,
+                onChanged: (val) => setState(() => _aiVoiceEnabled = val),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  const Text('TTS Simulated Voice Gender:  ', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ChoiceChip(
+                    label: const Text('Female Voice'),
+                    selected: _voiceGender == 'Female',
+                    onSelected: (val) {
+                      if (val) setState(() => _voiceGender = 'Female');
+                    },
+                  ),
+                  const SizedBox(width: 12),
+                  ChoiceChip(
+                    label: const Text('Male Voice'),
+                    selected: _voiceGender == 'Male',
+                    onSelected: (val) {
+                      if (val) setState(() => _voiceGender = 'Male');
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _voiceSpeedCtrl,
+                labelText: 'TTS Speech Rate Speed (0.5x - 2.0x)',
+                hintText: '1.0',
+                prefixIcon: Icons.speed,
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                controller: _voiceVolumeCtrl,
+                labelText: 'TTS Audio Output Volume (0.0 - 1.0)',
+                hintText: '0.8',
+                prefixIcon: Icons.volume_up,
+              ),
+              const Divider(height: 32),
+              const Text('TTS Browser Synthesis Simulator Test', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              const SizedBox(height: 12),
+              CustomTextField(
+                controller: _ttsTextCtrl,
+                labelText: 'Test Speech Message Text',
+                hintText: 'Welcome to Agarwal Hub...',
+                prefixIcon: Icons.chat_bubble_outline,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryBlue, foregroundColor: Colors.white),
+                    icon: Icon(_isTtsSpeaking ? Icons.volume_up : Icons.play_arrow),
+                    label: Text(_isTtsSpeaking ? 'Speaking...' : 'Play Speech'),
+                    onPressed: () {
+                      final speed = double.tryParse(_voiceSpeedCtrl.text) ?? 1.0;
+                      final volume = double.tryParse(_voiceVolumeCtrl.text) ?? 0.8;
+                      _speakTTS(_ttsTextCtrl.text.trim(), _voiceGender, speed, volume);
+                    },
+                  ),
+                  const SizedBox(width: 12),
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.stop),
+                    label: const Text('Stop Speech'),
+                    onPressed: _stopTTS,
+                  ),
+                ],
+              )
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildMonetizationTab(SystemSettings settings) {
+    return Column(
+      children: [
+        GlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Monetization Master Switches', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const SizedBox(height: 16),
+              SwitchListTile(
+                title: const Text('Global Subscriptions Portal Active', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Toggle monetization subscriptions systems on/off.'),
+                value: _monetizationEnabled,
+                onChanged: (val) => setState(() => _monetizationEnabled = val),
+              ),
+              SwitchListTile(
+                title: const Text('Premium Scholar System Badges', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Displays premium scholar badge on profiles of premium package users.'),
+                value: _premiumSystemEnabled,
+                onChanged: (val) => setState(() => _premiumSystemEnabled = val),
+              ),
+              SwitchListTile(
+                title: const Text('Display Banner & Interstitial Advertisements', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Deploy Google AdMob ads to free tier active users.'),
+                value: _adsEnabled,
+                onChanged: (val) => setState(() => _adsEnabled = val),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _freeTrialDaysCtrl,
+                      labelText: 'Free Trial Trial Period (Days)',
+                      hintText: '7',
+                      prefixIcon: Icons.card_giftcard,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Payment Integration Environment', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        DropdownButtonFormField<String>(
+                          value: _paymentGatewayStatus,
+                          decoration: const InputDecoration(border: OutlineInputBorder()),
+                          items: ['Active', 'Sandbox', 'Inactive'].map((s) {
+                            return DropdownMenuItem(value: s, child: Text(s));
+                          }).toList(),
+                          onChanged: (val) {
+                            if (val != null) setState(() => _paymentGatewayStatus = val);
+                          },
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        GlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Active Subscriptions Billing Plans Packages', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const Divider(height: 32),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: settings.subscriptionPlans.length,
+                itemBuilder: (context, index) {
+                  final plan = settings.subscriptionPlans[index];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(plan['name'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                  const SizedBox(width: 10),
+                                  if (plan['badge'] != null && plan['badge'].toString().isNotEmpty)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      decoration: BoxDecoration(color: AppColors.secondaryOrange, borderRadius: BorderRadius.circular(6)),
+                                      child: Text(plan['badge'], style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                                    )
+                                ],
+                              ),
+                              Text('₹${plan['price']} / ${plan['duration']}', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text('Details: ${plan['description']}', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                          Text('Features: ${plan['features']}', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              )
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildMaintenanceTab(SystemSettings settings) {
+    return GlassContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Portal Upgrades & Maintenance Configuration', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          const SizedBox(height: 16),
+          SwitchListTile(
+            title: const Text('Active Maintenance Lockout Mode', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            subtitle: const Text('Lock portal access for students/teachers while doing system upgrades.'),
+            value: _maintenanceModeEnabled,
+            onChanged: (val) => setState(() => _maintenanceModeEnabled = val),
+          ),
+          const SizedBox(height: 16),
+          CustomTextField(
+            controller: _maintenanceMsgCtrl,
+            labelText: 'Under Maintenance Message Title',
+            hintText: 'Portal is currently undergoing scheduled database upgrades...',
+            prefixIcon: Icons.lock_clock,
+          ),
+          const SizedBox(height: 16),
+          CustomTextField(
+            controller: _scheduledTimeCtrl,
+            labelText: 'Scheduled Duration Details',
+            hintText: 'e.g. June 15, 02:00 AM to 04:00 AM IST',
+            prefixIcon: Icons.calendar_today,
+          ),
+          const Divider(height: 32),
+          const Text('Play Store / App Store App Version Tracking', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          const SizedBox(height: 16),
+          SwitchListTile(
+            title: const Text('Enforce Hard Force Upgrade', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            subtitle: const Text('Force students to update mobile app if version is below minimum supported.'),
+            value: _forceUpdateEnabled,
+            onChanged: (val) => setState(() => _forceUpdateEnabled = val),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  controller: _currentVersionCtrl,
+                  labelText: 'Current Loaded Version',
+                  hintText: '1.2.0',
+                  prefixIcon: Icons.info_outline,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: CustomTextField(
+                  controller: _latestVersionCtrl,
+                  labelText: 'Latest Available Version',
+                  hintText: '1.2.0',
+                  prefixIcon: Icons.system_update,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: CustomTextField(
+                  controller: _minVersionCtrl,
+                  labelText: 'Minimum Supported Version',
+                  hintText: '1.0.0',
+                  prefixIcon: Icons.warning_amber_rounded,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          CustomTextField(
+            controller: _updateMsgCtrl,
+            labelText: 'Force Upgrade Alert Message text',
+            hintText: 'A newer secure upgrade is available. Please update the application...',
+            prefixIcon: Icons.chat,
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  controller: _playStoreCtrl,
+                  labelText: 'Google Play Store Uploader Link',
+                  hintText: 'https://play.google.com/store...',
+                  prefixIcon: Icons.shop,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: CustomTextField(
+                  controller: _appStoreCtrl,
+                  labelText: 'Apple App Store link',
+                  hintText: 'https://apps.apple.com...',
+                  prefixIcon: Icons.phone_iphone,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  controller: _websiteLinkCtrl,
+                  labelText: 'App Landing Website Link',
+                  hintText: 'https://agarwalknowledgehub.com',
+                  prefixIcon: Icons.web,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: CustomTextField(
+                  controller: _privacyCtrl,
+                  labelText: 'Privacy Policy URL',
+                  hintText: 'https://agarwalknowledgehub.com/privacy',
+                  prefixIcon: Icons.privacy_tip_outlined,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: CustomTextField(
+                  controller: _termsCtrl,
+                  labelText: 'Terms & Conditions URL',
+                  hintText: 'https://agarwalknowledgehub.com/terms',
+                  prefixIcon: Icons.gavel,
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBackupTab(SystemSettings settings, SettingsViewModel settingsVm, UserProfile user) {
+    return Column(
+      children: [
+        GlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Automated Database Backup Configurations', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const SizedBox(height: 16),
+              SwitchListTile(
+                title: const Text('Enable Auto-Scheduled Backups', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: const Text('Store backup snapshot to secure storage bucket automatically.'),
+                value: _autoBackupEnabled,
+                onChanged: (val) => setState(() => _autoBackupEnabled = val),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Backup Schedule Frequency', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        DropdownButtonFormField<String>(
+                          value: _backupSchedule,
+                          decoration: const InputDecoration(border: OutlineInputBorder()),
+                          items: ['Daily', 'Weekly', 'Monthly'].map((s) {
+                            return DropdownMenuItem(value: s, child: Text(s));
+                          }).toList(),
+                          onChanged: (val) {
+                            if (val != null) setState(() => _backupSchedule = val);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CustomTextField(
+                      controller: _retentionCtrl,
+                      labelText: 'Data Retention Window (Days)',
+                      hintText: '365',
+                      prefixIcon: Icons.delete_sweep_outlined,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Trigger Manual Cloud Storage Backup snapshot', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+                    icon: _isBackupInProgress 
+                        ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : const Icon(Icons.cloud_upload),
+                    label: Text(_isBackupInProgress ? 'Backing Up...' : 'Backup Database Now'),
+                    onPressed: _isBackupInProgress ? null : () async {
+                      setState(() {
+                        _isBackupInProgress = true;
+                      });
+                      await Future.delayed(const Duration(seconds: 2));
+                      await settingsVm.triggerBackup(user.name);
+                      setState(() {
+                        _isBackupInProgress = false;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Manual database backup snapshot saved! 💾'), backgroundColor: Colors.green),
+                      );
+                    },
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        GlassContainer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Backup Snapshots History Registry', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const Divider(height: 32),
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: settings.backupHistory.length,
+                separatorBuilder: (_, __) => const Divider(),
+                itemBuilder: (context, idx) {
+                  final bak = settings.backupHistory[idx];
+                  return ListTile(
+                    leading: const Icon(Icons.backup_table_sharp, color: AppColors.primaryBlue),
+                    title: Text('${bak['type']} (${bak['size']})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    subtitle: Text('Creator: ${bak['creator']} | Date: ${bak['date']} | Status: ${bak['status']}'),
+                    trailing: TextButton.icon(
+                      style: TextButton.styleFrom(foregroundColor: AppColors.secondaryOrange),
+                      icon: const Icon(Icons.restore, size: 16),
+                      label: const Text('Restore'),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (confirmCtx) => AlertDialog(
+                            title: const Text('Confirm destructive restore'),
+                            content: Text(
+                              'WARNING: Restoring backup ${bak['id']} dated ${bak['date']} will overwrite all current system parameters, active rosters, homework assignments, and class structures. This action cannot be undone.\n\nAre you sure you want to proceed?'
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(confirmCtx),
+                                child: const Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+                                onPressed: () async {
+                                  Navigator.pop(confirmCtx);
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (loadingCtx) => const AlertDialog(
+                                      content: Row(
+                                        children: [
+                                          CircularProgressIndicator(),
+                                          SizedBox(width: 24),
+                                          Text('Restoring system database snapshot...', style: TextStyle(fontWeight: FontWeight.bold)),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                  await settingsVm.restoreBackup(bak['id']!);
+                                  Navigator.pop(context); // Close loading dialog
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Database restored successfully! 🔄'), backgroundColor: Colors.green),
+                                  );
+                                },
+                                child: const Text('Restore Destructively'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              )
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildAuditLogsTab(EnterpriseProvider entProvider) {
+    // Audit search/filters implementation
+    final List<AuditLog> filteredLogs = entProvider.auditLogs.where((log) {
+      final query = _logSearchQuery.toLowerCase();
+      final matchesQuery = log.operatorName.toLowerCase().contains(query) ||
+          log.description.toLowerCase().contains(query) ||
+          log.actionType.toLowerCase().contains(query);
+
+      final matchesAction = _logFilterAction == 'All' || log.actionType == _logFilterAction;
+      final matchesRole = _logFilterRole == 'All' || log.operatorRole == _logFilterRole;
+
+      return matchesQuery && matchesAction && matchesRole;
+    }).toList();
+
+    // Pagination bounds
+    final int totalLogsCount = filteredLogs.length;
+    final int totalPages = (totalLogsCount / _logPageSize).ceil().clamp(1, 9999);
+    final int startOffset = (_logCurrentPage - 1) * _logPageSize;
+    final int endOffset = (startOffset + _logPageSize).clamp(0, totalLogsCount);
+    final List<AuditLog> paginatedLogs = filteredLogs.sublist(startOffset, endOffset);
+
+    return GlassContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('System Audit Action Registry Logs', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Search Operators / Actions...',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (val) {
+                    setState(() {
+                      _logSearchQuery = val.trim();
+                      _logCurrentPage = 1;
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(width: 16),
+              DropdownButton<String>(
+                value: _logFilterAction,
+                items: ['All', 'Login', 'Logout', 'Upload', 'Delete', 'Settings'].map((act) {
+                  return DropdownMenuItem(value: act, child: Text(act));
+                }).toList(),
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() {
+                      _logFilterAction = val;
+                      _logCurrentPage = 1;
+                    });
+                  }
+                },
+              ),
+              const SizedBox(width: 16),
+              DropdownButton<String>(
+                value: _logFilterRole,
+                items: ['All', 'Super Admin', 'Admin', 'Teacher', 'Parent'].map((r) {
+                  return DropdownMenuItem(value: r, child: Text(r));
+                }).toList(),
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() {
+                      _logFilterRole = val;
+                      _logCurrentPage = 1;
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          if (paginatedLogs.isEmpty)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(32.0),
+                child: Text('No matching audit registry logs found.'),
+              ),
+            )
+          else ...[
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: const [
+                  DataColumn(label: Text('Timestamp', style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(label: Text('Operator Name', style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(label: Text('Role', style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(label: Text('Action Type', style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataColumn(label: Text('Description', style: TextStyle(fontWeight: FontWeight.bold))),
+                ],
+                rows: paginatedLogs.map((log) {
+                  return DataRow(cells: [
+                    DataCell(Text(log.timestamp.toString().substring(0, 19))),
+                    DataCell(Text(log.operatorName)),
+                    DataCell(Text(log.operatorRole)),
+                    DataCell(
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: log.actionType == 'Login' 
+                              ? Colors.green.withOpacity(0.1) 
+                              : (log.actionType == 'Delete' ? Colors.red.withOpacity(0.1) : Colors.blue.withOpacity(0.1)),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          log.actionType,
+                          style: TextStyle(
+                            color: log.actionType == 'Login' 
+                                ? Colors.green 
+                                : (log.actionType == 'Delete' ? Colors.red : Colors.blue),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                    ),
+                    DataCell(Text(log.description)),
+                  ]);
+                }).toList(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Displaying logs ${startOffset + 1} - $endOffset of $totalLogsCount'),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios, size: 14),
+                      onPressed: _logCurrentPage > 1 
+                          ? () => setState(() => _logCurrentPage--) 
+                          : null,
+                    ),
+                    Text('Page $_logCurrentPage of $totalPages'),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward_ios, size: 14),
+                      onPressed: _logCurrentPage < totalPages 
+                          ? () => setState(() => _logCurrentPage++) 
+                          : null,
+                    ),
+                  ],
+                )
+              ],
+            )
+          ]
+        ],
       ),
     );
   }

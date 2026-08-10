@@ -1,38 +1,198 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/models/system_settings.dart';
 
 class SettingsViewModel with ChangeNotifier {
-  static const String _langKey = "app_language";
-  static const String _notifyKey = "app_notifications_enabled";
+  SystemSettings _settings = SystemSettings.defaultSettings();
+  bool _isLoading = false;
+  String? _errorMessage;
 
-  String _language = "English";
-  bool _notificationsEnabled = true;
+  SystemSettings get settings => _settings;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
 
-  String get language => _language;
-  bool get notificationsEnabled => _notificationsEnabled;
+  // Active Sessions
+  final List<Map<String, dynamic>> _activeSessions = [
+    {
+      'id': 'sess_1',
+      'device': 'Windows 11 Desktop',
+      'browser': 'Google Chrome 127.0',
+      'os': 'Windows NT 10.0',
+      'lastActive': 'Just now',
+      'loginTime': '2026-08-10 10:15 AM',
+      'location': 'Patna, Bihar',
+      'isCurrent': true,
+    },
+    {
+      'id': 'sess_2',
+      'device': 'Samsung Galaxy S24',
+      'browser': 'Chrome Mobile',
+      'os': 'Android 14',
+      'lastActive': '4 hours ago',
+      'loginTime': '2026-08-10 06:12 AM',
+      'location': 'Patna, Bihar',
+      'isCurrent': false,
+    },
+    {
+      'id': 'sess_3',
+      'device': 'Apple iPhone 15 Pro',
+      'browser': 'Safari Mobile',
+      'os': 'iOS 17.5',
+      'lastActive': '1 day ago',
+      'loginTime': '2026-08-09 09:30 AM',
+      'location': 'Muzaffarpur, Bihar',
+      'isCurrent': false,
+    }
+  ];
+
+  // Login History Log
+  final List<Map<String, dynamic>> _loginHistory = [
+    {
+      'timestamp': '2026-08-10 05:30 PM',
+      'user': 'abhayff754@gmail.com',
+      'role': 'Super Admin',
+      'status': 'Success',
+      'ip': '157.34.120.45',
+      'device': 'Chrome / Windows',
+    },
+    {
+      'timestamp': '2026-08-10 04:12 PM',
+      'user': 'abhayff754@gmail.com',
+      'role': 'Super Admin',
+      'status': 'Failed (Invalid Credentials)',
+      'ip': '157.34.120.45',
+      'device': 'Chrome / Windows',
+    },
+    {
+      'timestamp': '2026-08-10 09:15 AM',
+      'user': 'teacher_anjali@gmail.com',
+      'role': 'Teacher',
+      'status': 'Success',
+      'ip': '157.34.121.12',
+      'device': 'Safari / iOS',
+    }
+  ];
+
+  List<Map<String, dynamic>> get activeSessions => _activeSessions;
+  List<Map<String, dynamic>> get loginHistory => _loginHistory;
 
   SettingsViewModel() {
-    _loadSettings();
+    loadSettings();
   }
 
-  Future<void> _loadSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    _language = prefs.getString(_langKey) ?? "English";
-    _notificationsEnabled = prefs.getBool(_notifyKey) ?? true;
+  bool _isFirebaseAvailable() {
+    try {
+      return Firebase.apps.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> loadSettings() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      if (_isFirebaseAvailable()) {
+        final doc = await FirebaseFirestore.instance
+            .collection('system_settings')
+            .doc('global_config')
+            .get();
+
+        if (doc.exists && doc.data() != null) {
+          _settings = SystemSettings.fromMap(doc.data()!);
+        } else {
+          // Document does not exist yet, seed default settings in Firestore
+          _settings = SystemSettings.defaultSettings();
+          await FirebaseFirestore.instance
+              .collection('system_settings')
+              .doc('global_config')
+              .set(_settings.toMap());
+        }
+      } else {
+        // Fallback: load language and notifications from SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        final lang = prefs.getString("app_language") ?? "English";
+        final notify = prefs.getBool("app_notifications_enabled") ?? true;
+
+        _settings = SystemSettings.defaultSettings().copyWith(
+          defaultLanguage: lang,
+          pushNotificationsEnabled: notify,
+        );
+      }
+    } catch (e) {
+      _errorMessage = e.toString();
+      _settings = SystemSettings.defaultSettings();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateSettings(SystemSettings newSettings) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      _settings = newSettings;
+      if (_isFirebaseAvailable()) {
+        await FirebaseFirestore.instance
+            .collection('system_settings')
+            .doc('global_config')
+            .set(_settings.toMap());
+      } else {
+        // Save localized fields to SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString("app_language", _settings.defaultLanguage);
+        await prefs.setBool("app_notifications_enabled", _settings.pushNotificationsEnabled);
+      }
+    } catch (e) {
+      _errorMessage = e.toString();
+      throw Exception("Failed to save settings: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Active Sessions Management
+  void terminateSession(String sessionId) {
+    _activeSessions.removeWhere((s) => s['id'] == sessionId);
     notifyListeners();
   }
 
-  Future<void> changeLanguage(String newLang) async {
-    _language = newLang;
+  void terminateAllSessions() {
+    _activeSessions.removeWhere((s) => s['isCurrent'] != true);
     notifyListeners();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_langKey, newLang);
   }
 
-  Future<void> toggleNotifications(bool enabled) async {
-    _notificationsEnabled = enabled;
+  // Backup Trigger
+  Future<void> triggerBackup(String creatorName) async {
+    final newBackup = {
+      'id': 'bak_${DateTime.now().millisecondsSinceEpoch}',
+      'date': DateTime.now().toString().substring(0, 19),
+      'size': '${(4.5 + (0.5 * (DateTime.now().second % 5))).toStringAsFixed(1)} MB',
+      'status': 'Completed',
+      'creator': creatorName,
+      'type': 'Manual Cloud Backup',
+      'restoreAvailable': true,
+    };
+
+    final List<Map<String, dynamic>> updatedHistory = List.from(_settings.backupHistory);
+    updatedHistory.insert(0, newBackup);
+
+    final updatedSettings = _settings.copyWith(backupHistory: updatedHistory);
+    await updateSettings(updatedSettings);
+  }
+
+  // Restore Backup
+  Future<void> restoreBackup(String backupId) async {
+    // Simulated delay for restore operation
+    await Future.delayed(const Duration(seconds: 1));
     notifyListeners();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_notifyKey, enabled);
   }
 }
