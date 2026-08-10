@@ -580,6 +580,9 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
         return ReportsPanel(isDark: isDark);
       case 'System Settings':
         return WebSettingsPanel(isDark: isDark);
+      case 'Parent Management':
+      case 'Parents':
+        return ParentManagementPanel(isDark: isDark);
       default:
         return GenericRolePanel(
           title: title,
@@ -3888,6 +3891,513 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
           )
         ],
       ),
+    );
+  }
+}
+
+// ==========================================
+// SUB SCREEN: PARENT MANAGEMENT PANEL
+// ==========================================
+class ParentManagementPanel extends StatefulWidget {
+  final bool isDark;
+  const ParentManagementPanel({super.key, required this.isDark});
+
+  @override
+  State<ParentManagementPanel> createState() => _ParentManagementPanelState();
+}
+
+class _ParentManagementPanelState extends State<ParentManagementPanel> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  Widget _buildMiniStat(String label, String value, IconData icon, Color color) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 4),
+            Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
+  void _showParentActivityDialog(BuildContext context, UserProfile parent) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        final lastActiveStr = parent.isOnline 
+            ? 'Active Now' 
+            : '${DateTime.now().difference(parent.lastActive).inMinutes} mins ago';
+        return AlertDialog(
+          title: Text('${parent.name} - Activity Logs'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Role: Parent'),
+              const SizedBox(height: 6),
+              Text('Associated Child: ${parent.parentName}'),
+              const SizedBox(height: 6),
+              Text('Last Active: $lastActiveStr'),
+              const SizedBox(height: 6),
+              Text('Online Status: ${parent.isOnline ? "Online 🟢" : "Offline ⚪"}'),
+              const SizedBox(height: 6),
+              Text('Account Status: ${parent.isBlocked ? "Blocked ⛔" : "Active ✅"}'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Close'),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void _showEditParentDialog(BuildContext context, UserProfile parent) {
+    final nameCtrl = TextEditingController(text: parent.name);
+    final phoneCtrl = TextEditingController(text: parent.phone);
+    final emailCtrl = TextEditingController(text: parent.email);
+    final addressCtrl = TextEditingController(text: parent.address);
+    final childNameCtrl = TextEditingController(text: parent.parentName);
+    final childPhoneCtrl = TextEditingController(text: parent.parentMobile);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            const Icon(Icons.edit_outlined, color: AppColors.primaryBlue),
+            const SizedBox(width: 10),
+            const Text('Edit Parent Details'),
+          ],
+        ),
+        content: SizedBox(
+          width: 460,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomTextField(
+                  controller: nameCtrl,
+                  labelText: 'Parent Name',
+                  hintText: 'e.g. Sanjay Agarwal',
+                  prefixIcon: Icons.person_outline,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: phoneCtrl,
+                  labelText: 'Parent Mobile',
+                  hintText: 'e.g. +919876543211',
+                  prefixIcon: Icons.phone_android_outlined,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: emailCtrl,
+                  labelText: 'Email Address',
+                  hintText: 'e.g. parent@gmail.com',
+                  prefixIcon: Icons.email_outlined,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: addressCtrl,
+                  labelText: 'Address',
+                  hintText: 'e.g. Mithapur, Patna',
+                  prefixIcon: Icons.location_on_outlined,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: childNameCtrl,
+                  labelText: 'Child Name',
+                  hintText: 'e.g. Narayan Agarwal',
+                  prefixIcon: Icons.child_care,
+                ),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: childPhoneCtrl,
+                  labelText: 'Child Mobile',
+                  hintText: 'e.g. +919876543210',
+                  prefixIcon: Icons.phone_callback,
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryBlue,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              final updated = parent.copyWith(
+                name: nameCtrl.text.trim(),
+                phone: phoneCtrl.text.trim(),
+                email: emailCtrl.text.trim(),
+                address: addressCtrl.text.trim(),
+                parentName: childNameCtrl.text.trim(),
+                parentMobile: childPhoneCtrl.text.trim(),
+              );
+              Provider.of<WebPanelViewModel>(context, listen: false).updateStudent(updated);
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Details of ${parent.name} updated successfully! 🔄')),
+              );
+            },
+            child: const Text('Save Changes'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final webVm = Provider.of<WebPanelViewModel>(context);
+    final authVm = Provider.of<AuthViewModel>(context);
+    final isSuperAdmin = authVm.userProfile?.role == AppStrings.roleSuperAdmin;
+
+    final filteredParents = webVm.parentsList.where((p) {
+      final query = _searchQuery.toLowerCase();
+      return p.name.toLowerCase().contains(query) ||
+          p.phone.contains(query) ||
+          p.parentName.toLowerCase().contains(query);
+    }).toList();
+
+    final int totalCount = webVm.parentsList.length;
+    final int onlineCount = webVm.parentsList.where((p) => p.isOnline).length;
+    final int offlineCount = webVm.parentsList.where((p) => !p.isOnline).length;
+    final int blockedCount = webVm.parentsList.where((p) => p.isBlocked).length;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 2,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top Banner Card with Sync Module
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  margin: const EdgeInsets.only(bottom: 24),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF1E3C72), Color(0xFF2A5298)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.family_restroom, size: 36, color: Colors.white),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Parent Management',
+                              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'ERP System Module Active Sync',
+                              style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.8)),
+                            ),
+                          ],
+                        ),
+                      ),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: const Color(0xFF1E3C72),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        icon: const Icon(Icons.sync, size: 16),
+                        onPressed: () async {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Starting Parent ERP Database Active Sync... 🔄')),
+                          );
+                          int syncCount = 0;
+                          for (final student in webVm.studentsList) {
+                            if (student.parentName.trim().isNotEmpty && student.parentMobile.trim().isNotEmpty) {
+                              await webVm._syncParentForStudent(student);
+                              syncCount++;
+                            }
+                          }
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Success! Sync Complete. $syncCount Parent profiles linked! ✅')),
+                          );
+                        },
+                        label: const Text('Sync Module', style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Top Live Active Surveillance Counter Bar
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: widget.isDark ? AppColors.darkSurface : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.primaryBlue.withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildMiniStat('Total Parents', '$totalCount', Icons.people, AppColors.primaryBlue),
+                      _buildMiniStat('Live Active 🟢', '$onlineCount', Icons.sensors, Colors.green),
+                      _buildMiniStat('Offline ⚪', '$offlineCount', Icons.sensors_off, Colors.grey),
+                      _buildMiniStat('Blocked ⛔', '$blockedCount', Icons.block, Colors.red),
+                    ],
+                  ),
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Parent Roster & Activity Surveillance', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                    if (isSuperAdmin)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.red.withOpacity(0.3)),
+                        ),
+                        child: const Text(
+                          'Super Admin Surveillance Controls Active 🛠️',
+                          style: TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Search Bar
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search parents by name, mobile, or child name...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              setState(() {
+                                _searchController.clear();
+                                _searchQuery = '';
+                              });
+                            },
+                          )
+                        : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onChanged: (val) {
+                    setState(() {
+                      _searchQuery = val.trim();
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                if (filteredParents.isEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.people_outline, size: 48, color: Colors.grey.withOpacity(0.5)),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'No parents registered or matching your search criteria.',
+                            style: TextStyle(color: Colors.grey),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: filteredParents.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      final parent = filteredParents[index];
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: widget.isDark ? AppColors.darkSurface : Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: parent.isBlocked 
+                                ? Colors.red.withOpacity(0.3) 
+                                : (parent.isOnline ? Colors.green.withOpacity(0.3) : Colors.grey.withOpacity(0.2)),
+                          ),
+                        ),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: CircleAvatar(
+                            backgroundColor: parent.isOnline ? Colors.green : Colors.grey,
+                            foregroundColor: Colors.white,
+                            child: const Icon(Icons.family_restroom),
+                          ),
+                          title: Row(
+                            children: [
+                              Text(parent.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(width: 10),
+                              if (parent.isBlocked)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Text(
+                                    'Suspended 🚫',
+                                    style: TextStyle(color: Colors.red, fontSize: 9, fontWeight: FontWeight.bold),
+                                  ),
+                                )
+                              else if (parent.isOnline)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Text(
+                                    'Active Live 🟢',
+                                    style: TextStyle(color: Colors.green, fontSize: 9, fontWeight: FontWeight.bold),
+                                  ),
+                                )
+                              else
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Text(
+                                    'Offline ⚪',
+                                    style: TextStyle(color: Colors.grey, fontSize: 9, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          subtitle: Text('Child: ${parent.parentName} | Phone: ${parent.phone} | Class: ${parent.userClass}'),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.visibility_outlined, color: AppColors.primaryBlue),
+                                tooltip: 'View Activity Logs',
+                                onPressed: () => _showParentActivityDialog(context, parent),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+                                tooltip: 'Edit Details',
+                                onPressed: () => _showEditParentDialog(context, parent),
+                              ),
+
+                              if (isSuperAdmin) ...[
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: parent.isBlocked ? Colors.green : Colors.red,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  onPressed: () {
+                                    final updated = parent.copyWith(
+                                      isBlocked: !parent.isBlocked,
+                                      isOnline: !parent.isBlocked ? false : parent.isOnline,
+                                    );
+                                    webVm.updateStudent(updated);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(parent.isBlocked ? '${parent.name} Unblocked!' : '${parent.name} Blocked!'),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(parent.isBlocked ? 'Unblock' : 'Block', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                                ),
+                                const SizedBox(width: 8),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.orange.shade700,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  onPressed: () {
+                                    final updated = parent.copyWith(
+                                      forceLogout: true,
+                                      isOnline: false,
+                                    );
+                                    webVm.updateStudent(updated);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Force Logout command sent to ${parent.name}\'s active sessions!'),
+                                        backgroundColor: Colors.orange.shade700,
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('Force Logout', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                                ),
+                              ],
+
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline, color: AppColors.error),
+                                onPressed: () => webVm.deleteStudent(parent.uid),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

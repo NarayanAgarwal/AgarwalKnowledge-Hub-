@@ -30,6 +30,7 @@ class WebPanelViewModel with ChangeNotifier {
   // Lists
   List<UserProfile> studentsList = [];
   List<UserProfile> teachersList = [];
+  List<UserProfile> parentsList = [];
   List<Notice> noticesList = [];
   List<Homework> homeworksList = [];
   List<Note> notesList = [];
@@ -123,6 +124,14 @@ class WebPanelViewModel with ChangeNotifier {
         notifyListeners();
       });
 
+      _repository.streamUsers(AppStrings.roleParent).listen((data) {
+        parentsList = data;
+        if (parentsList.isEmpty) {
+          _seedDefaultMockParents();
+        }
+        notifyListeners();
+      });
+
       _repository.getNotices().listen((data) {
         noticesList = data;
         notifyListeners();
@@ -199,6 +208,7 @@ class WebPanelViewModel with ChangeNotifier {
     await _repository.createUserProfile(student);
     studentsList.add(student);
     notifyListeners();
+    await _syncParentForStudent(student);
   }
 
   Future<void> updateStudent(UserProfile student) async {
@@ -208,6 +218,118 @@ class WebPanelViewModel with ChangeNotifier {
       studentsList[idx] = student;
     }
     notifyListeners();
+    await _syncParentForStudent(student);
+  }
+
+  Future<void> _syncParentForStudent(UserProfile student) async {
+    if (student.parentName.trim().isEmpty || student.parentMobile.trim().isEmpty) return;
+    
+    final parentPhone = student.parentMobile.trim();
+    final parentUid = "parent_$parentPhone";
+    
+    // Create or update parent profile linked to this student
+    final parent = UserProfile(
+      uid: parentUid,
+      role: AppStrings.roleParent,
+      name: student.parentName.trim(),
+      phone: parentPhone,
+      email: "${student.parentName.trim().toLowerCase().replaceAll(' ', '')}@gmail.com", // default format
+      address: student.address,
+      userClass: student.userClass, // class of the child
+      rollNumber: student.rollNumber, // roll number of the child
+      gender: "Male",
+      dob: "",
+      admissionNumber: "PAR-${parentPhone.hashCode.abs().toString().substring(0, 4)}",
+      school: student.school,
+      parentName: student.name, // Child name
+      parentMobile: student.phone, // Child mobile
+      emergencyContact: student.phone,
+      profilePhotoUrl: "",
+      createdDate: DateTime.now(),
+      lastLogin: DateTime.now(),
+    );
+    
+    await _repository.createUserProfile(parent);
+    
+    // Update locally in parentsList
+    final idx = parentsList.indexWhere((p) => p.uid == parent.uid);
+    if (idx != -1) {
+      parentsList[idx] = parent;
+    } else {
+      parentsList.add(parent);
+    }
+    notifyListeners();
+  }
+
+  void _seedDefaultMockParents() {
+    parentsList = [
+      UserProfile(
+        uid: "parent_9876543211",
+        role: AppStrings.roleParent,
+        name: "Sanjay Agarwal",
+        phone: "+919876543211",
+        email: "sanjay@gmail.com",
+        address: "Mithapur, Patna",
+        userClass: "Class 5",
+        rollNumber: "1",
+        gender: "Male",
+        dob: "",
+        admissionNumber: "PAR-1122",
+        school: "Agarwal Knowledge Hub",
+        parentName: "Narayan Agarwal",
+        parentMobile: "+919876543210",
+        emergencyContact: "",
+        profilePhotoUrl: "",
+        createdDate: DateTime.now(),
+        lastLogin: DateTime.now(),
+        isOnline: true,
+        lastActive: DateTime.now(),
+      ),
+      UserProfile(
+        uid: "parent_9876543233",
+        role: AppStrings.roleParent,
+        name: "Ramesh Kumar",
+        phone: "+919876543233",
+        email: "ramesh@gmail.com",
+        address: "Kankarbagh, Patna",
+        userClass: "Class 8",
+        rollNumber: "5",
+        gender: "Male",
+        dob: "",
+        admissionNumber: "PAR-3344",
+        school: "Agarwal Knowledge Hub",
+        parentName: "Amit Kumar",
+        parentMobile: "+919876543230",
+        emergencyContact: "",
+        profilePhotoUrl: "",
+        createdDate: DateTime.now(),
+        lastLogin: DateTime.now(),
+        isOnline: false,
+        lastActive: DateTime.now().subtract(const Duration(hours: 2)),
+      ),
+      UserProfile(
+        uid: "parent_9876543255",
+        role: AppStrings.roleParent,
+        name: "Sunita Devi",
+        phone: "+919876543255",
+        email: "sunita@gmail.com",
+        address: "Patna City, Patna",
+        userClass: "Class 3",
+        rollNumber: "12",
+        gender: "Female",
+        dob: "",
+        admissionNumber: "PAR-5566",
+        school: "Agarwal Knowledge Hub",
+        parentName: "Neha Kumari",
+        parentMobile: "+919876543250",
+        emergencyContact: "",
+        profilePhotoUrl: "",
+        createdDate: DateTime.now(),
+        lastLogin: DateTime.now(),
+        isOnline: true,
+        lastActive: DateTime.now(),
+      ),
+    ];
   }
 
   Future<void> deleteStudent(String uid) async {
