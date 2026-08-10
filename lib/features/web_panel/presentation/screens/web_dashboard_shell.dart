@@ -4149,7 +4149,7 @@ class _ParentManagementPanelState extends State<ParentManagementPanel> {
                           int syncCount = 0;
                           for (final student in webVm.studentsList) {
                             if (student.parentName.trim().isNotEmpty && student.parentMobile.trim().isNotEmpty) {
-                              await webVm._syncParentForStudent(student);
+                              await webVm.syncParentForStudent(student);
                               syncCount++;
                             }
                           }

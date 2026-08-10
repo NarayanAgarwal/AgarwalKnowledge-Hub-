@@ -208,7 +208,7 @@ class WebPanelViewModel with ChangeNotifier {
     await _repository.createUserProfile(student);
     studentsList.add(student);
     notifyListeners();
-    await _syncParentForStudent(student);
+    await syncParentForStudent(student);
   }
 
   Future<void> updateStudent(UserProfile student) async {
@@ -218,10 +218,10 @@ class WebPanelViewModel with ChangeNotifier {
       studentsList[idx] = student;
     }
     notifyListeners();
-    await _syncParentForStudent(student);
+    await syncParentForStudent(student);
   }
 
-  Future<void> _syncParentForStudent(UserProfile student) async {
+  Future<void> syncParentForStudent(UserProfile student) async {
     if (student.parentName.trim().isEmpty || student.parentMobile.trim().isEmpty) return;
     
     final parentPhone = student.parentMobile.trim();
