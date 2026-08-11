@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/services/academic_provider.dart';
 import '../../../../core/theme/theme_provider.dart';
 import '../../../../core/widgets/glass_container.dart';
 import '../../../../core/widgets/custom_button.dart';
@@ -4769,7 +4771,7 @@ class _AttendanceManagementPanelState extends State<AttendanceManagementPanel> {
       const SnackBar(
         content: Row(
           children: [
-            Icon(Icons.sync_saved_locally, color: Colors.white),
+            Icon(Icons.sync, color: Colors.white),
             SizedBox(width: 8),
             Text('Sync Successful! QR Config updated in mobile screens! 📱🟢'),
           ],
