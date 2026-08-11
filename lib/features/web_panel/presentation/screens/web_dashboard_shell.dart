@@ -1190,9 +1190,9 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
     );
   }
 
-  void _showStatsSummaryDialog(BuildContext context, String type) {
+  void _showStatsSummaryDialog(BuildContext outerContext, String type) {
     final bool isDark = widget.isDark;
-    final webVm = Provider.of<WebPanelViewModel>(context, listen: false);
+    final webVm = Provider.of<WebPanelViewModel>(outerContext, listen: false);
 
     List<UserProfile> studentsList;
     if (type == 'Total Students') {
@@ -1206,10 +1206,10 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
     }
 
     showDialog(
-      context: context,
-      builder: (context) {
+      context: outerContext,
+      builder: (dialogCtx) {
         return StatefulBuilder(
-          builder: (context, setDialogState) {
+          builder: (statefulCtx, setDialogState) {
             return AlertDialog(
               backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
@@ -1233,7 +1233,7 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
                     : ListView.separated(
                         itemCount: studentsList.length,
                         separatorBuilder: (c, i) => const Divider(),
-                        itemBuilder: (context, index) {
+                        itemBuilder: (listCtx, index) {
                           final student = studentsList[index];
                           return ListTile(
                             contentPadding: EdgeInsets.zero,
@@ -1243,12 +1243,12 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
                                 ? TextButton(
                                     onPressed: () async {
                                       final updated = student.copyWith(isBlocked: false);
-                                      await Provider.of<WebPanelViewModel>(context, listen: false).updateStudent(updated);
+                                      await Provider.of<WebPanelViewModel>(outerContext, listen: false).updateStudent(updated);
                                       setDialogState(() {
                                         studentsList.removeAt(index);
                                       });
                                       setState(() {});
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(outerContext).showSnackBar(
                                         SnackBar(content: Text('${student.name} unblocked successfully! 🔓')),
                                       );
                                     },
@@ -1268,7 +1268,7 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Navigator.pop(dialogCtx),
                   child: const Text('Close'),
                 ),
               ],
