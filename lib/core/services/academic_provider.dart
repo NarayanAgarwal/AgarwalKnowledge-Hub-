@@ -5,9 +5,11 @@ import '../models/exam.dart';
 class AcademicProvider with ChangeNotifier {
   // Attendance states
   String? _activeQrCode;
-  int _qrCountdownSeconds = 0;
+  int _qrCountdownSeconds = 86400; // Default 24 hours
   Timer? _qrTimer;
   final List<String> _qrMarkedStudentUids = [];
+  String _qrClassScope = 'All Classes';
+  String? _customQrUrl;
 
   // GPS parameters (School Geo-coordinates center)
   final double schoolLatitude = 25.5941; 
@@ -75,9 +77,15 @@ class AcademicProvider with ChangeNotifier {
   List<Map<String, String>> get certificates => _certificates;
 
   // QR CODE Attendance Method
-  void generateQrCode() {
-    _activeQrCode = 'ATTENDANCE_TOKEN_${DateTime.now().millisecondsSinceEpoch}';
-    _qrCountdownSeconds = 60;
+  String get qrClassScope => _qrClassScope;
+  String? get customQrUrl => _customQrUrl;
+
+  // QR CODE Attendance Method (Rotates every 24 hours)
+  void generateQrCode({String classScope = 'All Classes'}) {
+    _activeQrCode = 'ATTENDANCE_TOKEN_${classScope.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}';
+    _qrClassScope = classScope;
+    _customQrUrl = null;
+    _qrCountdownSeconds = 86400; // Reset to 24 hours (86400 seconds)
     _qrMarkedStudentUids.clear();
     notifyListeners();
 
@@ -87,9 +95,32 @@ class AcademicProvider with ChangeNotifier {
         _qrCountdownSeconds--;
         notifyListeners();
       } else {
-        _activeQrCode = null;
-        timer.cancel();
+        // Automatically rotate after 24 hours
+        generateQrCode(classScope: _qrClassScope);
+      }
+    });
+  }
+
+  void updateQrConfig({
+    required String token,
+    required String classScope,
+    String? customUrl,
+    required int secondsRemaining,
+  }) {
+    _activeQrCode = token;
+    _qrClassScope = classScope;
+    _customQrUrl = customUrl;
+    _qrCountdownSeconds = secondsRemaining;
+    notifyListeners();
+
+    _qrTimer?.cancel();
+    _qrTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_qrCountdownSeconds > 0) {
+        _qrCountdownSeconds--;
         notifyListeners();
+      } else {
+        // Automatically rotate
+        generateQrCode(classScope: _qrClassScope);
       }
     });
   }

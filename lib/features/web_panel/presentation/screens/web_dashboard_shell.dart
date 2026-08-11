@@ -1190,6 +1190,95 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
     );
   }
 
+  void _showStatsSummaryDialog(BuildContext context, String type) {
+    final bool isDark = widget.isDark;
+    final webVm = Provider.of<WebPanelViewModel>(context, listen: false);
+
+    List<UserProfile> studentsList;
+    if (type == 'Total Students') {
+      studentsList = webVm.studentsList;
+    } else if (type == 'Live Active') {
+      studentsList = webVm.studentsList.where((s) => s.isOnline).toList();
+    } else if (type == 'Offline') {
+      studentsList = webVm.studentsList.where((s) => !s.isOnline).toList();
+    } else {
+      studentsList = webVm.studentsList.where((s) => s.isBlocked).toList();
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              title: Row(
+                children: [
+                  Icon(
+                    type == 'Blocked'
+                        ? Icons.block
+                        : (type == 'Live Active' ? Icons.sensors : Icons.people),
+                    color: AppColors.primaryBlue,
+                  ),
+                  const SizedBox(width: 8),
+                  Text('$type List (${studentsList.length})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                ],
+              ),
+              content: SizedBox(
+                width: 400,
+                height: 300,
+                child: studentsList.isEmpty
+                    ? Center(child: Text('No students found for: $type'))
+                    : ListView.separated(
+                        itemCount: studentsList.length,
+                        separatorBuilder: (c, i) => const Divider(),
+                        itemBuilder: (context, index) {
+                          final student = studentsList[index];
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(student.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                            subtitle: Text('Class: ${student.userClass} | Phone: ${student.phone}', style: const TextStyle(fontSize: 11)),
+                            trailing: type == 'Blocked'
+                                ? TextButton(
+                                    onPressed: () async {
+                                      final updated = student.copyWith(isBlocked: false);
+                                      await Provider.of<WebPanelViewModel>(context, listen: false).updateStudent(updated);
+                                      setDialogState(() {
+                                        studentsList.removeAt(index);
+                                      });
+                                      setState(() {});
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('${student.name} unblocked successfully! 🔓')),
+                                      );
+                                    },
+                                    child: const Text('Unblock', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                                  )
+                                : Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: student.isOnline ? Colors.green : Colors.grey,
+                                    ),
+                                  ),
+                          );
+                        },
+                      ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Close'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   void _showStudentActivityDialog(BuildContext context, UserProfile student) {
     final bool isGmailUser = student.email.isNotEmpty;
     showDialog(
@@ -1389,10 +1478,34 @@ class _StudentManagementPanelState extends State<StudentManagementPanel> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildMiniStat('Total Students', '$totalCount', Icons.people, AppColors.primaryBlue),
-                      _buildMiniStat('Live Active 🟢', '$onlineCount', Icons.sensors, Colors.green),
-                      _buildMiniStat('Offline ⚪', '$offlineCount', Icons.sensors_off, Colors.grey),
-                      _buildMiniStat('Blocked ⛔', '$blockedCount', Icons.block, Colors.red),
+                      GestureDetector(
+                        onTap: () => _showStatsSummaryDialog(context, 'Total Students'),
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: _buildMiniStat('Total Students', '$totalCount', Icons.people, AppColors.primaryBlue),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => _showStatsSummaryDialog(context, 'Live Active'),
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: _buildMiniStat('Live Active 🟢', '$onlineCount', Icons.sensors, Colors.green),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => _showStatsSummaryDialog(context, 'Offline'),
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: _buildMiniStat('Offline ⚪', '$offlineCount', Icons.sensors_off, Colors.grey),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => _showStatsSummaryDialog(context, 'Blocked'),
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: _buildMiniStat('Blocked ⛔', '$blockedCount', Icons.block, Colors.red),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -4608,6 +4721,71 @@ class _AttendanceManagementPanelState extends State<AttendanceManagementPanel> {
   DateTime _selectedDate = DateTime.now();
   String _selectedClass = 'All Classes';
 
+  int _qrSecondsRemaining = 86400;
+  Timer? _qrTimer;
+  String _qrClassScope = 'All Classes';
+  String? _customQrUrl;
+  String _currentQrToken = 'ATTENDANCE_TOKEN_All_Classes';
+  bool _isAutoGenerated = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _startQrTimer();
+  }
+
+  void _startQrTimer() {
+    _qrTimer?.cancel();
+    _qrTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          if (_qrSecondsRemaining > 0) {
+            _qrSecondsRemaining--;
+          } else {
+            _qrSecondsRemaining = 86400; // Reset to 24h
+            _currentQrToken = 'ATTENDANCE_TOKEN_${_qrClassScope.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}';
+          }
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _qrTimer?.cancel();
+    super.dispose();
+  }
+
+  void _syncQrToApp() {
+    final acadProvider = Provider.of<AcademicProvider>(context, listen: false);
+    acadProvider.updateQrConfig(
+      token: _currentQrToken,
+      classScope: _qrClassScope,
+      customUrl: _customQrUrl,
+      secondsRemaining: _qrSecondsRemaining,
+    );
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.sync_saved_locally, color: Colors.white),
+            SizedBox(width: 8),
+            Text('Sync Successful! QR Config updated in mobile screens! 📱🟢'),
+          ],
+        ),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  String _formatSeconds(int totalSeconds) {
+    final int hours = totalSeconds ~/ 3600;
+    final int minutes = (totalSeconds % 3600) ~/ 60;
+    final int seconds = totalSeconds % 60;
+    return '${hours.toString().padLeft(2, '0')}h ${minutes.toString().padLeft(2, '0')}m ${seconds.toString().padLeft(2, '0')}s';
+  }
+
   // Map of studentId -> AttendanceStatus ('Present', 'Absent', 'Late', 'Leave')
   final Map<String, String> _attendanceMap = {};
 
@@ -4930,6 +5108,186 @@ class _AttendanceManagementPanelState extends State<AttendanceManagementPanel> {
               _buildStatsCard('Absent Alert Count', '$absent Absent', Icons.warning, Colors.red),
               _buildStatsCard('On Leaves', '$leaveCount Leave', Icons.medical_services, Colors.orange),
             ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // QR Console Container
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? null : Colors.white,
+              gradient: isDark
+                  ? LinearGradient(
+                      colors: [
+                        Colors.blue.withOpacity(0.12),
+                        Colors.blue.withOpacity(0.02),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isDark ? Colors.blue.withOpacity(0.25) : Colors.grey.shade100,
+                width: 1.5,
+              ),
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.qr_code_2, color: Colors.blue),
+                    SizedBox(width: 8),
+                    Text(
+                      'Interactive QR Attendance Console',
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Left QR Code Preview
+                    Expanded(
+                      flex: 4,
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 160,
+                            height: 160,
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: Center(
+                              child: _customQrUrl != null
+                                  ? Image.network(_customQrUrl!, fit: BoxFit.contain)
+                                  : Image.network(
+                                      'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$_currentQrToken',
+                                      loadingBuilder: (context, child, loadingProgress) {
+                                        if (loadingProgress == null) return child;
+                                        return const Center(child: CircularProgressIndicator());
+                                      },
+                                    ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _isAutoGenerated ? 'Auto-Generated QR Code' : 'Custom Uploaded QR Code',
+                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    // Right settings
+                    Expanded(
+                      flex: 6,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('QR Attendance Scope', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.grey.withOpacity(0.4)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                value: _qrClassScope,
+                                dropdownColor: isDark ? AppColors.darkSurface : Colors.white,
+                                isExpanded: true,
+                                style: TextStyle(fontSize: 12, color: isDark ? Colors.white : Colors.black87),
+                                items: _classesList.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                                onChanged: (val) {
+                                  if (val != null) {
+                                    setState(() {
+                                      _qrClassScope = val;
+                                      _currentQrToken = 'ATTENDANCE_TOKEN_${val.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}';
+                                      _isAutoGenerated = true;
+                                      _customQrUrl = null;
+                                    });
+                                    _syncQrToApp();
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          const Text('Custom QR Code URL (Optional)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  onSubmitted: (val) {
+                                    if (val.trim().isNotEmpty) {
+                                      setState(() {
+                                        _customQrUrl = val.trim();
+                                        _isAutoGenerated = false;
+                                      });
+                                      _syncQrToApp();
+                                    }
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: 'Paste custom QR image URL',
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blueGrey,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _customQrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=050e2e&data=https://agarwalknowledgehub.vercel.app';
+                                    _isAutoGenerated = false;
+                                  });
+                                  _syncQrToApp();
+                                },
+                                child: const Text('Add Custom', style: TextStyle(fontSize: 11)),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Rotates in: ${_formatSeconds(_qrSecondsRemaining)}',
+                                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange, fontSize: 12),
+                              ),
+                              ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
+                                onPressed: _syncQrToApp,
+                                icon: const Icon(Icons.sync, size: 12),
+                                label: const Text('Sync QR to Mobile App', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
 
           const SizedBox(height: 20),

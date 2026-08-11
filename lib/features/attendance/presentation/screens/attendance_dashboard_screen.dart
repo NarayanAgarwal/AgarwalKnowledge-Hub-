@@ -15,6 +15,8 @@ class AttendanceDashboardScreen extends StatefulWidget {
 
 class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool _showClassWiseAttendancePage = false;
+  String? _selectedClassForAttendance;
 
   @override
   void initState() {
@@ -28,8 +30,14 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> w
     super.dispose();
   }
 
+  String _formatSeconds(int totalSeconds) {
+    final int hours = totalSeconds ~/ 3600;
+    final int minutes = (totalSeconds % 3600) ~/ 60;
+    final int seconds = totalSeconds % 60;
+    return '${hours.toString().padLeft(2, '0')}h ${minutes.toString().padLeft(2, '0')}m ${seconds.toString().padLeft(2, '0')}s';
+  }
+
   void _onMarkGps(AcademicProvider provider, String uid) {
-    // Simulate user standing inside school gates (25.5942, 85.1377)
     final bool success = provider.markAttendanceViaGps(
       lat: 25.5942,
       lon: 85.1377,
@@ -59,20 +67,153 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> w
       );
       return;
     }
+    setState(() {
+      _showClassWiseAttendancePage = true;
+      _selectedClassForAttendance = null;
+    });
+  }
 
-    final bool success = provider.markAttendanceViaQr(provider.activeQrCode!, uid);
+  Widget _buildClassWiseAttendanceView(BuildContext context, AcademicProvider acadProvider) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final List<String> classes = [
+      'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 
+      'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'
+    ];
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(success ? 'Scan Successful!' : 'QR Code Expired'),
-        content: Text(
-          success
-              ? 'Attendance code verified. Present logged.'
-              : 'This QR code is either invalid or expired.',
+    if (_selectedClassForAttendance != null) {
+      final List<String> mockRoster = [
+        'Aman Agarwal', 'Ravi Shankar', 'Priya Kumari', 'Sneha Patel', 'Animesh Roy'
+      ];
+      return GlassContainer(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    setState(() {
+                      _selectedClassForAttendance = null;
+                    });
+                  },
+                ),
+                Text(
+                  'Roster: $_selectedClassForAttendance',
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Select your name below to mark yourself Present:',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+            const SizedBox(height: 16),
+            Column(
+              children: mockRoster.map((name) {
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  color: isDark ? AppColors.darkSurface : Colors.white,
+                  child: ListTile(
+                    title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    trailing: const Icon(Icons.check_circle_outline, color: Colors.green),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Confirm Attendance'),
+                          content: Text('Are you sure you want to log presence for $name in $_selectedClassForAttendance?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Cancel'),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                setState(() {
+                                  _showClassWiseAttendancePage = false;
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Success! Attendance marked for $name! 🎉'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              },
+                              child: const Text('Confirm', style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
+      );
+    }
+
+    return GlassContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Agarwal Knowledge Hub',
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.blue),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  setState(() {
+                    _showClassWiseAttendancePage = false;
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'Select your Class to proceed with self-attendance:',
+            style: TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+          const SizedBox(height: 16),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: classes.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 2.2,
+            ),
+            itemBuilder: (context, index) {
+              final className = classes[index];
+              return ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isDark ? AppColors.darkSurface : Colors.grey[200],
+                  foregroundColor: isDark ? Colors.white : Colors.black87,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  padding: EdgeInsets.zero,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _selectedClassForAttendance = className;
+                  });
+                },
+                child: Text(className, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -104,44 +245,56 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> w
       body: TabBarView(
         controller: _tabController,
         children: [
-          // QR CODE ATTENDANCE
           SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
                 if (isStaff) ...[
-                  // Teacher interface
                   GlassContainer(
                     child: Column(
                       children: [
                         const Text('Teacher QR Console', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                         const SizedBox(height: 12),
+                        Text(
+                          'Active Class Scope: ${acadProvider.qrClassScope}',
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryBlue, fontSize: 13),
+                        ),
+                        const SizedBox(height: 8),
                         const Text(
-                          'Generate a time-expiring QR code. Students scanning this code inside their portal will be logged present.',
+                          'Generate a 24-hour expiring QR code. Students scanning this code inside their portal will see class selection.',
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                          style: TextStyle(color: Colors.grey, fontSize: 11),
                         ),
                         const SizedBox(height: 24),
                         if (acadProvider.activeQrCode != null) ...[
                           Container(
                             width: 180,
                             height: 180,
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: const Center(
-                              child: Icon(Icons.qr_code, size: 120, color: Colors.black),
+                            child: Center(
+                              child: acadProvider.customQrUrl != null
+                                  ? Image.network(acadProvider.customQrUrl!)
+                                  : Image.network(
+                                      'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${acadProvider.activeQrCode}',
+                                      loadingBuilder: (context, child, loadingProgress) {
+                                        if (loadingProgress == null) return child;
+                                        return const CircularProgressIndicator();
+                                      },
+                                    ),
                             ),
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Expires in: ${acadProvider.qrCountdownSeconds} seconds',
+                            'Rotates in: ${_formatSeconds(acadProvider.qrCountdownSeconds)}',
                             style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.secondaryOrange),
                           ),
                         ] else ...[
                           CustomButton(
-                            text: 'Generate QR Code',
+                            text: 'Generate 24h QR Code',
                             onPressed: () => acadProvider.generateQrCode(),
                           ),
                         ]
@@ -149,42 +302,44 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> w
                     ),
                   ),
                 ] else ...[
-                  // Student interface
-                  GlassContainer(
-                    child: Column(
-                      children: [
-                        const Text('Scan Attendance QR', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                        const SizedBox(height: 12),
-                        const Text(
-                          'Scan the active code displayed on the teacher board to confirm your class presence.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                  if (_showClassWiseAttendancePage)
+                    _buildClassWiseAttendanceView(context, acadProvider)
+                  else
+                    GlassContainer(
+                      child: Column(
+                        children: [
+                          const Text('Scan Attendance QR', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'Scan the active code displayed on the teacher board to confirm your class presence.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                            ),
+                            const SizedBox(height: 32),
+                            Container(
+                              width: 220,
+                              height: 220,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: AppColors.primaryBlue, width: 2),
+                                borderRadius: BorderRadius.circular(24),
+                                color: isDark ? AppColors.darkSurface : Colors.grey[500],
+                              ),
+                              child: const Center(
+                                child: Icon(Icons.camera_alt_outlined, color: Colors.white, size: 48),
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+                            CustomButton(
+                              text: 'Simulate Scanning QR',
+                              onPressed: () => _onScanQrMock(acadProvider, user.uid),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 32),
-                        Container(
-                          width: 220,
-                          height: 220,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: AppColors.primaryBlue, width: 2),
-                            borderRadius: BorderRadius.circular(24),
-                            color: isDark ? AppColors.darkSurface : Colors.grey[500],
-                          ),
-                          child: const Center(
-                            child: Icon(Icons.camera_alt_outlined, color: Colors.white, size: 48),
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                        CustomButton(
-                          text: 'Simulate Scanning QR',
-                          onPressed: () => _onScanQrMock(acadProvider, user.uid),
-                        ),
-                      ],
-                    ),
-                  ),
-                ]
-              ],
+                      ),
+                  ]
+                ],
+              ),
             ),
-          ),
           
           // GPS BOUNDARY CHECK
           SingleChildScrollView(
