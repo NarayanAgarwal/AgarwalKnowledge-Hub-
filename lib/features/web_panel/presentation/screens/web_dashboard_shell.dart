@@ -2429,70 +2429,481 @@ class _TeacherManagementPanelState extends State<TeacherManagementPanel> {
 // ==========================================
 // SUB SCREEN 4: CLASS & SUBJECT PANEL
 // ==========================================
-class ClassSubjectPanel extends StatelessWidget {
+class ClassSubjectPanel extends StatefulWidget {
   final bool isDark;
-
   const ClassSubjectPanel({super.key, required this.isDark});
 
   @override
+  State<ClassSubjectPanel> createState() => _ClassSubjectPanelState();
+}
+
+class _ClassSubjectPanelState extends State<ClassSubjectPanel> {
+  final TextEditingController _classSearchController = TextEditingController();
+  final TextEditingController _subjectSearchController = TextEditingController();
+
+  List<String> _classes = [
+    'CBSE Nursery-5',
+    'BSEB Class 1-7',
+    'Computer Science',
+    'Class 8',
+    'Class 9',
+    'Class 10',
+    'Class 11',
+    'Class 12',
+  ];
+
+  List<String> _subjects = [
+    'Mathematics',
+    'English Grammar',
+    'Computer Theory',
+    'Computer Practical',
+    'Physics',
+    'Chemistry',
+    'Biology',
+    'Social Science',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _classSearchController.addListener(() => setState(() {}));
+    _subjectSearchController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _classSearchController.dispose();
+    _subjectSearchController.dispose();
+    super.dispose();
+  }
+
+  void _showAddClassDialog({String? existingClass, int? index}) {
+    final bool isDark = widget.isDark;
+    final controller = TextEditingController(text: existingClass ?? '');
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(
+            existingClass != null ? 'Edit Class' : 'Add New Class',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: 'Enter class name (e.g. CBSE Class 10)',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () {
+                final text = controller.text.trim();
+                if (text.isEmpty) return;
+                setState(() {
+                  if (existingClass != null && index != null) {
+                    _classes[index] = text;
+                  } else {
+                    _classes.add(text);
+                  }
+                });
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(existingClass != null ? 'Class updated! 💾' : 'New Class added! 🎉'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+              child: Text(existingClass != null ? 'Save' : 'Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showAddSubjectDialog({String? existingSubject, int? index}) {
+    final bool isDark = widget.isDark;
+    final controller = TextEditingController(text: existingSubject ?? '');
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(
+            existingSubject != null ? 'Edit Subject' : 'Add New Subject',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: 'Enter subject name (e.g. Science)',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () {
+                final text = controller.text.trim();
+                if (text.isEmpty) return;
+                setState(() {
+                  if (existingSubject != null && index != null) {
+                    _subjects[index] = text;
+                  } else {
+                    _subjects.add(text);
+                  }
+                });
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(existingSubject != null ? 'Subject updated! 💾' : 'New Subject added! 🎉'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+              child: Text(existingSubject != null ? 'Save' : 'Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final bool isDark = widget.isDark;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final bool isMobile = screenWidth < 700;
+
+    final String classQuery = _classSearchController.text.toLowerCase();
+    final List<String> filteredClasses = _classes
+        .where((c) => c.toLowerCase().contains(classQuery))
+        .toList();
+
+    final String subjectQuery = _subjectSearchController.text.toLowerCase();
+    final List<String> filteredSubjects = _subjects
+        .where((s) => s.toLowerCase().contains(subjectQuery))
+        .toList();
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(isMobile ? 12 : 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Academic Structure', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.primaryBlue.withOpacity(0.85), AppColors.primaryBlue.withOpacity(0.55)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              children: [
+                const CircleAvatar(
+                  radius: 26,
+                  backgroundColor: Colors.white24,
+                  child: Icon(Icons.class_outlined, color: Colors.white, size: 26),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Classes & Subjects Management',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Define academic branches, class standards, and subject curriculum for school records.',
+                        style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 20),
+
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: isMobile ? 1 : 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: isMobile ? 4 : 3.5,
+            children: [
+              _buildStatsSummaryCard('Total Active Classes', '${_classes.length}', Icons.school, Colors.blue),
+              _buildStatsSummaryCard('Total Course Subjects', '${_subjects.length}', Icons.book, Colors.green),
+            ],
+          ),
+          
           const SizedBox(height: 24),
-          Row(
+
+          Flex(
+            direction: isMobile ? Axis.vertical : Axis.horizontal,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
+                flex: isMobile ? 0 : 1,
                 child: GlassContainer(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Active Classes', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Active Classes', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryBlue,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                            ),
+                            onPressed: () => _showAddClassDialog(),
+                            icon: const Icon(Icons.add, size: 12),
+                            label: const Text('Add Class', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 12),
-                      _buildMiniListItem('CBSE Nursery-5'),
-                      const Divider(),
-                      _buildMiniListItem('BSEB Class 1-7'),
-                      const Divider(),
-                      _buildMiniListItem('Computer Science'),
+                      TextField(
+                        controller: _classSearchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search classes...',
+                          prefixIcon: const Icon(Icons.search, size: 16),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: filteredClasses.length,
+                        separatorBuilder: (c, i) => const Divider(height: 8),
+                        itemBuilder: (context, idx) {
+                          final className = filteredClasses[idx];
+                          final originalIndex = _classes.indexOf(className);
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const CircleAvatar(
+                              radius: 14,
+                              backgroundColor: Colors.blue24,
+                              child: Icon(Icons.grade, color: Colors.blue, size: 14),
+                            ),
+                            title: Text(className, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.edit_outlined, size: 16, color: Colors.green),
+                                  onPressed: () => _showAddClassDialog(existingClass: className, index: originalIndex),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline, size: 16, color: Colors.red),
+                                  onPressed: () {
+                                    setState(() {
+                                      _classes.removeAt(originalIndex);
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('$className deleted!'),
+                                        action: SnackBarAction(
+                                          label: 'UNDO',
+                                          onPressed: () {
+                                            setState(() {
+                                              _classes.insert(originalIndex, className);
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(width: 24),
+              
+              if (isMobile) const SizedBox(height: 20) else const SizedBox(width: 24),
+              
               Expanded(
+                flex: isMobile ? 0 : 1,
                 child: GlassContainer(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Course Subjects', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Course Subjects', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                            ),
+                            onPressed: () => _showAddSubjectDialog(),
+                            icon: const Icon(Icons.add, size: 12),
+                            label: const Text('Add Subject', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 12),
-                      _buildMiniListItem('Mathematics'),
-                      const Divider(),
-                      _buildMiniListItem('English Grammar'),
-                      const Divider(),
-                      _buildMiniListItem('Computer Theory'),
-                      const Divider(),
-                      _buildMiniListItem('Computer Practical'),
+                      TextField(
+                        controller: _subjectSearchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search subjects...',
+                          prefixIcon: const Icon(Icons.search, size: 16),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: filteredSubjects.length,
+                        separatorBuilder: (c, i) => const Divider(height: 8),
+                        itemBuilder: (context, idx) {
+                          final subjectName = filteredSubjects[idx];
+                          final originalIndex = _subjects.indexOf(subjectName);
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const CircleAvatar(
+                              radius: 14,
+                              backgroundColor: Colors.green24,
+                              child: Icon(Icons.menu_book, color: Colors.green, size: 14),
+                            ),
+                            title: Text(subjectName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.edit_outlined, size: 16, color: Colors.green),
+                                  onPressed: () => _showAddSubjectDialog(existingSubject: subjectName, index: originalIndex),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline, size: 16, color: Colors.red),
+                                  onPressed: () {
+                                    setState(() {
+                                      _subjects.removeAt(originalIndex);
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('$subjectName deleted!'),
+                                        action: SnackBarAction(
+                                          label: 'UNDO',
+                                          onPressed: () {
+                                            setState(() {
+                                              _subjects.insert(originalIndex, subjectName);
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildMiniListItem(String title) {
-    return ListTile(
-      leading: const Icon(Icons.check_circle_outline, color: AppColors.accentGreen),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-      dense: true,
+  Widget _buildStatsSummaryCard(String title, String count, IconData icon, Color color) {
+    final bool isDark = widget.isDark;
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? null : Colors.white,
+        gradient: isDark
+            ? LinearGradient(
+                colors: [color.withOpacity(0.18), color.withOpacity(0.03)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? color.withOpacity(0.25) : Colors.grey.shade100,
+          width: 1.5,
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: color.withOpacity(0.15),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 14),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  color: isDark ? AppColors.darkTextSecondary : Colors.grey.shade600,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                count,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
