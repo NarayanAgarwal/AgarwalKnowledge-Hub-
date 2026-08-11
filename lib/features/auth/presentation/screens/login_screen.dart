@@ -10,6 +10,8 @@ import '../../../../core/widgets/glass_container.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../../dashboard/presentation/screens/main_navigation_screen.dart';
 import '../../../web_panel/presentation/screens/admin_login_screen.dart';
+import '../../../attendance/presentation/screens/attendance_dashboard_screen.dart';
+import '../../../../core/services/academic_provider.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
 
@@ -86,10 +88,26 @@ class _LoginScreenState extends State<LoginScreen> {
         : await authVm.verifyOtp(smsCode);
 
     if (success && mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
-      );
+      if (Uri.base.queryParameters['action'] == 'qr_attendance') {
+        final token = Uri.base.queryParameters['token'];
+        final classScope = Uri.base.queryParameters['class'] ?? 'All Classes';
+        if (token != null) {
+          Provider.of<AcademicProvider>(context, listen: false).updateQrConfig(
+            token: token,
+            classScope: classScope,
+            secondsRemaining: 86400,
+          );
+        }
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const AttendanceDashboardScreen()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+        );
+      }
     } else if (mounted && authVm.errorMessage != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(authVm.errorMessage!)),
@@ -107,10 +125,26 @@ class _LoginScreenState extends State<LoginScreen> {
       final success = await authVm.loginWithPassword(formattedPhone, password);
       
       if (success && mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
-        );
+        if (Uri.base.queryParameters['action'] == 'qr_attendance') {
+          final token = Uri.base.queryParameters['token'];
+          final classScope = Uri.base.queryParameters['class'] ?? 'All Classes';
+          if (token != null) {
+            Provider.of<AcademicProvider>(context, listen: false).updateQrConfig(
+              token: token,
+              classScope: classScope,
+              secondsRemaining: 86400,
+            );
+          }
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const AttendanceDashboardScreen()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+          );
+        }
       } else if (mounted && authVm.errorMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

@@ -279,7 +279,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> w
                               child: acadProvider.customQrUrl != null
                                   ? Image.network(acadProvider.customQrUrl!)
                                   : Image.network(
-                                      'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${acadProvider.activeQrCode}',
+                                      'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://agarwalknowledgehub.vercel.app/?action=qr_attendance%26token=${acadProvider.activeQrCode}%26class=${Uri.encodeComponent(acadProvider.qrClassScope)}',
                                       loadingBuilder: (context, child, loadingProgress) {
                                         if (loadingProgress == null) return child;
                                         return const CircularProgressIndicator();
@@ -356,7 +356,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> w
                                     : (acadProvider.customQrUrl != null
                                         ? Image.network(acadProvider.customQrUrl!)
                                         : Image.network(
-                                            'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${acadProvider.activeQrCode}',
+                                            'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://agarwalknowledgehub.vercel.app/?action=qr_attendance%26token=${acadProvider.activeQrCode}%26class=${Uri.encodeComponent(acadProvider.qrClassScope)}',
                                           )),
                               ),
                             ),

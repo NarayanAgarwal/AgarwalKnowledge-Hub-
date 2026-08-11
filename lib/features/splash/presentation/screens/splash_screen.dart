@@ -8,6 +8,8 @@ import '../../../auth/viewmodels/auth_viewmodel.dart';
 import '../../../dashboard/presentation/screens/main_navigation_screen.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
 import '../../../web_panel/presentation/screens/web_dashboard_shell.dart';
+import '../../../attendance/presentation/screens/attendance_dashboard_screen.dart';
+import '../../../../core/services/academic_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -26,29 +28,45 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _navigateToNext() async {
     final authVm = Provider.of<AuthViewModel>(context, listen: false);
     
-    // Await the saved login session loading from SharedPreferences/Firestore
     try {
       await authVm.initializationFuture;
     } catch (e) {
       debugPrint("Error loading initialization session: $e");
     }
     
-    // Enforce a minimum display of 2 seconds for visual splash branding
     await Future.delayed(const Duration(milliseconds: 2000));
     if (!mounted) return;
     
+    final params = Uri.base.queryParameters;
     if (authVm.userProfile != null) {
-      final role = authVm.userProfile!.role;
-      if (role == AppStrings.roleSuperAdmin || role == AppStrings.roleAdmin || role == AppStrings.roleTeacher) {
+      if (params['action'] == 'qr_attendance') {
+        final token = params['token'];
+        final classScope = params['class'] ?? 'All Classes';
+        if (token != null) {
+          final acadProvider = Provider.of<AcademicProvider>(context, listen: false);
+          acadProvider.updateQrConfig(
+            token: token,
+            classScope: classScope,
+            secondsRemaining: 86400,
+          );
+        }
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const WebDashboardShell()),
+          MaterialPageRoute(builder: (context) => const AttendanceDashboardScreen()),
         );
       } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
-        );
+        final role = authVm.userProfile!.role;
+        if (role == AppStrings.roleSuperAdmin || role == AppStrings.roleAdmin || role == AppStrings.roleTeacher) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const WebDashboardShell()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+          );
+        }
       }
     } else {
       Navigator.pushReplacement(

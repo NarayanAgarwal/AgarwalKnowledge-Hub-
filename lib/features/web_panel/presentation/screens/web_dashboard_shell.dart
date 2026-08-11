@@ -5170,7 +5170,7 @@ class _AttendanceManagementPanelState extends State<AttendanceManagementPanel> {
                               child: _customQrUrl != null
                                   ? Image.network(_customQrUrl!, fit: BoxFit.contain)
                                   : Image.network(
-                                      'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$_currentQrToken',
+                                      'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://agarwalknowledgehub.vercel.app/?action=qr_attendance%26token=$_currentQrToken%26class=${Uri.encodeComponent(_qrClassScope)}',
                                       loadingBuilder: (context, child, loadingProgress) {
                                         if (loadingProgress == null) return child;
                                         return const Center(child: CircularProgressIndicator());
