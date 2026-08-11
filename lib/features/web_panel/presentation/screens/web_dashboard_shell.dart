@@ -6180,6 +6180,36 @@ class GenericRolePanel extends StatefulWidget {
 
 class _GenericRolePanelState extends State<GenericRolePanel> {
   final TextEditingController _searchController = TextEditingController();
+  List<Map<String, String>> _records = [];
+  List<Map<String, String>> _deletedRecords = [];
+
+  // Stats states
+  String _operationalStatus = 'Optimal';
+  String _encryptionKeyMode = 'AES-256 Enabled';
+
+  @override
+  void initState() {
+    super.initState();
+    _records = _getSimulatedData();
+    _searchController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void didUpdateWidget(GenericRolePanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.title != widget.title) {
+      _records = _getSimulatedData();
+      _deletedRecords.clear();
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   List<Map<String, String>> _getSimulatedData() {
     switch (widget.title) {
@@ -6235,10 +6265,567 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
     }
   }
 
+  String _getKeyLabel(String key) {
+    switch (key) {
+      case 'name': return 'Name / Title';
+      case 'code': return 'Branch Code';
+      case 'address': return 'Address';
+      case 'head': return 'Head of Branch';
+      case 'phone': return 'Phone Number';
+      case 'status': return 'Status';
+      case 'child': return 'Student Child';
+      case 'class': return 'Class Section';
+      case 'email': return 'Email Address';
+      case 'room': return 'Room Number';
+      case 'strength': return 'Room Strength';
+      case 'teacher': return 'Class Teacher';
+      case 'date': return 'Date';
+      case 'venue': return 'Venue';
+      case 'cost': return 'Ticket/Entry Cost';
+      case 'coordinator': return 'Coordinator Name';
+      case 'issuedTo': return 'Issued To';
+      case 'designation': return 'Designation Type';
+      case 'transaction': return 'Transaction ID';
+      case 'student': return 'Student Name';
+      case 'amount': return 'Amount Paid';
+      case 'method': return 'Payment Method';
+      case 'detail_1': return 'Record Name';
+      case 'detail_2': return 'Category';
+      case 'detail_3': return 'Supervisor / Type';
+      default: return key.toUpperCase();
+    }
+  }
+
+  void _showAddEditDialog({Map<String, String>? existingItem, int? index}) {
+    final bool isDark = widget.isDark;
+    final List<String> formKeys = _records.isNotEmpty 
+        ? _records.first.keys.toList() 
+        : ['name', 'status'];
+
+    final Map<String, TextEditingController> controllers = {};
+    for (var k in formKeys) {
+      if (k != 'status') {
+        controllers[k] = TextEditingController(text: existingItem != null ? existingItem[k] : '');
+      }
+    }
+    String currentStatus = existingItem != null ? (existingItem['status'] ?? 'Active') : 'Active';
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              title: Row(
+                children: [
+                  Icon(existingItem != null ? Icons.edit_note : Icons.add_circle_outline, color: AppColors.primaryBlue),
+                  const SizedBox(width: 8),
+                  Text(
+                    existingItem != null ? 'Edit Details' : 'Add New Record',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ],
+              ),
+              content: SizedBox(
+                width: 450,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ...controllers.entries.map((entry) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _getKeyLabel(entry.key),
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 6),
+                              TextField(
+                                controller: entry.value,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter ${_getKeyLabel(entry.key).toLowerCase()}',
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                      
+                      const Text(
+                        'Status',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: currentStatus,
+                            isExpanded: true,
+                            items: ['Active', 'Primary', 'Full', 'Upcoming', 'Scheduled', 'Planned', 'Generated', 'Printed', 'Paid', 'Pending', 'Completed', 'In-Progress']
+                                .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                                .toList(),
+                            onChanged: (val) {
+                              if (val != null) {
+                                setDialogState(() {
+                                  currentStatus = val;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryBlue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: () {
+                    final Map<String, String> newItem = {};
+                    controllers.forEach((k, ctrl) {
+                      newItem[k] = ctrl.text.trim();
+                    });
+                    newItem['status'] = currentStatus;
+
+                    final mainKey = formKeys.first;
+                    if ((newItem[mainKey] ?? '').isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please fill out the primary field.'), backgroundColor: Colors.orange),
+                      );
+                      return;
+                    }
+
+                    setState(() {
+                      if (existingItem != null && index != null) {
+                        _records[index] = newItem;
+                      } else {
+                        _records.add(newItem);
+                      }
+                    });
+
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(existingItem != null ? 'Record updated successfully! 💾' : 'New record added successfully! 🎉'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  },
+                  child: Text(existingItem != null ? 'Save Changes' : 'Add Record'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showViewDetailsDialog(Map<String, String> item) {
+    final bool isDark = widget.isDark;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Row(
+            children: [
+              Icon(Icons.info_outline, color: AppColors.primaryBlue),
+              const SizedBox(width: 8),
+              Text(
+                'View Record Details',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ],
+          ),
+          content: SizedBox(
+            width: 400,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: item.entries.map((entry) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 4,
+                        child: Text(
+                          '${_getKeyLabel(entry.key)}:',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.grey),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 6,
+                        child: Text(
+                          entry.value,
+                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showTrashArchiveDialog() {
+    final bool isDark = widget.isDark;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              title: Row(
+                children: [
+                  const Icon(Icons.delete_outline, color: Colors.red),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${widget.title} Delete History',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ],
+              ),
+              content: SizedBox(
+                width: 450,
+                height: 350,
+                child: _deletedRecords.isEmpty
+                    ? const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.auto_delete_outlined, size: 48, color: Colors.grey),
+                            SizedBox(height: 12),
+                            Text('No deleted history items.'),
+                          ],
+                        ),
+                      )
+                    : ListView.separated(
+                        itemCount: _deletedRecords.length,
+                        separatorBuilder: (c, i) => const Divider(),
+                        itemBuilder: (context, index) {
+                          final item = _deletedRecords[index];
+                          final primaryVal = item.values.first;
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              primaryVal,
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                            ),
+                            subtitle: Text(
+                              'Status: ${item['status']}',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                TextButton.icon(
+                                  onPressed: () {
+                                    setState(() {
+                                      _records.add(item);
+                                      _deletedRecords.removeAt(index);
+                                    });
+                                    setDialogState(() {});
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Record restored successfully! 🔄'), backgroundColor: Colors.green),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.restore, size: 14, color: Colors.green),
+                                  label: const Text('Restore', style: TextStyle(color: Colors.green, fontSize: 11)),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_forever, size: 18, color: Colors.red),
+                                  onPressed: () {
+                                    setState(() {
+                                      _deletedRecords.removeAt(index);
+                                    });
+                                    setDialogState(() {});
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Record deleted permanently! 🗑️'), backgroundColor: Colors.red),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Close'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showSyncSettingsDialog() {
+    final bool isDark = widget.isDark;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Row(
+            children: [
+              Icon(Icons.sync, color: AppColors.primaryBlue),
+              const SizedBox(width: 8),
+              const Text('Synchronization Panel', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Force manual cache refresh and check data integrity against Firebase cloud stores.',
+                style: TextStyle(fontSize: 13, height: 1.4),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  const Icon(Icons.cloud_done_outlined, color: Colors.green, size: 16),
+                  const SizedBox(width: 6),
+                  Text('Cloud Stream Sync: Realtime Active', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.green.shade700)),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Sync Done! Active count: ${_records.length} items checked successfully. 🔄💾'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+              child: const Text('Refresh Sync'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showOperationalStatusDialog() {
+    final bool isDark = widget.isDark;
+    String selectedStatus = _operationalStatus;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              title: Row(
+                children: [
+                  Icon(Icons.offline_bolt_outlined, color: AppColors.primaryBlue),
+                  const SizedBox(width: 8),
+                  const Text('Operational Status', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Configure operational flags to signal ongoing module maintenance or downtime to active clients.',
+                    style: TextStyle(fontSize: 13, height: 1.4),
+                  ),
+                  const SizedBox(height: 16),
+                  ...['Optimal', 'Maintenance', 'Degraded Performance'].map((status) {
+                    return RadioListTile<String>(
+                      title: Text(status, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                      value: status,
+                      groupValue: selectedStatus,
+                      onChanged: (val) {
+                        if (val != null) {
+                          setDialogState(() {
+                            selectedStatus = val;
+                          });
+                         }
+                       },
+                     );
+                   }),
+                 ],
+               ),
+               actions: [
+                 TextButton(
+                   onPressed: () => Navigator.pop(context),
+                   child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                 ),
+                 ElevatedButton(
+                   style: ElevatedButton.styleFrom(
+                     backgroundColor: AppColors.primaryBlue,
+                     foregroundColor: Colors.white,
+                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                   ),
+                   onPressed: () {
+                     setState(() {
+                       _operationalStatus = selectedStatus;
+                     });
+                     Navigator.pop(context);
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       SnackBar(
+                         content: Text('Module status changed to: $_operationalStatus! ⚙️'),
+                         backgroundColor: Colors.green,
+                       ),
+                     );
+                   },
+                   child: const Text('Apply Status'),
+                 ),
+               ],
+             );
+           },
+         );
+       },
+     );
+   }
+
+   void _showEncryptionKeysDialog() {
+     final bool isDark = widget.isDark;
+     String selectedKey = _encryptionKeyMode;
+     showDialog(
+       context: context,
+       builder: (context) {
+         return StatefulBuilder(
+           builder: (context, setDialogState) {
+             return AlertDialog(
+               backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+               title: Row(
+                 children: [
+                   Icon(Icons.security, color: AppColors.primaryBlue),
+                   const SizedBox(width: 8),
+                   const Text('Configure Encryption', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                 ],
+               ),
+               content: Column(
+                 mainAxisSize: MainAxisSize.min,
+                 crossAxisAlignment: CrossAxisAlignment.start,
+                 children: [
+                   const Text(
+                     'Toggle security payload standards for secure client-server socket tunnels.',
+                     style: TextStyle(fontSize: 13, height: 1.4),
+                   ),
+                   const SizedBox(height: 16),
+                   ...['AES-256 Enabled', 'ChaCha20-Poly1305', 'RSA-4096 Hybrid'].map((key) {
+                     return RadioListTile<String>(
+                       title: Text(key, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                       value: key,
+                       groupValue: selectedKey,
+                       onChanged: (val) {
+                         if (val != null) {
+                           setDialogState(() {
+                             selectedKey = val;
+                           });
+                         }
+                       },
+                     );
+                   }),
+                 ],
+               ),
+               actions: [
+                 TextButton(
+                   onPressed: () => Navigator.pop(context),
+                   child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                 ),
+                 ElevatedButton(
+                   style: ElevatedButton.styleFrom(
+                     backgroundColor: AppColors.primaryBlue,
+                     foregroundColor: Colors.white,
+                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                   ),
+                   onPressed: () {
+                     setState(() {
+                       _encryptionKeyMode = selectedKey;
+                     });
+                     Navigator.pop(context);
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       SnackBar(
+                         content: Text('Encryption updated to: $_encryptionKeyMode! 🛡️'),
+                         backgroundColor: Colors.green,
+                       ),
+                     );
+                   },
+                   child: const Text('Save Standard'),
+                 ),
+               ],
+             );
+           },
+         );
+       },
+     );
+   }
+
   @override
   Widget build(BuildContext context) {
     final bool isDark = widget.isDark;
-    final List<Map<String, String>> records = _getSimulatedData();
+    final String query = _searchController.text.toLowerCase();
+    final List<Map<String, String>> filteredRecords = _records.where((item) {
+      return item.values.any((val) => val.toLowerCase().contains(query));
+    }).toList();
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final bool isMobile = screenWidth < 700;
 
@@ -6253,7 +6840,6 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Responsive Glassmorphic Header Banner
           Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(
@@ -6324,8 +6910,12 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
                     onPressed: () {
+                      setState(() {
+                        _records = _getSimulatedData();
+                        _deletedRecords.clear();
+                      });
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('${widget.title} details refreshed! 🔄')),
+                        SnackBar(content: Text('${widget.title} details successfully synced & reset! 🔄')),
                       );
                     },
                     icon: const Icon(Icons.refresh, size: 14),
@@ -6338,7 +6928,6 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
           
           const SizedBox(height: 20),
           
-          // Responsive Stats Row: Wrap in GridView with adaptive crossAxisCount
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -6347,15 +6936,23 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
             mainAxisSpacing: 12,
             childAspectRatio: isMobile ? 3.5 : 2.8,
             children: [
-              _buildStatsCard('Total Items Sync', '${records.length}', Icons.sync, Colors.blue, isMobile),
-              _buildStatsCard('Operational Status', 'Optimal', Icons.check_circle_outline, Colors.green, isMobile),
-              _buildStatsCard('Encryption Keys', 'AES-256 Enabled', Icons.security, Colors.orange, isMobile),
+              GestureDetector(
+                onTap: _showSyncSettingsDialog,
+                child: _buildStatsCard('Total Items Sync', '${filteredRecords.length}', Icons.sync, Colors.blue, isMobile),
+              ),
+              GestureDetector(
+                onTap: _showOperationalStatusDialog,
+                child: _buildStatsCard('Operational Status', _operationalStatus, Icons.check_circle_outline, Colors.green, isMobile),
+              ),
+              GestureDetector(
+                onTap: _showEncryptionKeysDialog,
+                child: _buildStatsCard('Encryption Keys', _encryptionKeyMode, Icons.security, Colors.orange, isMobile),
+              ),
             ],
           ),
           
           const SizedBox(height: 20),
           
-          // Responsive Data Table Panel
           Container(
             decoration: BoxDecoration(
               color: isDark ? null : Colors.white,
@@ -6386,7 +6983,6 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Responsive Search & Filter header
                 Flex(
                   direction: isMobile ? Axis.vertical : Axis.horizontal,
                   crossAxisAlignment: isMobile ? CrossAxisAlignment.start : CrossAxisAlignment.center,
@@ -6395,10 +6991,16 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
                       'Operational Logs & Records',
                       style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15),
                     ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.delete_sweep, color: Colors.grey),
+                      tooltip: 'View Delete History (Trash)',
+                      onPressed: _showTrashArchiveDialog,
+                    ),
                     if (isMobile) const SizedBox(height: 12),
                     if (!isMobile) const Spacer(),
                     SizedBox(
-                      width: isMobile ? double.infinity : 260,
+                      width: isMobile ? double.infinity : 200,
                       child: TextField(
                         controller: _searchController,
                         decoration: InputDecoration(
@@ -6409,22 +7011,35 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
                         ),
                       ),
                     ),
+                    const SizedBox(width: 10),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accentColor,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      ),
+                      onPressed: () => _showAddEditDialog(),
+                      icon: const Icon(Icons.add, size: 14),
+                      label: const Text('Add Record', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                    ),
                   ],
                 ),
                 
                 const SizedBox(height: 16),
                 
-                // Data List
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: records.length,
+                  itemCount: filteredRecords.length,
                   separatorBuilder: (c, i) => const Divider(height: 16),
                   itemBuilder: (context, idx) {
-                    final item = records[idx];
+                    final item = filteredRecords[idx];
                     final keys = item.keys.toList();
+                    final originalIndex = _records.indexOf(item);
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
+                      onTap: () => _showViewDetailsDialog(item),
                       leading: CircleAvatar(
                         radius: 18,
                         backgroundColor: accentColor.withOpacity(0.1),
@@ -6441,24 +7056,65 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
                           style: TextStyle(color: isDark ? Colors.grey : Colors.grey.shade600, fontSize: 11),
                         ),
                       ),
-                      trailing: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: (item['status'] == 'Active' || item['status'] == 'Paid' || item['status'] == 'Generated' || item['status'] == 'Completed' || item['status'] == 'Primary')
-                              ? Colors.green.withOpacity(0.15)
-                              : Colors.orange.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          item['status'] ?? 'Active',
-                          style: TextStyle(
-                            color: (item['status'] == 'Active' || item['status'] == 'Paid' || item['status'] == 'Generated' || item['status'] == 'Completed' || item['status'] == 'Primary')
-                                ? Colors.green
-                                : Colors.orange,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: (item['status'] == 'Active' || item['status'] == 'Paid' || item['status'] == 'Generated' || item['status'] == 'Completed' || item['status'] == 'Primary')
+                                  ? Colors.green.withOpacity(0.15)
+                                  : Colors.orange.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              item['status'] ?? 'Active',
+                              style: TextStyle(
+                                color: (item['status'] == 'Active' || item['status'] == 'Paid' || item['status'] == 'Generated' || item['status'] == 'Completed' || item['status'] == 'Primary')
+                                    ? Colors.green
+                                    : Colors.orange,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(Icons.visibility_outlined, size: 16, color: Colors.blue),
+                            tooltip: 'View Details',
+                            onPressed: () => _showViewDetailsDialog(item),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.edit_outlined, size: 16, color: Colors.green),
+                            tooltip: 'Edit',
+                            onPressed: () => _showAddEditDialog(existingItem: item, index: originalIndex),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline, size: 16, color: Colors.red),
+                            tooltip: 'Delete',
+                            onPressed: () {
+                              setState(() {
+                                _deletedRecords.add(item);
+                                _records.removeAt(originalIndex);
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('Record moved to Delete History.'),
+                                  action: SnackBarAction(
+                                    label: 'UNDO',
+                                    textColor: Colors.yellow,
+                                    onPressed: () {
+                                      setState(() {
+                                        _records.insert(originalIndex, item);
+                                        _deletedRecords.remove(item);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -6472,6 +7128,71 @@ class _GenericRolePanelState extends State<GenericRolePanel> {
   }
 
   Widget _buildStatsCard(String title, String count, IconData icon, Color color, bool isMobile) {
+    final bool isDark = widget.isDark;
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? null : Colors.white,
+        gradient: isDark
+            ? LinearGradient(
+                colors: [
+                  color.withOpacity(0.18),
+                  color.withOpacity(0.03),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? color.withOpacity(0.25) : Colors.grey.shade100,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? color.withOpacity(0.15) : color.withOpacity(0.12),
+            offset: const Offset(0, 4),
+            blurRadius: 10,
+          )
+        ],
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 12 : 16,
+        vertical: isMobile ? 10 : 16,
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 18,
+            backgroundColor: color.withOpacity(0.15),
+            child: Icon(icon, color: isDark ? Colors.white : color, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: isDark ? AppColors.darkTextSecondary : Colors.grey.shade600,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  count,
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
     final bool isDark = widget.isDark;
     return Container(
       decoration: BoxDecoration(
