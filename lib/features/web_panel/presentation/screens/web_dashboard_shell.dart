@@ -2953,6 +2953,191 @@ class _SectionManagementPanelState extends State<SectionManagementPanel> {
     super.dispose();
   }
 
+  void _showSectionsSummaryDialog() {
+    final bool isDark = widget.isDark;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Row(
+            children: [
+              Icon(Icons.layers, color: AppColors.primaryBlue),
+              const SizedBox(width: 8),
+              const Text('Active Sections Summary', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            ],
+          ),
+          content: SizedBox(
+            width: 400,
+            height: 300,
+            child: ListView.separated(
+              itemCount: _sections.length,
+              separatorBuilder: (c, i) => const Divider(),
+              itemBuilder: (context, index) {
+                final sec = _sections[index];
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text('${sec['class']} - ${sec['name']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  subtitle: Text('Teacher: ${sec['teacher']} | Room: ${sec['room']}', style: const TextStyle(fontSize: 11)),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showClassroomsDetailDialog() {
+    final bool isDark = widget.isDark;
+    final Map<String, List<Map<String, dynamic>>> roomMap = {};
+    for (var sec in _sections) {
+      final String room = sec['room'];
+      if (!roomMap.containsKey(room)) {
+        roomMap[room] = [];
+      }
+      roomMap[room]!.add(sec);
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Row(
+            children: [
+              const Icon(Icons.door_sliding, color: Colors.green),
+              const SizedBox(width: 8),
+              const Text('Classrooms In Use', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            ],
+          ),
+          content: SizedBox(
+            width: 400,
+            height: 300,
+            child: roomMap.isEmpty
+                ? const Center(child: Text('No classrooms currently in use.'))
+                : ListView.separated(
+                    itemCount: roomMap.keys.length,
+                    separatorBuilder: (c, i) => const Divider(),
+                    itemBuilder: (context, index) {
+                      final String room = roomMap.keys.elementAt(index);
+                      final List<Map<String, dynamic>> assigned = roomMap[room]!;
+                      final sectionsNames = assigned.map((s) => '${s['class']} (${s['name']})').join(', ');
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: CircleAvatar(
+                          radius: 14,
+                          backgroundColor: Colors.green.withOpacity(0.1),
+                          child: const Icon(Icons.room, color: Colors.green, size: 14),
+                        ),
+                        title: Text(room, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        subtitle: Text('Assigned Sections: $sectionsNames', style: const TextStyle(fontSize: 11)),
+                      );
+                    },
+                  ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showStrengthDetailDialog() {
+    final bool isDark = widget.isDark;
+    int maxStrength = 0;
+    String maxSec = '';
+    for (var sec in _sections) {
+      final int str = sec['strength'] as int;
+      if (str > maxStrength) {
+        maxStrength = str;
+        maxSec = '${sec['class']} - ${sec['name']}';
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Row(
+            children: [
+              const Icon(Icons.group, color: Colors.orange),
+              const SizedBox(width: 8),
+              const Text('Section Strength Capacity', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            ],
+          ),
+          content: SizedBox(
+            width: 400,
+            height: 320,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (maxStrength > 0) ...[
+                  Text(
+                    'Highest Capacity Section: $maxSec ($maxStrength Students)',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.orange),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: _sections.length,
+                    separatorBuilder: (c, i) => const Divider(),
+                    itemBuilder: (context, index) {
+                      final sec = _sections[index];
+                      final int strength = sec['strength'] as int;
+                      final double percent = (strength / 60).clamp(0.0, 1.0);
+                      return Column(
+                         crossAxisAlignment: CrossAxisAlignment.start,
+                         children: [
+                           Row(
+                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                             children: [
+                               Text('${sec['class']} - ${sec['name']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                               Text('$strength/60 Students', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                             ],
+                           ),
+                           const SizedBox(height: 4),
+                           LinearProgressIndicator(
+                             value: percent,
+                             backgroundColor: Colors.grey.withOpacity(0.2),
+                             color: percent > 0.8 ? Colors.orange : Colors.green,
+                             minHeight: 4,
+                             borderRadius: BorderRadius.circular(4),
+                           ),
+                         ],
+                       );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showAddEditDialog({Map<String, dynamic>? existingSection, int? index}) {
     final bool isDark = widget.isDark;
 
@@ -3389,9 +3574,18 @@ class _SectionManagementPanelState extends State<SectionManagementPanel> {
             mainAxisSpacing: 12,
             childAspectRatio: isMobile ? 3.5 : 2.8,
             children: [
-              _buildStatsCard('Total Active Sections', '${_sections.length}', Icons.layers, Colors.blue),
-              _buildStatsCard('Classrooms Used', '$roomsUsed Rooms', Icons.door_sliding, Colors.green),
-              _buildStatsCard('Avg Section Strength', '${avgCapacity.toStringAsFixed(1)} Students', Icons.group, Colors.orange),
+              GestureDetector(
+                onTap: _showSectionsSummaryDialog,
+                child: _buildStatsCard('Total Active Sections', '${_sections.length}', Icons.layers, Colors.blue),
+              ),
+              GestureDetector(
+                onTap: _showClassroomsDetailDialog,
+                child: _buildStatsCard('Classrooms Used', '$roomsUsed Rooms', Icons.door_sliding, Colors.green),
+              ),
+              GestureDetector(
+                onTap: _showStrengthDetailDialog,
+                child: _buildStatsCard('Avg Section Strength', '${avgCapacity.toStringAsFixed(1)} Students', Icons.group, Colors.orange),
+              ),
             ],
           ),
 
