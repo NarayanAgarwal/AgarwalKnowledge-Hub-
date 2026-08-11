@@ -555,6 +555,8 @@ class _WebDashboardShellState extends State<WebDashboardShell> {
       case 'Class & Subjects':
       case 'Classes & Subjects':
         return ClassSubjectPanel(isDark: isDark);
+      case 'Section Management':
+        return SectionManagementPanel(isDark: isDark);
       case 'Resource Library':
       case 'Study Material':
         return ResourceUploadPanel(isDark: isDark);
@@ -2857,6 +2859,707 @@ class _ClassSubjectPanelState extends State<ClassSubjectPanel> {
   }
 
   Widget _buildStatsSummaryCard(String title, String count, IconData icon, Color color) {
+    final bool isDark = widget.isDark;
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? null : Colors.white,
+        gradient: isDark
+            ? LinearGradient(
+                colors: [color.withOpacity(0.18), color.withOpacity(0.03)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? color.withOpacity(0.25) : Colors.grey.shade100,
+          width: 1.5,
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: color.withOpacity(0.15),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 14),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  color: isDark ? AppColors.darkTextSecondary : Colors.grey.shade600,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                count,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+    }
+}
+
+// ==========================================
+// SUB SCREEN 4B: SECTION MANAGEMENT PANEL
+// ==========================================
+class SectionManagementPanel extends StatefulWidget {
+  final bool isDark;
+  const SectionManagementPanel({super.key, required this.isDark});
+
+  @override
+  State<SectionManagementPanel> createState() => _SectionManagementPanelState();
+}
+
+class _SectionManagementPanelState extends State<SectionManagementPanel> {
+  final TextEditingController _searchController = TextEditingController();
+
+  List<Map<String, dynamic>> _sections = [
+    {'name': 'Section A', 'class': 'Class 5', 'room': 'Room 12', 'strength': 40, 'teacher': 'Nisha Gupta', 'status': 'Full'},
+    {'name': 'Section B', 'class': 'Class 5', 'room': 'Room 14', 'strength': 35, 'teacher': 'Ravi Kant', 'status': 'Active'},
+    {'name': 'Section A', 'class': 'Class 8', 'room': 'Room 20', 'strength': 45, 'teacher': 'S. Kumar', 'status': 'Full'},
+    {'name': 'Section C', 'class': 'Class 6', 'room': 'Room 08', 'strength': 28, 'teacher': 'Anjali Sharma', 'status': 'Active'},
+  ];
+
+  List<Map<String, dynamic>> _deletedSections = [];
+
+  final List<String> _classesList = [
+    'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'
+  ];
+
+  final List<String> _teachersList = [
+    'Nisha Gupta', 'Ravi Kant', 'S. Kumar', 'Anjali Sharma', 'Vivek Patel'
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _showAddEditDialog({Map<String, dynamic>? existingSection, int? index}) {
+    final bool isDark = widget.isDark;
+
+    final nameController = TextEditingController(text: existingSection != null ? existingSection['name'] : '');
+    final roomController = TextEditingController(text: existingSection != null ? existingSection['room'] : '');
+    final strengthController = TextEditingController(text: existingSection != null ? existingSection['strength'].toString() : '30');
+
+    String selectedClass = existingSection != null ? existingSection['class'] : _classesList.first;
+    String selectedTeacher = existingSection != null ? existingSection['teacher'] : _teachersList.first;
+    String selectedStatus = existingSection != null ? existingSection['status'] : 'Active';
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              title: Row(
+                children: [
+                  Icon(existingSection != null ? Icons.edit_note : Icons.add_circle_outline, color: AppColors.primaryBlue),
+                  const SizedBox(width: 8),
+                  Text(
+                    existingSection != null ? 'Edit Section Details' : 'Add New Section',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ],
+              ),
+              content: SizedBox(
+                width: 450,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Section Name', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 6),
+                      TextField(
+                        controller: nameController,
+                        decoration: InputDecoration(
+                          hintText: 'e.g. Section A',
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      const Text('Map to Class', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: selectedClass,
+                            isExpanded: true,
+                            items: _classesList.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                            onChanged: (val) {
+                              if (val != null) {
+                                setDialogState(() {
+                                  selectedClass = val;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      const Text('Room Number', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 6),
+                      TextField(
+                        controller: roomController,
+                        decoration: InputDecoration(
+                          hintText: 'e.g. Room 12',
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      const Text('Student Capacity / Strength', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 6),
+                      TextField(
+                        controller: strengthController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'e.g. 40',
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      const Text('Assign Class Teacher', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: selectedTeacher,
+                            isExpanded: true,
+                            items: _teachersList.map((t) => DropdownMenuItem(value: t, child: Text(t))).toList(),
+                            onChanged: (val) {
+                              if (val != null) {
+                                setDialogState(() {
+                                  selectedTeacher = val;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      const Text('Capacity Status', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: selectedStatus,
+                            isExpanded: true,
+                            items: ['Active', 'Full'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                            onChanged: (val) {
+                              if (val != null) {
+                                setDialogState(() {
+                                  selectedStatus = val;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryBlue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: () {
+                    final String name = nameController.text.trim();
+                    final String room = roomController.text.trim();
+                    final int strength = int.tryParse(strengthController.text.trim()) ?? 30;
+
+                    if (name.isEmpty || room.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please fill out all fields.'), backgroundColor: Colors.orange),
+                      );
+                      return;
+                    }
+
+                    final Map<String, dynamic> newSection = {
+                      'name': name,
+                      'class': selectedClass,
+                      'room': room,
+                      'strength': strength,
+                      'teacher': selectedTeacher,
+                      'status': selectedStatus,
+                    };
+
+                    setState(() {
+                      if (existingSection != null && index != null) {
+                        _sections[index] = newSection;
+                      } else {
+                        _sections.add(newSection);
+                      }
+                    });
+
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(existingSection != null ? 'Section updated! 💾' : 'New Section added! 🎉'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  },
+                  child: Text(existingSection != null ? 'Save Changes' : 'Add Section'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showTrashArchiveDialog() {
+    final bool isDark = widget.isDark;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              title: Row(
+                children: [
+                  const Icon(Icons.delete_outline, color: Colors.red),
+                  const SizedBox(width: 8),
+                  const Text('Section Delete History', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                ],
+              ),
+              content: SizedBox(
+                width: 450,
+                height: 350,
+                child: _deletedSections.isEmpty
+                    ? const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.auto_delete_outlined, size: 48, color: Colors.grey),
+                            SizedBox(height: 12),
+                            Text('No deleted sections.'),
+                          ],
+                        ),
+                      )
+                    : ListView.separated(
+                        itemCount: _deletedSections.length,
+                        separatorBuilder: (c, i) => const Divider(),
+                        itemBuilder: (context, index) {
+                          final item = _deletedSections[index];
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text('${item['class']} - ${item['name']}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                            subtitle: Text('Teacher: ${item['teacher']} | Room: ${item['room']}', style: const TextStyle(fontSize: 11)),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                TextButton.icon(
+                                  onPressed: () {
+                                    setState(() {
+                                      _sections.add(item);
+                                      _deletedSections.removeAt(index);
+                                    });
+                                    setDialogState(() {});
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Section restored! 🔄'), backgroundColor: Colors.green),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.restore, size: 14, color: Colors.green),
+                                  label: const Text('Restore', style: TextStyle(color: Colors.green, fontSize: 11)),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_forever, size: 18, color: Colors.red),
+                                  onPressed: () {
+                                    setState(() {
+                                      _deletedSections.removeAt(index);
+                                    });
+                                    setDialogState(() {});
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Section permanently deleted! 🗑️'), backgroundColor: Colors.red),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showViewDetailsDialog(Map<String, dynamic> item) {
+    final bool isDark = widget.isDark;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Row(
+            children: [
+              Icon(Icons.info_outline, color: AppColors.primaryBlue),
+              const SizedBox(width: 8),
+              const Text('Section Details', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            ],
+          ),
+          content: SizedBox(
+            width: 400,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDetailRow('Section Name:', item['name']),
+                _buildDetailRow('Assigned Class:', item['class']),
+                _buildDetailRow('Room Number:', item['room']),
+                _buildDetailRow('Student Capacity:', '${item['strength']} Students'),
+                _buildDetailRow('Class Teacher:', item['teacher']),
+                _buildDetailRow('Status:', item['status']),
+              ],
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 4,
+            child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.grey)),
+          ),
+          Expanded(
+            flex: 6,
+            child: Text(value, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isDark = widget.isDark;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final bool isMobile = screenWidth < 700;
+
+    final String query = _searchController.text.toLowerCase();
+    final List<Map<String, dynamic>> filteredSections = _sections.where((item) {
+      return (item['name'] as String).toLowerCase().contains(query) ||
+          (item['class'] as String).toLowerCase().contains(query) ||
+          (item['teacher'] as String).toLowerCase().contains(query) ||
+          (item['room'] as String).toLowerCase().contains(query);
+    }).toList();
+
+    // Unique rooms
+    final int roomsUsed = _sections.map((s) => s['room']).toSet().length;
+
+    // Average capacity
+    final double avgCapacity = _sections.isEmpty 
+        ? 0 
+        : _sections.map((s) => s['strength'] as int).reduce((a, b) => a + b) / _sections.length;
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(isMobile ? 12 : 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Banner card
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.primaryBlue.withOpacity(0.85), AppColors.primaryBlue.withOpacity(0.55)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              children: [
+                const CircleAvatar(
+                  radius: 26,
+                  backgroundColor: Colors.white24,
+                  child: Icon(Icons.layers_outlined, color: Colors.white, size: 26),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Section Management Panel',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Divide grade classes into operational sections, assign rooms and class mentors.',
+                        style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Stats grid
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: isMobile ? 1 : 3,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: isMobile ? 3.5 : 2.8,
+            children: [
+              _buildStatsCard('Total Active Sections', '${_sections.length}', Icons.layers, Colors.blue),
+              _buildStatsCard('Classrooms Used', '$roomsUsed Rooms', Icons.door_sliding, Colors.green),
+              _buildStatsCard('Avg Section Strength', '${avgCapacity.toStringAsFixed(1)} Students', Icons.group, Colors.orange),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // Records table
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? null : Colors.white,
+              gradient: isDark
+                  ? LinearGradient(
+                      colors: [
+                        AppColors.primaryBlue.withOpacity(0.12),
+                        AppColors.primaryBlue.withOpacity(0.02),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isDark ? AppColors.primaryBlue.withOpacity(0.25) : Colors.grey.shade100,
+                width: 1.5,
+              ),
+            ),
+            padding: EdgeInsets.all(isMobile ? 14 : 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flex(
+                  direction: isMobile ? Axis.vertical : Axis.horizontal,
+                  crossAxisAlignment: isMobile ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Operational Sections',
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.delete_sweep, color: Colors.grey),
+                      tooltip: 'View Deleted History',
+                      onPressed: _showTrashArchiveDialog,
+                    ),
+                    if (isMobile) const SizedBox(height: 12),
+                    if (!isMobile) const Spacer(),
+                    SizedBox(
+                      width: isMobile ? double.infinity : 200,
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search sections...',
+                          prefixIcon: const Icon(Icons.search, size: 18),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryBlue,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      ),
+                      onPressed: () => _showAddEditDialog(),
+                      icon: const Icon(Icons.add, size: 14),
+                      label: const Text('Add Section', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: filteredSections.length,
+                  separatorBuilder: (c, i) => const Divider(height: 16),
+                  itemBuilder: (context, idx) {
+                    final item = filteredSections[idx];
+                    final originalIndex = _sections.indexOf(item);
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      onTap: () => _showViewDetailsDialog(item),
+                      leading: CircleAvatar(
+                        radius: 18,
+                        backgroundColor: AppColors.primaryBlue.withOpacity(0.1),
+                        child: const Icon(Icons.layers, color: AppColors.primaryBlue, size: 18),
+                      ),
+                      title: Text(
+                        '${item['class']} - ${item['name']}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 2.0),
+                        child: Text(
+                          'MENTOR: ${item['teacher']} | ROOM: ${item['room']} | CAPACITY: ${item['strength']} Students',
+                          style: TextStyle(color: isDark ? Colors.grey : Colors.grey.shade600, fontSize: 11),
+                        ),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: item['status'] == 'Active'
+                                  ? Colors.green.withOpacity(0.15)
+                                  : Colors.orange.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              item['status'],
+                              style: TextStyle(
+                                color: item['status'] == 'Active' ? Colors.green : Colors.orange,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(Icons.visibility_outlined, size: 16, color: Colors.blue),
+                            onPressed: () => _showViewDetailsDialog(item),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.edit_outlined, size: 16, color: Colors.green),
+                            onPressed: () => _showAddEditDialog(existingSection: item, index: originalIndex),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline, size: 16, color: Colors.red),
+                            onPressed: () {
+                              setState(() {
+                                _deletedSections.add(item);
+                                _sections.removeAt(originalIndex);
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('Section moved to Delete History.'),
+                                  action: SnackBarAction(
+                                    label: 'UNDO',
+                                    textColor: Colors.yellow,
+                                    onPressed: () {
+                                      setState(() {
+                                        _sections.insert(originalIndex, item);
+                                        _deletedSections.remove(item);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsCard(String title, String count, IconData icon, Color color) {
     final bool isDark = widget.isDark;
     return Container(
       decoration: BoxDecoration(
