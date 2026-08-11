@@ -2716,10 +2716,10 @@ class _ClassSubjectPanelState extends State<ClassSubjectPanel> {
                           final originalIndex = _classes.indexOf(className);
                           return ListTile(
                             contentPadding: EdgeInsets.zero,
-                            leading: const CircleAvatar(
+                            leading: CircleAvatar(
                               radius: 14,
-                              backgroundColor: Colors.blue24,
-                              child: Icon(Icons.grade, color: Colors.blue, size: 14),
+                              backgroundColor: Colors.blue.withOpacity(0.1),
+                              child: const Icon(Icons.grade, color: Colors.blue, size: 14),
                             ),
                             title: Text(className, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                             trailing: Row(
@@ -2806,10 +2806,10 @@ class _ClassSubjectPanelState extends State<ClassSubjectPanel> {
                           final originalIndex = _subjects.indexOf(subjectName);
                           return ListTile(
                             contentPadding: EdgeInsets.zero,
-                            leading: const CircleAvatar(
+                            leading: CircleAvatar(
                               radius: 14,
-                              backgroundColor: Colors.green24,
-                              child: Icon(Icons.menu_book, color: Colors.green, size: 14),
+                              backgroundColor: Colors.green.withOpacity(0.1),
+                              child: const Icon(Icons.menu_book, color: Colors.green, size: 14),
                             ),
                             title: Text(subjectName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                             trailing: Row(
