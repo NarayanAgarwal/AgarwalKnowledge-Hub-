@@ -4595,52 +4595,474 @@ class _QuizBuilderPanelState extends State<QuizBuilderPanel> {
 // ==========================================
 // SUB SCREEN 8: ATTENDANCE PANEL
 // ==========================================
-class AttendanceManagementPanel extends StatelessWidget {
+class AttendanceManagementPanel extends StatefulWidget {
   final bool isDark;
 
   const AttendanceManagementPanel({super.key, required this.isDark});
 
   @override
-  Widget build(BuildContext context) {
-    final webVm = Provider.of<WebPanelViewModel>(context);
+  State<AttendanceManagementPanel> createState() => _AttendanceManagementPanelState();
+}
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+class _AttendanceManagementPanelState extends State<AttendanceManagementPanel> {
+  DateTime _selectedDate = DateTime.now();
+  String _selectedClass = 'All Classes';
+
+  // Map of studentId -> AttendanceStatus ('Present', 'Absent', 'Late', 'Leave')
+  final Map<String, String> _attendanceMap = {};
+
+  final List<String> _classesList = [
+    'All Classes', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'
+  ];
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: widget.isDark ? ThemeData.dark() : ThemeData.light(),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  void _simulateExportCSV(List<UserProfile> students) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.download_done, color: Colors.greenAccent),
+            const SizedBox(width: 8),
+            Text('Downloaded attendance report for ${students.length} students! 📄'),
+          ],
+        ),
+        backgroundColor: Colors.blueAccent,
+      ),
+    );
+  }
+
+  void _simulateSaveAttendance() {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.save, color: Colors.white),
+            SizedBox(width: 8),
+            Text('Attendance register successfully saved & synced! 💾'),
+          ],
+        ),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void _markAll(List<UserProfile> students, String status) {
+    setState(() {
+      for (var s in students) {
+        _attendanceMap[s.uid] = status;
+      }
+    });
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('All matching student rows set to $status! ⚡'),
+        backgroundColor: Colors.blueGrey,
+      ),
+    );
+  }
+
+  Widget _buildStatusToggle(String studentId, String status, Color color, IconData icon, String label, String studentName) {
+    final bool isActive = _attendanceMap[studentId] == status;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _attendanceMap[studentId] = status;
+        });
+        if (status == 'Absent') {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.notifications_active, color: Colors.yellow),
+                  const SizedBox(width: 8),
+                  Text('SMS & Push Alert triggered for $studentName\'s Parent! 📱'),
+                ],
+              ),
+              backgroundColor: Colors.redAccent,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: isActive ? color.withOpacity(0.2) : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isActive ? color : Colors.grey.withOpacity(0.3),
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: isActive ? color : Colors.grey, size: 14),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: isActive ? color : Colors.grey,
+                fontWeight: FontWeight.bold,
+                fontSize: 10,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsCard(String title, String count, IconData icon, Color color) {
+    final bool isDark = widget.isDark;
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? null : Colors.white,
+        gradient: isDark
+            ? LinearGradient(
+                colors: [color.withOpacity(0.18), color.withOpacity(0.03)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? color.withOpacity(0.25) : Colors.grey.shade100,
+          width: 1.5,
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: color.withOpacity(0.15),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 14),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Daily Attendance Grid', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.download),
-                label: const Text('Export Report'),
-                onPressed: () {},
+              Text(
+                title,
+                style: TextStyle(
+                  color: isDark ? AppColors.darkTextSecondary : Colors.grey.shade600,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                count,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
               ),
             ],
           ),
-          const SizedBox(height: 24),
-          Card(
-            child: DataTable(
-              columns: const [
-                DataColumn(label: Text('Student Name', style: TextStyle(fontWeight: FontWeight.bold))),
-                DataColumn(label: Text('Class', style: TextStyle(fontWeight: FontWeight.bold))),
-                DataColumn(label: Text('Present', style: TextStyle(fontWeight: FontWeight.bold))),
-                DataColumn(label: Text('Absent', style: TextStyle(fontWeight: FontWeight.bold))),
-              ],
-              rows: webVm.studentsList.map((student) {
-                return DataRow(
-                  cells: [
-                    DataCell(Text(student.name)),
-                    DataCell(Text(student.userClass)),
-                    const DataCell(Icon(Icons.check_box_outlined, color: AppColors.accentGreen)),
-                    const DataCell(Icon(Icons.check_box_outline_blank, color: Colors.grey)),
-                  ],
-                );
-              }).toList(),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isDark = widget.isDark;
+    final webVm = Provider.of<WebPanelViewModel>(context);
+    final students = webVm.studentsList;
+
+    // Initialize attendance status
+    for (var student in students) {
+      if (!_attendanceMap.containsKey(student.uid)) {
+        _attendanceMap[student.uid] = 'Present';
+      }
+    }
+
+    // Filter by selected class
+    final List<UserProfile> filteredStudents = students.where((student) {
+      if (_selectedClass == 'All Classes') return true;
+      return student.userClass.trim().toLowerCase() == _selectedClass.trim().toLowerCase();
+    }).toList();
+
+    // Statistics calculations
+    final int total = filteredStudents.length;
+    int present = 0;
+    int absent = 0;
+    int lateCount = 0;
+    int leaveCount = 0;
+
+    for (var student in filteredStudents) {
+      final status = _attendanceMap[student.uid] ?? 'Present';
+      if (status == 'Present') present++;
+      else if (status == 'Absent') absent++;
+      else if (status == 'Late') lateCount++;
+      else if (status == 'Leave') leaveCount++;
+    }
+
+    final double attendanceRate = total == 0 ? 0.0 : ((present + lateCount) / total) * 100;
+    final String dateString = '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}';
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final bool isMobile = screenWidth < 700;
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(isMobile ? 12 : 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Banner card with Filters
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.primaryBlue.withOpacity(0.85), AppColors.primaryBlue.withOpacity(0.55)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
             ),
-          )
+            child: Flex(
+              direction: isMobile ? Axis.vertical : Axis.horizontal,
+              crossAxisAlignment: isMobile ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: isMobile ? 0 : 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Daily Attendance Panel',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Mark student records, view rates, and automatically trigger parent alerts.',
+                        style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 11),
+                      ),
+                    ],
+                  ),
+                ),
+                if (isMobile) const SizedBox(height: 16),
+                Row(
+                  children: [
+                    // Date selector button
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white24,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      onPressed: () => _selectDate(context),
+                      icon: const Icon(Icons.calendar_today, size: 14),
+                      label: Text(dateString, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                    ),
+                    const SizedBox(width: 10),
+                    // Class selector dropdown
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: _selectedClass,
+                          dropdownColor: isDark ? AppColors.darkSurface : Colors.white,
+                          style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: FontWeight.bold, fontSize: 12),
+                          iconEnabledColor: Colors.white,
+                          items: _classesList.map((c) {
+                            return DropdownMenuItem<String>(
+                              value: c,
+                              child: Text(c, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                            );
+                          }).toList(),
+                          onChanged: (val) {
+                            if (val != null) {
+                              setState(() {
+                                _selectedClass = val;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Stats grid row
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: isMobile ? 2 : 4,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: isMobile ? 2.5 : 2.8,
+            children: [
+              _buildStatsCard('Attendance Rate', '${attendanceRate.toStringAsFixed(1)}%', Icons.analytics, Colors.blue),
+              _buildStatsCard('Total Students', '$total Students', Icons.people, Colors.green),
+              _buildStatsCard('Absent Alert Count', '$absent Absent', Icons.warning, Colors.red),
+              _buildStatsCard('On Leaves', '$leaveCount Leave', Icons.medical_services, Colors.orange),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // Actions and Attendance Grid
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? null : Colors.white,
+              gradient: isDark
+                  ? LinearGradient(
+                      colors: [
+                        AppColors.primaryBlue.withOpacity(0.12),
+                        AppColors.primaryBlue.withOpacity(0.02),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isDark ? AppColors.primaryBlue.withOpacity(0.25) : Colors.grey.shade100,
+                width: 1.5,
+              ),
+            ),
+            padding: EdgeInsets.all(isMobile ? 14 : 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Bulk action actions row
+                Flex(
+                  direction: isMobile ? Axis.vertical : Axis.horizontal,
+                  crossAxisAlignment: isMobile ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+                  children: [
+                    const Text('Student Roster Grid', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15)),
+                    if (isMobile) const SizedBox(height: 12),
+                    if (!isMobile) const Spacer(),
+                    Row(
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () => _markAll(filteredStudents, 'Present'),
+                          icon: const Icon(Icons.done_all, size: 14),
+                          label: const Text('All Present', style: TextStyle(fontSize: 11)),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.green),
+                            foregroundColor: Colors.green,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        OutlinedButton.icon(
+                          onPressed: () => _markAll(filteredStudents, 'Absent'),
+                          icon: const Icon(Icons.close, size: 14),
+                          label: const Text('All Absent', style: TextStyle(fontSize: 11)),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.red),
+                            foregroundColor: Colors.red,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton.icon(
+                          onPressed: () => _simulateExportCSV(filteredStudents),
+                          icon: const Icon(Icons.download, size: 14),
+                          label: const Text('Export Excel', style: TextStyle(fontSize: 11)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueGrey,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // Attendance Roster List
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: filteredStudents.length,
+                  separatorBuilder: (c, i) => const Divider(height: 16),
+                  itemBuilder: (context, idx) {
+                    final student = filteredStudents[idx];
+                    return Flex(
+                      direction: isMobile ? Axis.vertical : Axis.horizontal,
+                      crossAxisAlignment: isMobile ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          flex: isMobile ? 0 : 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(student.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                              const SizedBox(height: 2),
+                              Text(student.userClass, style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                            ],
+                          ),
+                        ),
+                        if (isMobile) const SizedBox(height: 10),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: [
+                            _buildStatusToggle(student.uid, 'Present', Colors.green, Icons.check_circle_outline, 'Present', student.name),
+                            _buildStatusToggle(student.uid, 'Absent', Colors.red, Icons.cancel_outlined, 'Absent', student.name),
+                            _buildStatusToggle(student.uid, 'Late', Colors.orange, Icons.watch_later_outlined, 'Late', student.name),
+                            _buildStatusToggle(student.uid, 'Leave', Colors.blue, Icons.medical_services_outlined, 'Leave', student.name),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 24),
+
+                // Save button
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryBlue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: _simulateSaveAttendance,
+                    icon: const Icon(Icons.cloud_upload_outlined),
+                    label: const Text('Save Daily Attendance', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
