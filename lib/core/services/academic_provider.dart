@@ -4,7 +4,7 @@ import '../models/exam.dart';
 
 class AcademicProvider with ChangeNotifier {
   // Attendance states
-  String? _activeQrCode;
+  String? _activeQrCode = 'ATTENDANCE_TOKEN_All_Classes';
   int _qrCountdownSeconds = 86400; // Default 24 hours
   Timer? _qrTimer;
   final List<String> _qrMarkedStudentUids = [];

@@ -333,6 +333,33 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> w
                               text: 'Simulate Scanning QR',
                               onPressed: () => _onScanQrMock(acadProvider, user.uid),
                             ),
+                            const SizedBox(height: 16),
+                            const Divider(),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Active QR Code updated from Panel:',
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              width: 140,
+                              height: 140,
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Center(
+                                child: acadProvider.activeQrCode == null
+                                    ? const Icon(Icons.qr_code, size: 64, color: Colors.grey)
+                                    : (acadProvider.customQrUrl != null
+                                        ? Image.network(acadProvider.customQrUrl!)
+                                        : Image.network(
+                                            'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${acadProvider.activeQrCode}',
+                                          )),
+                              ),
+                            ),
                           ],
                         ),
                       ),
