@@ -86,7 +86,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Future<void> _onSendEmailReset() async {
-    final email = _emailController.text.trim();
+    final email = _emailController.text.trim().toLowerCase();
     if (email.isEmpty || !email.contains('@')) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -111,23 +111,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       return;
     }
 
-    final sent = await authVm.sendPasswordResetEmail(email);
+    await authVm.sendEmailOtp(email);
     if (mounted) {
-      if (sent) {
-        setState(() {
-          _isEmailLinkSent = true;
-        });
+      if (authVm.errorMessage != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password reset link sent to your Gmail successfully! 📧'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: Text(authVm.errorMessage!),
+            backgroundColor: Colors.red,
           ),
         );
       } else {
+        setState(() {
+          _isOtpSent = true;
+          _isEmailLinkSent = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(authVm.errorMessage ?? 'Failed to send reset link.'),
-            backgroundColor: Colors.red,
+          const SnackBar(
+            content: Text('Reset OTP sent to your email successfully! 📧💬'),
+            backgroundColor: Colors.green,
           ),
         );
       }
@@ -138,24 +139,40 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final authVm = Provider.of<AuthViewModel>(context, listen: false);
-    final phone = _phoneController.text.trim();
-    final cleanPhone = phone.startsWith('+91') ? phone : '+91$phone';
+    bool updated = false;
 
-    // Step 1: Verify OTP
-    final otpVerified = await authVm.verifyOtp(_otpController.text.trim());
-    if (!otpVerified && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(authVm.errorMessage ?? 'Incorrect OTP entered.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
+    if (_resetViaEmail) {
+      final email = _emailController.text.trim().toLowerCase();
+      final otpVerified = await authVm.verifyEmailOtp(_otpController.text.trim());
+      if (!otpVerified && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authVm.errorMessage ?? 'Incorrect OTP entered.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      final newPassword = _passwordController.text;
+      updated = await authVm.resetPasswordWithEmailOtp(email, newPassword);
+    } else {
+      final phone = _phoneController.text.trim();
+      final cleanPhone = phone.startsWith('+91') ? phone : '+91$phone';
+      final otpVerified = await authVm.verifyOtp(_otpController.text.trim());
+      if (!otpVerified && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authVm.errorMessage ?? 'Incorrect OTP entered.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      final newPassword = _passwordController.text;
+      updated = await authVm.resetPasswordWithOtp(cleanPhone, newPassword);
     }
-
-    // Step 2: Update Password in database
-    final newPassword = _passwordController.text;
-    final updated = await authVm.resetPasswordWithOtp(cleanPhone, newPassword);
 
     if (updated && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -165,7 +182,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         ),
       );
       
-      // Navigate to dashboard directly (since verifyOtp automatically logged them in)
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
@@ -241,7 +257,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       Center(
                         child: Text(
                           _resetViaEmail
-                              ? (_isEmailLinkSent ? 'Reset Link Sent! 📧' : 'Reset via Gmail 📧')
+                              ? (_isOtpSent ? 'Verify Email OTP 📧' : 'Reset via Gmail 📧')
                               : (_isOtpSent ? 'Enter Reset Details 🔑' : 'Verify Mobile Number 📱'),
                           style: TextStyle(
                             fontSize: 20,
@@ -252,8 +268,83 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Tab Selector
-                      if (!_isOtpSent && !_isEmailLinkSent) ...[
+                      if (_isOtpSent) ...[
+                        const Text('Enter 6-Digit OTP 💬', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        const SizedBox(height: 6),
+                        CustomTextField(
+                          controller: _otpController,
+                          labelText: 'Reset OTP Code',
+                          hintText: 'Enter OTP code',
+                          prefixIcon: Icons.sms_outlined,
+                          keyboardType: TextInputType.number,
+                          validator: (val) {
+                            if (val == null || val.trim().isEmpty) return 'Please enter OTP';
+                            if (val.trim().length < 6) return 'OTP must be 6 digits';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 14),
+
+                        const Text('New Password 🔑', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        const SizedBox(height: 6),
+                        CustomTextField(
+                          controller: _passwordController,
+                          labelText: 'New Password',
+                          hintText: 'Enter new password',
+                          prefixIcon: Icons.lock_outline,
+                          isPassword: true,
+                          validator: (val) {
+                            if (val == null || val.isEmpty) return 'Please set a password';
+                            if (val.length < 6) return 'Password must be at least 6 characters';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 14),
+
+                        const Text('Confirm New Password 🔑', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        const SizedBox(height: 6),
+                        CustomTextField(
+                          controller: _confirmPasswordController,
+                          labelText: 'Confirm Password',
+                          hintText: 'Confirm new password',
+                          prefixIcon: Icons.lock,
+                          isPassword: true,
+                          validator: (val) {
+                            if (val == null || val.isEmpty) return 'Please confirm your password';
+                            if (val != _passwordController.text) return 'Passwords do not match';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 24),
+
+                        CustomButton(
+                          text: 'Verify & Reset Password 🚀',
+                          isLoading: authVm.isLoading,
+                          onPressed: _onResetPassword,
+                        ),
+
+                        const SizedBox(height: 14),
+
+                        Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isOtpSent = false;
+                                _otpController.clear();
+                              });
+                            },
+                            child: Text(
+                              _resetViaEmail ? 'Change Email Address' : 'Change Mobile Number',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primaryBlue,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ] else ...[
                         Row(
                           children: [
                             Expanded(
@@ -310,35 +401,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ],
                         ),
                         const SizedBox(height: 20),
-                      ],
 
-                      if (_resetViaEmail) ...[
-                        if (_isEmailLinkSent) ...[
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.08),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.green.withOpacity(0.3)),
-                            ),
-                            child: const Column(
-                              children: [
-                                Icon(Icons.mark_email_read_outlined, color: Colors.green, size: 48),
-                                SizedBox(height: 12),
-                                Text(
-                                  'A secure password reset link has been successfully sent to your registered Gmail address. Please check your inbox and spam folder to set a new password. 🔐',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(height: 1.4, fontSize: 13, fontWeight: FontWeight.w600),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          CustomButton(
-                            text: 'Back to Login 🚀',
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ] else ...[
+                        if (_resetViaEmail) ...[
                           const Text('Registered Email Address 📧', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                           const SizedBox(height: 6),
                           CustomTextField(
@@ -355,14 +419,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ),
                           const SizedBox(height: 20),
                           CustomButton(
-                            text: 'Send Reset Link 📧',
+                            text: 'Send Reset OTP 📧',
                             isLoading: authVm.isLoading,
                             onPressed: _onSendEmailReset,
                           ),
-                        ]
-                      ] else ...[
-                        // Step 1: Mobile Number Input
-                        if (!_isOtpSent) ...[
+                        ] else ...[
                           const Text('Registered Mobile Number 📱', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                           const SizedBox(height: 6),
                           CustomTextField(
@@ -371,7 +432,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             hintText: 'Enter mobile number',
                             prefixIcon: Icons.phone,
                             keyboardType: TextInputType.phone,
-                            enabled: !_isOtpSent,
                             validator: (val) {
                               if (val == null || val.trim().isEmpty) return 'Please enter mobile number';
                               if (val.trim().length < 10) return 'Enter a valid 10-digit number';
@@ -384,84 +444,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             isLoading: authVm.isLoading,
                             onPressed: _onSendOtp,
                           ),
-                        ] else ...[
-                          // Step 2: OTP & New Password Inputs
-                          const Text('Enter 6-Digit OTP 💬', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                          const SizedBox(height: 6),
-                          CustomTextField(
-                            controller: _otpController,
-                            labelText: 'Reset OTP Code',
-                            hintText: 'Enter OTP code',
-                            prefixIcon: Icons.sms_outlined,
-                            keyboardType: TextInputType.number,
-                            validator: (val) {
-                              if (val == null || val.trim().isEmpty) return 'Please enter OTP';
-                              if (val.trim().length < 6) return 'OTP must be 6 digits';
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 14),
-
-                          const Text('New Password 🔑', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                          const SizedBox(height: 6),
-                          CustomTextField(
-                            controller: _passwordController,
-                            labelText: 'New Password',
-                            hintText: 'Enter new password',
-                            prefixIcon: Icons.lock_outline,
-                            isPassword: true,
-                            validator: (val) {
-                              if (val == null || val.isEmpty) return 'Please set a password';
-                              if (val.length < 6) return 'Password must be at least 6 characters';
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 14),
-
-                          const Text('Confirm New Password 🔑', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                          const SizedBox(height: 6),
-                          CustomTextField(
-                            controller: _confirmPasswordController,
-                            labelText: 'Confirm Password',
-                            hintText: 'Confirm new password',
-                            prefixIcon: Icons.lock,
-                            isPassword: true,
-                            validator: (val) {
-                              if (val == null || val.isEmpty) return 'Please confirm your password';
-                              if (val != _passwordController.text) return 'Passwords do not match';
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 24),
-
-                          CustomButton(
-                            text: 'Verify & Reset Password 🚀',
-                            isLoading: authVm.isLoading,
-                            onPressed: _onResetPassword,
-                          ),
-
-                          const SizedBox(height: 14),
-
-                          Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _isOtpSent = false;
-                                  _otpController.clear();
-                                });
-                              },
-                              child: const Text(
-                                'Change Mobile Number',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primaryBlue,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ]
                       ],
                     ],
                   ),

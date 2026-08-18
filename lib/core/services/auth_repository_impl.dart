@@ -744,4 +744,45 @@ class AuthRepositoryImpl implements AuthRepository {
       return false;
     }
   }
+
+  @override
+  Future<bool> updatePasswordByEmail(String email, String newPassword) async {
+    if (_useMock) {
+      final prefs = await SharedPreferences.getInstance();
+      final usersJson = prefs.getString('mock_registered_users');
+      if (usersJson != null) {
+        final List<dynamic> usersList = jsonDecode(usersJson);
+        for (var u in usersList) {
+          if (u['email']?.toString().toLowerCase() == email.trim().toLowerCase()) {
+            u['password'] = newPassword;
+            await prefs.setString('mock_registered_users', jsonEncode(usersList));
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    try {
+      final cleanEmail = email.trim().toLowerCase();
+      final query = await _firestore
+          .collection(AppStrings.colUsers)
+          .where('email', isEqualTo: cleanEmail)
+          .limit(1)
+          .get();
+      if (query.docs.isEmpty) {
+        return false;
+      }
+      
+      final docId = query.docs.first.id;
+      await _firestore
+          .collection(AppStrings.colUsers)
+          .doc(docId)
+          .update({'password': newPassword});
+          
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }

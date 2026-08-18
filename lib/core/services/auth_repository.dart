@@ -31,6 +31,7 @@ abstract class AuthRepository {
   Future<UserProfile?> registerStudent(UserProfile profile, String password);
   Future<UserProfile?> loginWithPassword(String phone, String password);
   Future<bool> updatePassword(String phone, String newPassword);
+  Future<bool> updatePasswordByEmail(String email, String newPassword);
   Future<bool> isPhoneRegistered(String phone);
   Future<bool> isEmailRegistered(String email);
 }

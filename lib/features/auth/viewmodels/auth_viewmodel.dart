@@ -204,6 +204,29 @@ class AuthViewModel with ChangeNotifier {
     return false;
   }
 
+  Future<bool> resetPasswordWithEmailOtp(String email, String newPassword) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final success = await _authRepository.updatePasswordByEmail(email, newPassword);
+      if (success) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        throw Exception("Failed to update password. Email address not found.");
+      }
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll("Exception: ", "");
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return false;
+  }
+
   Future<bool> isEmailRegistered(String email) async {
     return await _authRepository.isEmailRegistered(email);
   }

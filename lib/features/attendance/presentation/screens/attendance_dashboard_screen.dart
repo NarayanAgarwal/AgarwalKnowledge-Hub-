@@ -292,10 +292,160 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> w
                             'Rotates in: ${_formatSeconds(acadProvider.qrCountdownSeconds)}',
                             style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.secondaryOrange),
                           ),
+                          const SizedBox(height: 12),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blueGrey,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  final controller = TextEditingController();
+                                  return AlertDialog(
+                                    title: const Text('Upload QR from Gallery 🖼️'),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Text(
+                                          'Paste custom QR image URL or click below to simulate picking a QR image from your gallery:',
+                                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        TextField(
+                                          controller: controller,
+                                          decoration: const InputDecoration(
+                                            hintText: 'Paste custom QR image URL',
+                                            border: OutlineInputBorder(),
+                                            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            controller.text = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=050e2e&data=https://agarwalknowledgehub.vercel.app';
+                                          },
+                                          child: const Text('Simulate Gallery Pick 🖼️'),
+                                        ),
+                                      ],
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                                        onPressed: () {
+                                          final url = controller.text.trim();
+                                          if (url.isNotEmpty) {
+                                            acadProvider.updateQrConfig(
+                                              token: 'ATTENDANCE_TOKEN_CUSTOM_${DateTime.now().millisecondsSinceEpoch}',
+                                              classScope: 'All Classes',
+                                              customUrl: url,
+                                              secondsRemaining: 86400,
+                                            );
+                                            Navigator.pop(context);
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('Custom QR uploaded & synchronized successfully! 🖼️🟢'),
+                                                backgroundColor: Colors.green,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: const Text('Save QR', style: TextStyle(color: Colors.white)),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            icon: const Icon(Icons.photo_library, size: 14),
+                            label: const Text('Upload QR from Gallery', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                          ),
                         ] else ...[
                           CustomButton(
                             text: 'Generate 24h QR Code',
                             onPressed: () => acadProvider.generateQrCode(),
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blueGrey,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  final controller = TextEditingController();
+                                  return AlertDialog(
+                                    title: const Text('Upload QR from Gallery 🖼️'),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Text(
+                                          'Paste custom QR image URL or click below to simulate picking a QR image from your gallery:',
+                                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        TextField(
+                                          controller: controller,
+                                          decoration: const InputDecoration(
+                                            hintText: 'Paste custom QR image URL',
+                                            border: OutlineInputBorder(),
+                                            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            controller.text = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=050e2e&data=https://agarwalknowledgehub.vercel.app';
+                                          },
+                                          child: const Text('Simulate Gallery Pick 🖼️'),
+                                        ),
+                                      ],
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                                        onPressed: () {
+                                          final url = controller.text.trim();
+                                          if (url.isNotEmpty) {
+                                            acadProvider.updateQrConfig(
+                                              token: 'ATTENDANCE_TOKEN_CUSTOM_${DateTime.now().millisecondsSinceEpoch}',
+                                              classScope: 'All Classes',
+                                              customUrl: url,
+                                              secondsRemaining: 86400,
+                                            );
+                                            Navigator.pop(context);
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('Custom QR uploaded & synchronized successfully! 🖼️🟢'),
+                                                backgroundColor: Colors.green,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: const Text('Save QR', style: TextStyle(color: Colors.white)),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            icon: const Icon(Icons.photo_library, size: 14),
+                            label: const Text('Upload QR from Gallery', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                           ),
                         ]
                       ],
